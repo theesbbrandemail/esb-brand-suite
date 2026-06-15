@@ -21,7 +21,7 @@ export function Shell({ children }: { children: ReactNode }) {
       <header className="sticky top-0 z-30 backdrop-blur-xl bg-background/40 border-b border-border">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
           <EsbLogo />
-          <nav className="hidden md:flex items-center gap-1 p-1 rounded-full bg-card/60 border border-border">
+          <nav className="hidden xl:flex items-center gap-0.5 p-1 rounded-full bg-card/60 border border-border">
             {tabs.map((t) => {
               const active = pathname === t.to;
               const Icon = t.icon;
@@ -29,7 +29,7 @@ export function Shell({ children }: { children: ReactNode }) {
                 <Link
                   key={t.to}
                   to={t.to}
-                  className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-sm transition-all ${
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs transition-all ${
                     active
                       ? "bg-gradient-to-br from-[oklch(0.86_0.14_88)] to-[oklch(0.72_0.14_70)] text-primary-foreground font-medium shadow-[0_4px_20px_-4px_oklch(0.82_0.13_82/0.4)]"
                       : "text-muted-foreground hover:text-foreground"
@@ -49,8 +49,8 @@ export function Shell({ children }: { children: ReactNode }) {
             <div className="h-9 w-9 rounded-full bg-gradient-to-br from-violet to-gold border border-border" />
           </div>
         </div>
-        {/* mobile tabs */}
-        <nav className="md:hidden flex items-center gap-1 px-4 pb-3 overflow-x-auto">
+        {/* compact tabs (mobile + tablet) */}
+        <nav className="xl:hidden flex items-center gap-1 px-4 pb-3 overflow-x-auto">
           {tabs.map((t) => {
             const active = pathname === t.to;
             return (
