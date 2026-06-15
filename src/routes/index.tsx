@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Shell } from "@/components/esb/Shell";
 import { LineSpark } from "@/components/esb/charts";
-import { ChevronRight, Bell, Sparkles, Package, Camera, ChevronDown, MapPin } from "lucide-react";
+import { ChevronRight, Sparkles, Package, Camera, ChevronDown, MapPin } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
