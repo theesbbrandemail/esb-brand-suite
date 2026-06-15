@@ -10,8 +10,12 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SuiteRouteImport } from './routes/suite'
+import { Route as SkinAnalysisRouteImport } from './routes/skin-analysis'
 import { Route as MobileRouteImport } from './routes/mobile'
+import { Route as ManagerRouteImport } from './routes/manager'
 import { Route as InventoryRouteImport } from './routes/inventory'
+import { Route as ContentRouteImport } from './routes/content'
+import { Route as AppointmentsRouteImport } from './routes/appointments'
 import { Route as IndexRouteImport } from './routes/index'
 
 const SuiteRoute = SuiteRouteImport.update({
@@ -19,14 +23,34 @@ const SuiteRoute = SuiteRouteImport.update({
   path: '/suite',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SkinAnalysisRoute = SkinAnalysisRouteImport.update({
+  id: '/skin-analysis',
+  path: '/skin-analysis',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MobileRoute = MobileRouteImport.update({
   id: '/mobile',
   path: '/mobile',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ManagerRoute = ManagerRouteImport.update({
+  id: '/manager',
+  path: '/manager',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const InventoryRoute = InventoryRouteImport.update({
   id: '/inventory',
   path: '/inventory',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContentRoute = ContentRouteImport.update({
+  id: '/content',
+  path: '/content',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppointmentsRoute = AppointmentsRouteImport.update({
+  id: '/appointments',
+  path: '/appointments',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -37,35 +61,76 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/appointments': typeof AppointmentsRoute
+  '/content': typeof ContentRoute
   '/inventory': typeof InventoryRoute
+  '/manager': typeof ManagerRoute
   '/mobile': typeof MobileRoute
+  '/skin-analysis': typeof SkinAnalysisRoute
   '/suite': typeof SuiteRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/appointments': typeof AppointmentsRoute
+  '/content': typeof ContentRoute
   '/inventory': typeof InventoryRoute
+  '/manager': typeof ManagerRoute
   '/mobile': typeof MobileRoute
+  '/skin-analysis': typeof SkinAnalysisRoute
   '/suite': typeof SuiteRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/appointments': typeof AppointmentsRoute
+  '/content': typeof ContentRoute
   '/inventory': typeof InventoryRoute
+  '/manager': typeof ManagerRoute
   '/mobile': typeof MobileRoute
+  '/skin-analysis': typeof SkinAnalysisRoute
   '/suite': typeof SuiteRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/inventory' | '/mobile' | '/suite'
+  fullPaths:
+    | '/'
+    | '/appointments'
+    | '/content'
+    | '/inventory'
+    | '/manager'
+    | '/mobile'
+    | '/skin-analysis'
+    | '/suite'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/inventory' | '/mobile' | '/suite'
-  id: '__root__' | '/' | '/inventory' | '/mobile' | '/suite'
+  to:
+    | '/'
+    | '/appointments'
+    | '/content'
+    | '/inventory'
+    | '/manager'
+    | '/mobile'
+    | '/skin-analysis'
+    | '/suite'
+  id:
+    | '__root__'
+    | '/'
+    | '/appointments'
+    | '/content'
+    | '/inventory'
+    | '/manager'
+    | '/mobile'
+    | '/skin-analysis'
+    | '/suite'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AppointmentsRoute: typeof AppointmentsRoute
+  ContentRoute: typeof ContentRoute
   InventoryRoute: typeof InventoryRoute
+  ManagerRoute: typeof ManagerRoute
   MobileRoute: typeof MobileRoute
+  SkinAnalysisRoute: typeof SkinAnalysisRoute
   SuiteRoute: typeof SuiteRoute
 }
 
@@ -78,6 +143,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SuiteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/skin-analysis': {
+      id: '/skin-analysis'
+      path: '/skin-analysis'
+      fullPath: '/skin-analysis'
+      preLoaderRoute: typeof SkinAnalysisRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/mobile': {
       id: '/mobile'
       path: '/mobile'
@@ -85,11 +157,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MobileRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/manager': {
+      id: '/manager'
+      path: '/manager'
+      fullPath: '/manager'
+      preLoaderRoute: typeof ManagerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/inventory': {
       id: '/inventory'
       path: '/inventory'
       fullPath: '/inventory'
       preLoaderRoute: typeof InventoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/content': {
+      id: '/content'
+      path: '/content'
+      fullPath: '/content'
+      preLoaderRoute: typeof ContentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/appointments': {
+      id: '/appointments'
+      path: '/appointments'
+      fullPath: '/appointments'
+      preLoaderRoute: typeof AppointmentsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -104,20 +197,14 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AppointmentsRoute: AppointmentsRoute,
+  ContentRoute: ContentRoute,
   InventoryRoute: InventoryRoute,
+  ManagerRoute: ManagerRoute,
   MobileRoute: MobileRoute,
+  SkinAnalysisRoute: SkinAnalysisRoute,
   SuiteRoute: SuiteRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

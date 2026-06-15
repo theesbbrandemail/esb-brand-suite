@@ -84,21 +84,25 @@ function ContentPage() {
               {[
                 { i: Home, l: "Home" },
                 { i: Search, l: "Search" },
-                { create: true },
+                { create: true as const },
                 { i: Bell, l: "Alerts" },
                 { i: User, l: "Profile" },
-              ].map((t, i) =>
-                t.create ? (
-                  <button key={i} className="h-12 w-12 rounded-full flex items-center justify-center -mt-6 border-4 border-[oklch(0.14_0.02_300)]" style={{ background: `linear-gradient(135deg, ${PINK}, oklch(0.45 0.22 340))`, boxShadow: `0 10px 30px -8px ${PINK}` }}>
-                    <Sparkles className="h-5 w-5 text-white" />
-                  </button>
-                ) : (
+              ].map((t, i) => {
+                if ("create" in t) {
+                  return (
+                    <button key={i} className="h-12 w-12 rounded-full flex items-center justify-center -mt-6 border-4 border-[oklch(0.14_0.02_300)]" style={{ background: `linear-gradient(135deg, ${PINK}, oklch(0.45 0.22 340))`, boxShadow: `0 10px 30px -8px ${PINK}` }}>
+                      <Sparkles className="h-5 w-5 text-white" />
+                    </button>
+                  );
+                }
+                const Icon = t.i;
+                return (
                   <button key={i} className="flex flex-col items-center gap-0.5">
-                    <t.i className="h-4 w-4 text-muted-foreground" />
+                    <Icon className="h-4 w-4 text-muted-foreground" />
                     <span className="text-[9px] text-muted-foreground">{t.l}</span>
                   </button>
-                )
-              )}
+                );
+              })}
             </div>
           </div>
         </Phone>
