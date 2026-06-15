@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { LayoutGrid, Sparkles, Smartphone, Bell } from "lucide-react";
+import { LayoutGrid, Sparkles, Smartphone, Bell, Package, Calendar, Image as ImageIcon, ScanFace, ClipboardList } from "lucide-react";
 import { EsbLogo } from "./Logo";
 import type { ReactNode } from "react";
 
@@ -7,6 +7,11 @@ const tabs = [
   { to: "/", label: "Overview", icon: LayoutGrid },
   { to: "/suite", label: "AI Suite", icon: Sparkles },
   { to: "/mobile", label: "Mobile", icon: Smartphone },
+  { to: "/inventory", label: "Inventory", icon: Package },
+  { to: "/appointments", label: "Appts", icon: Calendar },
+  { to: "/content", label: "Content", icon: ImageIcon },
+  { to: "/skin-analysis", label: "Skin AI", icon: ScanFace },
+  { to: "/manager", label: "Manager", icon: ClipboardList },
 ] as const;
 
 export function Shell({ children }: { children: ReactNode }) {
