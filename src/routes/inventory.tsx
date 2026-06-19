@@ -22,7 +22,7 @@ const products = [
 
 function InventoryPage() {
   return (
-    <Shell>
+    <Shell requireStaff>
       <div className="flex justify-center">
         <Phone>
           <PhoneScroll>

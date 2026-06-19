@@ -21,7 +21,7 @@ const seriesB = months.map((m, i) => ({ label: m, gold: 10 + Math.round(Math.cos
 
 export default function SuitePage() {
   return (
-    <Shell>
+    <Shell requireStaff>
       <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
         <div>
           <div className="text-xs text-muted-foreground uppercase tracking-wider">CEO Workspace</div>
