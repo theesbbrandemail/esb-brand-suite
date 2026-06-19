@@ -17,7 +17,7 @@ export const Route = createFileRoute("/manager")({
 
 function ManagerPage() {
   return (
-    <Shell>
+    <Shell requireStaff>
       <div className="flex justify-center">
         <Phone>
           <div className="absolute top-0 right-0 h-40 w-40 rounded-full bg-gold/15 blur-3xl" />
