@@ -1,15 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Shell } from "@/components/esb/Shell";
 import { DualBarChart, LineSpark } from "@/components/esb/charts";
-import { Search, ChevronRight, Sparkles, Calendar, CheckCircle2 } from "lucide-react";
+import { Search, ChevronRight, Sparkles, Calendar, TrendingUp, Activity, Brain, Crown } from "lucide-react";
+import { CeoGate } from "@/components/esb/CeoGate";
+import { AutomationApprovalQueue } from "@/components/esb/AutomationApprovalQueue";
 
 export const Route = createFileRoute("/suite")({
   head: () => ({
     meta: [
-      { title: "CEO AI Suite — ESB Brand" },
-      { name: "description", content: "Full operational suite for beauty brand CEOs: KPIs, reminders, AI automation." },
-      { property: "og:title", content: "CEO AI Suite — ESB Brand" },
-      { property: "og:description", content: "Full operational suite for beauty brand CEOs." },
+      { title: "CEO Intelligence Suite — ESB Brand" },
+      { name: "description", content: "Biometric-secured CEO command center: KPIs, AI intelligence, automation approvals." },
+      { property: "og:title", content: "CEO Intelligence Suite — ESB Brand" },
+      { property: "og:description", content: "Biometric-secured CEO command center for ESB Brand operations." },
     ],
   }),
   component: SuitePage,
@@ -22,35 +24,96 @@ const seriesB = months.map((m, i) => ({ label: m, gold: 10 + Math.round(Math.cos
 export default function SuitePage() {
   return (
     <Shell requireStaff>
-      <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
-        <div>
-          <div className="text-xs text-muted-foreground uppercase tracking-wider">CEO Workspace</div>
-          <h1 className="text-3xl md:text-4xl font-display font-semibold mt-1">CEO <span className="gold-text">AI Suite</span></h1>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-            <input
-              className="pl-9 pr-4 py-2 rounded-full bg-card border border-border text-sm w-64 focus:outline-none focus:ring-2 focus:ring-ring"
-              placeholder="Search suite..."
-            />
+      <CeoGate>
+        <div className="relative">
+          {/* Premium hero header */}
+          <div
+            className="relative overflow-hidden rounded-3xl p-8 mb-6"
+            style={{
+              background:
+                "linear-gradient(135deg, oklch(0.22 0.04 280 / 0.85), oklch(0.16 0.03 280 / 0.9)), radial-gradient(80% 60% at 0% 0%, oklch(0.82 0.13 82 / 0.15), transparent), radial-gradient(60% 50% at 100% 100%, oklch(0.62 0.2 295 / 0.2), transparent)",
+              border: "1px solid oklch(0.82 0.13 82 / 0.2)",
+              boxShadow: "0 30px 80px -30px oklch(0 0 0 / 0.6)",
+            }}
+          >
+            <div className="absolute top-0 right-0 h-40 w-40 rounded-full bg-gold opacity-10 blur-3xl" />
+            <div className="absolute bottom-0 left-0 h-40 w-40 rounded-full bg-violet opacity-15 blur-3xl" />
+
+            <div className="relative flex items-center justify-between flex-wrap gap-4">
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <Crown className="h-3.5 w-3.5 text-gold" />
+                  <span className="text-[10px] uppercase tracking-[0.3em] text-gold/90">
+                    Biometric Vault · CEO Access
+                  </span>
+                </div>
+                <h1 className="text-4xl md:text-5xl font-display font-semibold leading-tight">
+                  <span className="gold-text">Command</span> Intelligence
+                </h1>
+                <p className="text-sm text-muted-foreground mt-2 max-w-md">
+                  Real-time operations, AI-orchestrated automations, multi-brand revenue intelligence.
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                  <input
+                    className="pl-9 pr-4 py-2.5 rounded-full bg-card/80 backdrop-blur border border-border text-sm w-64 focus:outline-none focus:ring-2 focus:ring-ring"
+                    placeholder="Ask intelligence…"
+                  />
+                </div>
+                <button className="chip-gold flex items-center gap-1.5 px-4 py-2">
+                  <Brain className="h-3.5 w-3.5" /> Ask AI
+                </button>
+              </div>
+            </div>
+
+            {/* KPI strip */}
+            <div className="relative mt-7 grid grid-cols-2 md:grid-cols-4 gap-3">
+              <HeroStat label="Revenue / 30d" value="$427.9K" delta="+14.2%" icon={TrendingUp} />
+              <HeroStat label="AI Autonomy" value="86%" delta="+4.1%" icon={Brain} />
+              <HeroStat label="Active Brands" value="2" delta="Stable" icon={Crown} muted />
+              <HeroStat label="Health Score" value="A+" delta="92/100" icon={Activity} />
+            </div>
           </div>
-          <button className="chip-gold flex items-center gap-1.5"><Sparkles className="h-3 w-3" /> Search Suite</button>
+
+          {/* Main grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+            <BrandPanel title="Skincare Kitchen" tag="Brand 01" data={seriesA} growth="+18.4%" revenue="$245.8K" />
+            <KPIPanel />
+            <RemindersPanel />
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mt-5">
+            <div className="lg:col-span-2">
+              <AutomationApprovalQueue />
+            </div>
+            <AutomationStatsPanel />
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mt-5">
+            <BrandPanel title="Derma Aesthetics" tag="Brand 02" data={seriesB} growth="+12.5%" revenue="$182.1K" />
+            <BusinessOverviewPanel />
+            <IntelligencePanel />
+          </div>
         </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        <BrandPanel title="Skincare Kitchen" tag="Brand 01" data={seriesA} growth="+18.4%" revenue="$245.8K" />
-        <KPIPanel />
-        <RemindersPanel />
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mt-5">
-        <BrandPanel title="Derma Aesthetics" tag="Brand 02" data={seriesB} growth="+12.5%" revenue="$182.1K" />
-        <BusinessOverviewPanel />
-        <AutomationPanel />
-      </div>
+      </CeoGate>
     </Shell>
+  );
+}
+
+function HeroStat({
+  label, value, delta, icon: Icon, muted,
+}: { label: string; value: string; delta: string; icon: typeof TrendingUp; muted?: boolean }) {
+  return (
+    <div className="p-4 rounded-2xl bg-card/40 backdrop-blur border border-white/5">
+      <div className="flex items-center justify-between">
+        <span className="text-[10px] uppercase tracking-widest text-muted-foreground">{label}</span>
+        <Icon className="h-3.5 w-3.5 text-gold/70" />
+      </div>
+      <div className="mt-2 text-2xl font-display font-semibold">{value}</div>
+      <div className={`text-[11px] mt-0.5 ${muted ? "text-muted-foreground" : "text-success"}`}>{delta}</div>
+    </div>
   );
 }
 
@@ -102,14 +165,14 @@ function KPIPanel() {
 
 function RemindersPanel() {
   const items = [
-    { t: "Team Meeting", time: "10:00 AM", sub: "Review Quarterly Goals", tag: "Auto-Execute" },
-    { t: "Review Quarterly Report", time: "1:30 PM", sub: "Send to board", tag: "Pending" },
-    { t: "Client Call · Mrs Okafor", time: "3:00 PM", sub: "Skincare consultation", tag: "Confirmed" },
+    { t: "Board Briefing", time: "10:00 AM", sub: "Q3 strategic review", tag: "Auto-prep" },
+    { t: "Investor Call", time: "1:30 PM", sub: "Series A follow-up", tag: "Pending" },
+    { t: "Skincare Kitchen Launch", time: "3:00 PM", sub: "Press embargo lifts", tag: "Confirmed" },
   ];
   return (
     <div className="card-elevated p-5">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="font-display text-lg">Reminders</h3>
+        <h3 className="font-display text-lg">Today's Agenda</h3>
         <Calendar className="h-4 w-4 text-muted-foreground" />
       </div>
       <div className="space-y-2">
@@ -155,25 +218,47 @@ function BusinessOverviewPanel() {
   );
 }
 
-function AutomationPanel() {
+function AutomationStatsPanel() {
   return (
     <div className="card-elevated p-5 relative overflow-hidden">
       <div className="absolute -bottom-16 -right-16 h-48 w-48 rounded-full bg-violet/20 blur-3xl" />
       <div className="flex items-center justify-between mb-4 relative">
-        <h3 className="font-display text-lg">AI Automation</h3>
-        <span className="chip-gold">Auto-Execute</span>
+        <h3 className="font-display text-lg">AI Run Metrics</h3>
+        <span className="chip-gold">Live</span>
       </div>
       <LineSpark points={[14, 22, 19, 30, 28, 40, 52, 48, 65, 72]} height={90} />
       <div className="grid grid-cols-2 gap-3 mt-4 relative">
         <Stat label="Tasks auto-run" value="248" />
         <Stat label="Hours saved" value="62h" />
+        <Stat label="Approval rate" value="94%" />
+        <Stat label="Avg. precision" value="98.2%" />
       </div>
-      <div className="mt-4 p-3 rounded-xl bg-violet/10 border border-violet/30 flex items-start gap-2 relative">
-        <CheckCircle2 className="h-4 w-4 text-violet shrink-0 mt-0.5" />
-        <div className="text-xs">
-          <div className="font-medium">Optimize Marketing Spend</div>
-          <div className="text-muted-foreground">Reallocate $2.4K from display to retention emails.</div>
-        </div>
+    </div>
+  );
+}
+
+function IntelligencePanel() {
+  const insights = [
+    { t: "Retention spike", d: "Skincare Kitchen +18% repeat rate after AI-routine launch.", k: "Trend" },
+    { t: "Inventory risk", d: "Vitamin C serum 14 days to stockout at current velocity.", k: "Alert" },
+    { t: "Pricing opportunity", d: "HydraFacial conversion peaks at $185 — test +$10 lift.", k: "Action" },
+  ];
+  return (
+    <div className="card-elevated p-5">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="font-display text-lg">AI Intelligence Briefs</h3>
+        <Sparkles className="h-4 w-4 text-gold" />
+      </div>
+      <div className="space-y-2.5">
+        {insights.map((i) => (
+          <div key={i.t} className="p-3 rounded-xl bg-secondary/40 border border-border/60">
+            <div className="flex items-center justify-between mb-1">
+              <div className="text-sm font-medium">{i.t}</div>
+              <span className="text-[10px] uppercase tracking-wider text-gold">{i.k}</span>
+            </div>
+            <div className="text-[11px] text-muted-foreground">{i.d}</div>
+          </div>
+        ))}
       </div>
     </div>
   );
