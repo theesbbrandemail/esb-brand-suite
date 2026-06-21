@@ -14,6 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_automation_tasks: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          category: string | null
+          created_at: string
+          description: string | null
+          executed_at: string | null
+          id: string
+          impact_estimate: string | null
+          payload: Json | null
+          requested_by: string | null
+          result: Json | null
+          risk: Database["public"]["Enums"]["ai_task_risk"]
+          status: Database["public"]["Enums"]["ai_task_status"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          executed_at?: string | null
+          id?: string
+          impact_estimate?: string | null
+          payload?: Json | null
+          requested_by?: string | null
+          result?: Json | null
+          risk?: Database["public"]["Enums"]["ai_task_risk"]
+          status?: Database["public"]["Enums"]["ai_task_status"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          executed_at?: string | null
+          id?: string
+          impact_estimate?: string | null
+          payload?: Json | null
+          requested_by?: string | null
+          result?: Json | null
+          risk?: Database["public"]["Enums"]["ai_task_risk"]
+          status?: Database["public"]["Enums"]["ai_task_status"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -38,6 +92,45 @@ export type Database = {
           full_name?: string | null
           id?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      skin_analyses: {
+        Row: {
+          concerns: Json | null
+          created_at: string
+          id: string
+          image_url: string | null
+          model: string | null
+          routine: Json | null
+          scores: Json | null
+          skin_type: string | null
+          summary: string | null
+          user_id: string | null
+        }
+        Insert: {
+          concerns?: Json | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          model?: string | null
+          routine?: Json | null
+          scores?: Json | null
+          skin_type?: string | null
+          summary?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          concerns?: Json | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          model?: string | null
+          routine?: Json | null
+          scores?: Json | null
+          skin_type?: string | null
+          summary?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -83,6 +176,39 @@ export type Database = {
         }
         Relationships: []
       }
+      webauthn_credentials: {
+        Row: {
+          created_at: string
+          credential_id: string
+          device_label: string | null
+          id: string
+          last_used_at: string | null
+          public_key: string | null
+          transports: string[] | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          credential_id: string
+          device_label?: string | null
+          id?: string
+          last_used_at?: string | null
+          public_key?: string | null
+          transports?: string[] | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          credential_id?: string
+          device_label?: string | null
+          id?: string
+          last_used_at?: string | null
+          public_key?: string | null
+          transports?: string[] | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -101,6 +227,13 @@ export type Database = {
       }
     }
     Enums: {
+      ai_task_risk: "low" | "medium" | "high" | "critical"
+      ai_task_status:
+        | "pending"
+        | "approved"
+        | "rejected"
+        | "executed"
+        | "failed"
       app_role: "admin" | "staff" | "public"
     }
     CompositeTypes: {
@@ -229,6 +362,8 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      ai_task_risk: ["low", "medium", "high", "critical"],
+      ai_task_status: ["pending", "approved", "rejected", "executed", "failed"],
       app_role: ["admin", "staff", "public"],
     },
   },
