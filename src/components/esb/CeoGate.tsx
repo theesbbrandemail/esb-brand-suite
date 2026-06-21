@@ -111,9 +111,23 @@ export function CeoGate({ children }: { children: React.ReactNode }) {
     }
   }
 
-  // Non-CEO staff and admins who unlocked: pass through.
-  if (!isCeo) return <>{children}</>;
   if (phase === "unlocked") return <>{children}</>;
+
+  if (!isCeo) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center px-4">
+        <div className="card-elevated p-8 max-w-md text-center">
+          <div className="h-12 w-12 mx-auto rounded-full bg-gold/15 flex items-center justify-center mb-4">
+            <ShieldAlert className="h-5 w-5 text-gold" />
+          </div>
+          <h2 className="font-display text-xl mb-1">CEO-only vault</h2>
+          <p className="text-sm text-muted-foreground">
+            This command center is restricted to the CEO account and requires biometric authentication.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-10">
