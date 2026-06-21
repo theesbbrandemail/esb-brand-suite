@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/lib/auth";
 import { EsbLogo } from "@/components/esb/Logo";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Loader2, AlertCircle, CheckCircle2, RefreshCw, WifiOff } from "lucide-react";
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
@@ -16,29 +16,181 @@ export const Route = createFileRoute("/auth")({
   component: AuthPage,
 });
 
+type Phase = "idle" | "starting" | "redirecting" | "returning" | "success" | "error";
+
+type FriendlyError = {
+  title: string;
+  message: string;
+  hint?: string;
+  retry: boolean;
+};
+
+function classifyError(raw: string): FriendlyError {
+  const msg = raw.toLowerCase();
+
+  if (msg.includes("popup") && (msg.includes("closed") || msg.includes("blocked"))) {
+    return {
+      title: "Sign-in window was closed",
+      message: "The Google sign-in window closed before you finished.",
+      hint: "Try again and complete the Google prompt. If a popup was blocked, allow popups for this site.",
+      retry: true,
+    };
+  }
+  if (msg.includes("access_denied") || msg.includes("denied") || msg.includes("cancel")) {
+    return {
+      title: "Sign-in cancelled",
+      message: "You declined access on the Google consent screen.",
+      hint: "Continue with Google and approve the requested permissions to sign in.",
+      retry: true,
+    };
+  }
+  if (msg.includes("network") || msg.includes("failed to fetch") || msg.includes("fetch")) {
+    return {
+      title: "Network problem",
+      message: "We couldn't reach Google to complete sign-in.",
+      hint: "Check your internet connection and try again.",
+      retry: true,
+    };
+  }
+  if (msg.includes("timeout") || msg.includes("timed out")) {
+    return {
+      title: "Sign-in timed out",
+      message: "Google took too long to respond.",
+      hint: "Please try again in a moment.",
+      retry: true,
+    };
+  }
+  if (msg.includes("invalid") && msg.includes("state")) {
+    return {
+      title: "Session expired",
+      message: "The sign-in link expired before you returned.",
+      hint: "Start a fresh sign-in below.",
+      retry: true,
+    };
+  }
+  if (msg.includes("unsupported provider") || msg.includes("provider is not enabled")) {
+    return {
+      title: "Google sign-in unavailable",
+      message: "Google sign-in is not enabled for this workspace yet.",
+      hint: "Please contact an ESB Brand administrator.",
+      retry: false,
+    };
+  }
+  if (msg.includes("403") || msg.includes("forbidden")) {
+    return {
+      title: "Access blocked",
+      message: "Your Google account isn't permitted to access this app.",
+      hint: "If you believe this is a mistake, contact an ESB Brand administrator.",
+      retry: false,
+    };
+  }
+  return {
+    title: "Sign-in failed",
+    message: raw || "Something went wrong while signing you in.",
+    hint: "Please try again. If the problem persists, contact support.",
+    retry: true,
+  };
+}
+
 function AuthPage() {
   const { session, loading } = useAuth();
   const navigate = useNavigate();
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [phase, setPhase] = useState<Phase>("idle");
+  const [error, setError] = useState<FriendlyError | null>(null);
+  const [online, setOnline] = useState(
+    typeof navigator === "undefined" ? true : navigator.onLine,
+  );
+
+  // Detect OAuth callback (?code=... or #access_token=...) and show a returning state
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const search = window.location.search;
+    const hash = window.location.hash;
+    const hasCallback =
+      search.includes("code=") ||
+      search.includes("error=") ||
+      hash.includes("access_token=") ||
+      hash.includes("error=");
+    if (hasCallback) {
+      setPhase("returning");
+      // Surface OAuth provider errors carried back in the URL
+      const params = new URLSearchParams(search.startsWith("?") ? search.slice(1) : search);
+      const oauthErr = params.get("error_description") || params.get("error");
+      if (oauthErr) {
+        setError(classifyError(decodeURIComponent(oauthErr)));
+        setPhase("error");
+      }
+    }
+  }, []);
 
   useEffect(() => {
-    if (!loading && session) navigate({ to: "/" });
+    function on() { setOnline(true); }
+    function off() { setOnline(false); }
+    window.addEventListener("online", on);
+    window.addEventListener("offline", off);
+    return () => {
+      window.removeEventListener("online", on);
+      window.removeEventListener("offline", off);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!loading && session) {
+      setPhase("success");
+      const t = setTimeout(() => navigate({ to: "/" }), 450);
+      return () => clearTimeout(t);
+    }
   }, [loading, session, navigate]);
 
   async function signIn() {
     setError(null);
-    setBusy(true);
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin + "/auth",
-    });
-    if (result.error) {
-      setError(result.error.message || "Sign-in failed");
-      setBusy(false);
+
+    if (typeof navigator !== "undefined" && !navigator.onLine) {
+      setError(classifyError("network"));
+      setPhase("error");
       return;
     }
-    if (result.redirected) return;
-    navigate({ to: "/" });
+
+    setPhase("starting");
+    try {
+      const result = await lovable.auth.signInWithOAuth("google", {
+        redirect_uri: window.location.origin + "/auth",
+      });
+      if (result.error) {
+        setError(classifyError(result.error.message || ""));
+        setPhase("error");
+        return;
+      }
+      if (result.redirected) {
+        setPhase("redirecting");
+        return;
+      }
+      setPhase("success");
+      navigate({ to: "/" });
+    } catch (e) {
+      setError(classifyError(e instanceof Error ? e.message : String(e)));
+      setPhase("error");
+    }
+  }
+
+  const busy = phase === "starting" || phase === "redirecting" || phase === "returning";
+  const buttonLabel =
+    phase === "starting" ? "Opening Google…"
+    : phase === "redirecting" ? "Redirecting to Google…"
+    : phase === "returning" ? "Finishing sign-in…"
+    : phase === "success" ? "Signed in"
+    : "Continue with Google";
+
+  // Initial app-level auth check
+  if (loading && phase === "idle") {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-4">
+        <div className="flex items-center gap-3 text-sm text-muted-foreground">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          Checking your session…
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -64,17 +216,65 @@ function AuthPage() {
             Sign in with Google to access your dashboard. Staff and management get extended tools automatically.
           </p>
 
+          {!online && (
+            <div
+              role="status"
+              className="mb-4 flex items-start gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-200"
+            >
+              <WifiOff className="h-4 w-4 mt-0.5 shrink-0" />
+              <span>You appear to be offline. Reconnect to sign in.</span>
+            </div>
+          )}
+
           <button
             onClick={signIn}
-            disabled={busy}
-            className="w-full h-12 rounded-xl bg-white text-neutral-900 font-medium flex items-center justify-center gap-3 hover:bg-white/90 transition disabled:opacity-60"
+            disabled={busy || !online || phase === "success"}
+            aria-busy={busy}
+            className="w-full h-12 rounded-xl bg-white text-neutral-900 font-medium flex items-center justify-center gap-3 hover:bg-white/90 transition disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            <GoogleIcon />
-            {busy ? "Redirecting…" : "Continue with Google"}
+            {phase === "success" ? (
+              <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+            ) : busy ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <GoogleIcon />
+            )}
+            {buttonLabel}
           </button>
 
+          {(phase === "redirecting" || phase === "returning") && (
+            <p className="text-[11px] text-muted-foreground mt-3 text-center">
+              {phase === "redirecting"
+                ? "Don't close this tab — Google will bring you back here."
+                : "Almost done — preparing your dashboard."}
+            </p>
+          )}
+
           {error && (
-            <p className="text-xs text-destructive mt-4 text-center">{error}</p>
+            <div
+              role="alert"
+              className="mt-5 rounded-xl border border-destructive/30 bg-destructive/10 p-3"
+            >
+              <div className="flex items-start gap-2">
+                <AlertCircle className="h-4 w-4 text-destructive mt-0.5 shrink-0" />
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-destructive">{error.title}</p>
+                  <p className="text-xs text-destructive/90 mt-0.5">{error.message}</p>
+                  {error.hint && (
+                    <p className="text-xs text-muted-foreground mt-1.5">{error.hint}</p>
+                  )}
+                  {error.retry && (
+                    <button
+                      onClick={signIn}
+                      disabled={busy || !online}
+                      className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-foreground hover:text-gold transition"
+                    >
+                      <RefreshCw className="h-3 w-3" /> Try again
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
           )}
 
           <p className="text-[11px] text-muted-foreground mt-6 text-center leading-relaxed">
