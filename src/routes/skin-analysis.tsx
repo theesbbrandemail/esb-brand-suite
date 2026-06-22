@@ -106,19 +106,35 @@ function SkinPage() {
   async function runAnalysis() {
     if (!imageData) return;
     setError(null);
+    setRetryCountdown(0);
     setPhase("analyzing");
     try {
-      const r = await analyze({ data: { imageDataUrl: imageData } });
-      setResult(r as SkinAnalysis);
-      setPhase("result");
-    } catch (e: any) {
-      const msg = String(e?.message ?? e);
-      if (msg.includes("429")) setError("AI is busy. Please try again in a moment.");
-      else if (msg.includes("402")) setError("Free AI allowance is exhausted on this workspace.");
-      else setError("Analysis failed. Please try a clearer, well-lit selfie.");
+      const r = await analyze({ data: { imageDataUrl: imageData, tier } });
+      if ("ok" in r && r.ok) {
+        setResult(r as SkinAnalysis);
+        setPhase("result");
+      } else {
+        const err = r as { code: string; message: string; retryable: boolean; retryAfterMs?: number };
+        setError({ code: err.code, message: err.message, retryable: err.retryable, retryAfterMs: err.retryAfterMs });
+        if (err.retryAfterMs) {
+          const secs = Math.ceil(err.retryAfterMs / 1000);
+          setRetryCountdown(secs);
+          const iv = setInterval(() => {
+            setRetryCountdown((s) => {
+              if (s <= 1) { clearInterval(iv); return 0; }
+              return s - 1;
+            });
+          }, 1000);
+        }
+        setPhase("error");
+      }
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : String(e);
+      setError({ code: "client_error", message: msg || "Analysis failed. Please try again.", retryable: true });
       setPhase("error");
     }
   }
+
 
   function reset() {
     stopCamera();
