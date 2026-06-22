@@ -31,7 +31,10 @@ function SkinPage() {
   const [phase, setPhase] = useState<Phase>("idle");
   const [imageData, setImageData] = useState<string | null>(null);
   const [result, setResult] = useState<SkinAnalysis | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<ErrorInfo | null>(null);
+  const [tier, setTier] = useState<Tier>("fast");
+  const [retryCountdown, setRetryCountdown] = useState<number>(0);
+
   const videoRef = useRef<HTMLVideoElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
