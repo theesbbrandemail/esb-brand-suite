@@ -249,14 +249,32 @@ function SkinPage() {
             )}
 
             {phase === "error" && (
-              <div className="py-10 text-center">
+              <div className="py-10 text-center max-w-md mx-auto">
                 <div className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-danger/15 border border-danger/30 mb-3">
                   <AlertCircle className="h-5 w-5 text-danger" />
                 </div>
-                <div className="font-medium">{error ?? "Something went wrong"}</div>
-                <button onClick={reset} className="mt-4 text-sm text-gold underline">Start over</button>
+                <div className="font-medium">{error?.message ?? "Something went wrong"}</div>
+                {error?.code && (
+                  <div className="text-[10px] uppercase tracking-widest text-muted-foreground mt-2">
+                    Error code: {error.code}
+                  </div>
+                )}
+                <div className="flex justify-center gap-3 mt-5 flex-wrap">
+                  {error?.retryable && imageData && (
+                    <button
+                      onClick={runAnalysis}
+                      disabled={retryCountdown > 0}
+                      className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-gradient-to-br from-[oklch(0.86_0.14_88)] to-[oklch(0.72_0.14_70)] text-[oklch(0.2_0.03_280)] font-semibold text-sm disabled:opacity-50"
+                    >
+                      <RefreshCcw className="h-3.5 w-3.5" />
+                      {retryCountdown > 0 ? `Retry in ${retryCountdown}s` : "Retry analysis"}
+                    </button>
+                  )}
+                  <button onClick={reset} className="text-sm text-gold underline">Start over</button>
+                </div>
               </div>
             )}
+
 
             {phase === "result" && result && (
               <ResultView result={result} imageData={imageData} onReset={reset} />
