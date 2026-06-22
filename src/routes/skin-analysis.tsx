@@ -222,6 +222,36 @@ function SkinPage() {
                 <div className="relative mx-auto aspect-square max-w-md rounded-3xl overflow-hidden border border-border">
                   <img src={imageData} alt="Selfie preview" className="absolute inset-0 h-full w-full object-cover" />
                 </div>
+                <div className="mt-5 max-w-md mx-auto">
+                  <div className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2 text-center">
+                    AI Model
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    {([
+                      { id: "fast", label: "Fast", icon: Zap, hint: "Seconds" },
+                      { id: "balanced", label: "Balanced", icon: Gauge, hint: "Recommended" },
+                      { id: "precise", label: "Precise", icon: Brain, hint: "Deepest" },
+                    ] as const).map((t) => {
+                      const Icon = t.icon;
+                      const active = tier === t.id;
+                      return (
+                        <button
+                          key={t.id}
+                          onClick={() => setTier(t.id)}
+                          className={`rounded-xl p-2.5 border text-left transition ${
+                            active
+                              ? "border-gold bg-gold/10"
+                              : "border-border bg-secondary/40 hover:border-gold/40"
+                          }`}
+                        >
+                          <Icon className={`h-3.5 w-3.5 mb-1 ${active ? "text-gold" : "text-muted-foreground"}`} />
+                          <div className="text-xs font-semibold">{t.label}</div>
+                          <div className="text-[10px] text-muted-foreground">{t.hint}</div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
                 <div className="flex justify-center gap-3 mt-5 flex-wrap">
                   <button onClick={reset} className="flex items-center gap-1.5 px-4 py-2 rounded-full border border-border text-sm text-muted-foreground">
                     <RefreshCcw className="h-3.5 w-3.5" /> Retake
@@ -235,6 +265,7 @@ function SkinPage() {
                 </div>
               </div>
             )}
+
 
             {phase === "analyzing" && (
               <div className="py-16 text-center">
