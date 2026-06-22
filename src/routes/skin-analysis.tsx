@@ -62,9 +62,10 @@ function SkinPage() {
         }
       }, 50);
     } catch {
-      setError("Camera permission was denied. You can upload a photo instead.");
+      setError({ code: "camera_denied", message: "Camera permission was denied. You can upload a photo instead.", retryable: false });
       setPhase("error");
     }
+
   }
 
   function snap() {
