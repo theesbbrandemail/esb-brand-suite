@@ -4,9 +4,13 @@ import { useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { analyzeSkin, type SkinAnalysis } from "@/lib/skin.functions";
 import {
-  Camera, Upload, Loader2, Sparkles, Droplet, Sun, ShieldCheck,
-  X, RefreshCcw, AlertCircle, ScanFace,
+  Camera, Upload, Loader2, Sparkles, ShieldCheck,
+  X, RefreshCcw, AlertCircle, ScanFace, Zap, Gauge, Brain,
 } from "lucide-react";
+
+type Tier = "fast" | "balanced" | "precise";
+type ErrorInfo = { code: string; message: string; retryable: boolean; retryAfterMs?: number };
+
 
 export const Route = createFileRoute("/skin-analysis")({
   head: () => ({
