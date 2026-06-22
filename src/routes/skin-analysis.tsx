@@ -90,10 +90,11 @@ function SkinPage() {
     const f = e.target.files?.[0];
     if (!f) return;
     if (f.size > 8 * 1024 * 1024) {
-      setError("Image must be under 8MB.");
+      setError({ code: "too_large", message: "Image must be under 8MB.", retryable: false });
       setPhase("error");
       return;
     }
+
     const reader = new FileReader();
     reader.onload = () => {
       setImageData(String(reader.result));
