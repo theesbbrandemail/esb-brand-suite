@@ -4,9 +4,13 @@ import { useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { analyzeSkin, type SkinAnalysis } from "@/lib/skin.functions";
 import {
-  Camera, Upload, Loader2, Sparkles, Droplet, Sun, ShieldCheck,
-  X, RefreshCcw, AlertCircle, ScanFace,
+  Camera, Upload, Loader2, Sparkles, ShieldCheck,
+  X, RefreshCcw, AlertCircle, ScanFace, Zap, Gauge, Brain,
 } from "lucide-react";
+
+type Tier = "fast" | "balanced" | "precise";
+type ErrorInfo = { code: string; message: string; retryable: boolean; retryAfterMs?: number };
+
 
 export const Route = createFileRoute("/skin-analysis")({
   head: () => ({
@@ -27,7 +31,10 @@ function SkinPage() {
   const [phase, setPhase] = useState<Phase>("idle");
   const [imageData, setImageData] = useState<string | null>(null);
   const [result, setResult] = useState<SkinAnalysis | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<ErrorInfo | null>(null);
+  const [tier, setTier] = useState<Tier>("fast");
+  const [retryCountdown, setRetryCountdown] = useState<number>(0);
+
   const videoRef = useRef<HTMLVideoElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -55,9 +62,10 @@ function SkinPage() {
         }
       }, 50);
     } catch {
-      setError("Camera permission was denied. You can upload a photo instead.");
+      setError({ code: "camera_denied", message: "Camera permission was denied. You can upload a photo instead.", retryable: false });
       setPhase("error");
     }
+
   }
 
   function snap() {
@@ -82,10 +90,11 @@ function SkinPage() {
     const f = e.target.files?.[0];
     if (!f) return;
     if (f.size > 8 * 1024 * 1024) {
-      setError("Image must be under 8MB.");
+      setError({ code: "too_large", message: "Image must be under 8MB.", retryable: false });
       setPhase("error");
       return;
     }
+
     const reader = new FileReader();
     reader.onload = () => {
       setImageData(String(reader.result));
@@ -97,19 +106,35 @@ function SkinPage() {
   async function runAnalysis() {
     if (!imageData) return;
     setError(null);
+    setRetryCountdown(0);
     setPhase("analyzing");
     try {
-      const r = await analyze({ data: { imageDataUrl: imageData } });
-      setResult(r as SkinAnalysis);
-      setPhase("result");
-    } catch (e: any) {
-      const msg = String(e?.message ?? e);
-      if (msg.includes("429")) setError("AI is busy. Please try again in a moment.");
-      else if (msg.includes("402")) setError("Free AI allowance is exhausted on this workspace.");
-      else setError("Analysis failed. Please try a clearer, well-lit selfie.");
+      const r = await analyze({ data: { imageDataUrl: imageData, tier } });
+      if ("ok" in r && r.ok) {
+        setResult(r as SkinAnalysis);
+        setPhase("result");
+      } else {
+        const err = r as { code: string; message: string; retryable: boolean; retryAfterMs?: number };
+        setError({ code: err.code, message: err.message, retryable: err.retryable, retryAfterMs: err.retryAfterMs });
+        if (err.retryAfterMs) {
+          const secs = Math.ceil(err.retryAfterMs / 1000);
+          setRetryCountdown(secs);
+          const iv = setInterval(() => {
+            setRetryCountdown((s) => {
+              if (s <= 1) { clearInterval(iv); return 0; }
+              return s - 1;
+            });
+          }, 1000);
+        }
+        setPhase("error");
+      }
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : String(e);
+      setError({ code: "client_error", message: msg || "Analysis failed. Please try again.", retryable: true });
       setPhase("error");
     }
   }
+
 
   function reset() {
     stopCamera();
@@ -197,6 +222,36 @@ function SkinPage() {
                 <div className="relative mx-auto aspect-square max-w-md rounded-3xl overflow-hidden border border-border">
                   <img src={imageData} alt="Selfie preview" className="absolute inset-0 h-full w-full object-cover" />
                 </div>
+                <div className="mt-5 max-w-md mx-auto">
+                  <div className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2 text-center">
+                    AI Model
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    {([
+                      { id: "fast", label: "Fast", icon: Zap, hint: "Seconds" },
+                      { id: "balanced", label: "Balanced", icon: Gauge, hint: "Recommended" },
+                      { id: "precise", label: "Precise", icon: Brain, hint: "Deepest" },
+                    ] as const).map((t) => {
+                      const Icon = t.icon;
+                      const active = tier === t.id;
+                      return (
+                        <button
+                          key={t.id}
+                          onClick={() => setTier(t.id)}
+                          className={`rounded-xl p-2.5 border text-left transition ${
+                            active
+                              ? "border-gold bg-gold/10"
+                              : "border-border bg-secondary/40 hover:border-gold/40"
+                          }`}
+                        >
+                          <Icon className={`h-3.5 w-3.5 mb-1 ${active ? "text-gold" : "text-muted-foreground"}`} />
+                          <div className="text-xs font-semibold">{t.label}</div>
+                          <div className="text-[10px] text-muted-foreground">{t.hint}</div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
                 <div className="flex justify-center gap-3 mt-5 flex-wrap">
                   <button onClick={reset} className="flex items-center gap-1.5 px-4 py-2 rounded-full border border-border text-sm text-muted-foreground">
                     <RefreshCcw className="h-3.5 w-3.5" /> Retake
@@ -211,6 +266,7 @@ function SkinPage() {
               </div>
             )}
 
+
             {phase === "analyzing" && (
               <div className="py-16 text-center">
                 <div className="inline-flex items-center justify-center h-20 w-20 rounded-full bg-gold/10 border border-gold/30 mb-4">
@@ -224,14 +280,32 @@ function SkinPage() {
             )}
 
             {phase === "error" && (
-              <div className="py-10 text-center">
+              <div className="py-10 text-center max-w-md mx-auto">
                 <div className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-danger/15 border border-danger/30 mb-3">
                   <AlertCircle className="h-5 w-5 text-danger" />
                 </div>
-                <div className="font-medium">{error ?? "Something went wrong"}</div>
-                <button onClick={reset} className="mt-4 text-sm text-gold underline">Start over</button>
+                <div className="font-medium">{error?.message ?? "Something went wrong"}</div>
+                {error?.code && (
+                  <div className="text-[10px] uppercase tracking-widest text-muted-foreground mt-2">
+                    Error code: {error.code}
+                  </div>
+                )}
+                <div className="flex justify-center gap-3 mt-5 flex-wrap">
+                  {error?.retryable && imageData && (
+                    <button
+                      onClick={runAnalysis}
+                      disabled={retryCountdown > 0}
+                      className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-gradient-to-br from-[oklch(0.86_0.14_88)] to-[oklch(0.72_0.14_70)] text-[oklch(0.2_0.03_280)] font-semibold text-sm disabled:opacity-50"
+                    >
+                      <RefreshCcw className="h-3.5 w-3.5" />
+                      {retryCountdown > 0 ? `Retry in ${retryCountdown}s` : "Retry analysis"}
+                    </button>
+                  )}
+                  <button onClick={reset} className="text-sm text-gold underline">Start over</button>
+                </div>
               </div>
             )}
+
 
             {phase === "result" && result && (
               <ResultView result={result} imageData={imageData} onReset={reset} />
