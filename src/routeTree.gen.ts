@@ -18,6 +18,21 @@ import { Route as ContentRouteImport } from './routes/content'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AppointmentsRouteImport } from './routes/appointments'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as BrandsSkinclinicRouteImport } from './routes/brands.skinclinic'
+import { Route as BrandsSkincareKitchenRouteImport } from './routes/brands.skincare-kitchen'
+import { Route as BrandsRejuvenatingRouteImport } from './routes/brands.rejuvenating'
+import { Route as BrandsLogisticsRouteImport } from './routes/brands.logistics'
+import { Route as BrandsGlobalTechRouteImport } from './routes/brands.global-tech'
+import { Route as BrandsDermaRouteImport } from './routes/brands.derma'
+import { Route as BrandsDentalRouteImport } from './routes/brands.dental'
+import { Route as AiSocialRouteImport } from './routes/ai.social'
+import { Route as AiRecordsRouteImport } from './routes/ai.records'
+import { Route as AiNursesRouteImport } from './routes/ai.nurses'
+import { Route as AiManagerRouteImport } from './routes/ai.manager'
+import { Route as AiLogisticsRouteImport } from './routes/ai.logistics'
+import { Route as AiClientRouteImport } from './routes/ai.client'
+import { Route as AiCeoRouteImport } from './routes/ai.ceo'
+import { Route as AiAccountantRouteImport } from './routes/ai.accountant'
 
 const SuiteRoute = SuiteRouteImport.update({
   id: '/suite',
@@ -64,6 +79,81 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BrandsSkinclinicRoute = BrandsSkinclinicRouteImport.update({
+  id: '/brands/skinclinic',
+  path: '/brands/skinclinic',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BrandsSkincareKitchenRoute = BrandsSkincareKitchenRouteImport.update({
+  id: '/brands/skincare-kitchen',
+  path: '/brands/skincare-kitchen',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BrandsRejuvenatingRoute = BrandsRejuvenatingRouteImport.update({
+  id: '/brands/rejuvenating',
+  path: '/brands/rejuvenating',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BrandsLogisticsRoute = BrandsLogisticsRouteImport.update({
+  id: '/brands/logistics',
+  path: '/brands/logistics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BrandsGlobalTechRoute = BrandsGlobalTechRouteImport.update({
+  id: '/brands/global-tech',
+  path: '/brands/global-tech',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BrandsDermaRoute = BrandsDermaRouteImport.update({
+  id: '/brands/derma',
+  path: '/brands/derma',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BrandsDentalRoute = BrandsDentalRouteImport.update({
+  id: '/brands/dental',
+  path: '/brands/dental',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiSocialRoute = AiSocialRouteImport.update({
+  id: '/ai/social',
+  path: '/ai/social',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiRecordsRoute = AiRecordsRouteImport.update({
+  id: '/ai/records',
+  path: '/ai/records',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiNursesRoute = AiNursesRouteImport.update({
+  id: '/ai/nurses',
+  path: '/ai/nurses',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiManagerRoute = AiManagerRouteImport.update({
+  id: '/ai/manager',
+  path: '/ai/manager',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiLogisticsRoute = AiLogisticsRouteImport.update({
+  id: '/ai/logistics',
+  path: '/ai/logistics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiClientRoute = AiClientRouteImport.update({
+  id: '/ai/client',
+  path: '/ai/client',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiCeoRoute = AiCeoRouteImport.update({
+  id: '/ai/ceo',
+  path: '/ai/ceo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiAccountantRoute = AiAccountantRouteImport.update({
+  id: '/ai/accountant',
+  path: '/ai/accountant',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -75,6 +165,21 @@ export interface FileRoutesByFullPath {
   '/mobile': typeof MobileRoute
   '/skin-analysis': typeof SkinAnalysisRoute
   '/suite': typeof SuiteRoute
+  '/ai/accountant': typeof AiAccountantRoute
+  '/ai/ceo': typeof AiCeoRoute
+  '/ai/client': typeof AiClientRoute
+  '/ai/logistics': typeof AiLogisticsRoute
+  '/ai/manager': typeof AiManagerRoute
+  '/ai/nurses': typeof AiNursesRoute
+  '/ai/records': typeof AiRecordsRoute
+  '/ai/social': typeof AiSocialRoute
+  '/brands/dental': typeof BrandsDentalRoute
+  '/brands/derma': typeof BrandsDermaRoute
+  '/brands/global-tech': typeof BrandsGlobalTechRoute
+  '/brands/logistics': typeof BrandsLogisticsRoute
+  '/brands/rejuvenating': typeof BrandsRejuvenatingRoute
+  '/brands/skincare-kitchen': typeof BrandsSkincareKitchenRoute
+  '/brands/skinclinic': typeof BrandsSkinclinicRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -86,6 +191,21 @@ export interface FileRoutesByTo {
   '/mobile': typeof MobileRoute
   '/skin-analysis': typeof SkinAnalysisRoute
   '/suite': typeof SuiteRoute
+  '/ai/accountant': typeof AiAccountantRoute
+  '/ai/ceo': typeof AiCeoRoute
+  '/ai/client': typeof AiClientRoute
+  '/ai/logistics': typeof AiLogisticsRoute
+  '/ai/manager': typeof AiManagerRoute
+  '/ai/nurses': typeof AiNursesRoute
+  '/ai/records': typeof AiRecordsRoute
+  '/ai/social': typeof AiSocialRoute
+  '/brands/dental': typeof BrandsDentalRoute
+  '/brands/derma': typeof BrandsDermaRoute
+  '/brands/global-tech': typeof BrandsGlobalTechRoute
+  '/brands/logistics': typeof BrandsLogisticsRoute
+  '/brands/rejuvenating': typeof BrandsRejuvenatingRoute
+  '/brands/skincare-kitchen': typeof BrandsSkincareKitchenRoute
+  '/brands/skinclinic': typeof BrandsSkinclinicRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -98,6 +218,21 @@ export interface FileRoutesById {
   '/mobile': typeof MobileRoute
   '/skin-analysis': typeof SkinAnalysisRoute
   '/suite': typeof SuiteRoute
+  '/ai/accountant': typeof AiAccountantRoute
+  '/ai/ceo': typeof AiCeoRoute
+  '/ai/client': typeof AiClientRoute
+  '/ai/logistics': typeof AiLogisticsRoute
+  '/ai/manager': typeof AiManagerRoute
+  '/ai/nurses': typeof AiNursesRoute
+  '/ai/records': typeof AiRecordsRoute
+  '/ai/social': typeof AiSocialRoute
+  '/brands/dental': typeof BrandsDentalRoute
+  '/brands/derma': typeof BrandsDermaRoute
+  '/brands/global-tech': typeof BrandsGlobalTechRoute
+  '/brands/logistics': typeof BrandsLogisticsRoute
+  '/brands/rejuvenating': typeof BrandsRejuvenatingRoute
+  '/brands/skincare-kitchen': typeof BrandsSkincareKitchenRoute
+  '/brands/skinclinic': typeof BrandsSkinclinicRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -111,6 +246,21 @@ export interface FileRouteTypes {
     | '/mobile'
     | '/skin-analysis'
     | '/suite'
+    | '/ai/accountant'
+    | '/ai/ceo'
+    | '/ai/client'
+    | '/ai/logistics'
+    | '/ai/manager'
+    | '/ai/nurses'
+    | '/ai/records'
+    | '/ai/social'
+    | '/brands/dental'
+    | '/brands/derma'
+    | '/brands/global-tech'
+    | '/brands/logistics'
+    | '/brands/rejuvenating'
+    | '/brands/skincare-kitchen'
+    | '/brands/skinclinic'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -122,6 +272,21 @@ export interface FileRouteTypes {
     | '/mobile'
     | '/skin-analysis'
     | '/suite'
+    | '/ai/accountant'
+    | '/ai/ceo'
+    | '/ai/client'
+    | '/ai/logistics'
+    | '/ai/manager'
+    | '/ai/nurses'
+    | '/ai/records'
+    | '/ai/social'
+    | '/brands/dental'
+    | '/brands/derma'
+    | '/brands/global-tech'
+    | '/brands/logistics'
+    | '/brands/rejuvenating'
+    | '/brands/skincare-kitchen'
+    | '/brands/skinclinic'
   id:
     | '__root__'
     | '/'
@@ -133,6 +298,21 @@ export interface FileRouteTypes {
     | '/mobile'
     | '/skin-analysis'
     | '/suite'
+    | '/ai/accountant'
+    | '/ai/ceo'
+    | '/ai/client'
+    | '/ai/logistics'
+    | '/ai/manager'
+    | '/ai/nurses'
+    | '/ai/records'
+    | '/ai/social'
+    | '/brands/dental'
+    | '/brands/derma'
+    | '/brands/global-tech'
+    | '/brands/logistics'
+    | '/brands/rejuvenating'
+    | '/brands/skincare-kitchen'
+    | '/brands/skinclinic'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -145,6 +325,21 @@ export interface RootRouteChildren {
   MobileRoute: typeof MobileRoute
   SkinAnalysisRoute: typeof SkinAnalysisRoute
   SuiteRoute: typeof SuiteRoute
+  AiAccountantRoute: typeof AiAccountantRoute
+  AiCeoRoute: typeof AiCeoRoute
+  AiClientRoute: typeof AiClientRoute
+  AiLogisticsRoute: typeof AiLogisticsRoute
+  AiManagerRoute: typeof AiManagerRoute
+  AiNursesRoute: typeof AiNursesRoute
+  AiRecordsRoute: typeof AiRecordsRoute
+  AiSocialRoute: typeof AiSocialRoute
+  BrandsDentalRoute: typeof BrandsDentalRoute
+  BrandsDermaRoute: typeof BrandsDermaRoute
+  BrandsGlobalTechRoute: typeof BrandsGlobalTechRoute
+  BrandsLogisticsRoute: typeof BrandsLogisticsRoute
+  BrandsRejuvenatingRoute: typeof BrandsRejuvenatingRoute
+  BrandsSkincareKitchenRoute: typeof BrandsSkincareKitchenRoute
+  BrandsSkinclinicRoute: typeof BrandsSkinclinicRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -212,6 +407,111 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/brands/skinclinic': {
+      id: '/brands/skinclinic'
+      path: '/brands/skinclinic'
+      fullPath: '/brands/skinclinic'
+      preLoaderRoute: typeof BrandsSkinclinicRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/brands/skincare-kitchen': {
+      id: '/brands/skincare-kitchen'
+      path: '/brands/skincare-kitchen'
+      fullPath: '/brands/skincare-kitchen'
+      preLoaderRoute: typeof BrandsSkincareKitchenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/brands/rejuvenating': {
+      id: '/brands/rejuvenating'
+      path: '/brands/rejuvenating'
+      fullPath: '/brands/rejuvenating'
+      preLoaderRoute: typeof BrandsRejuvenatingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/brands/logistics': {
+      id: '/brands/logistics'
+      path: '/brands/logistics'
+      fullPath: '/brands/logistics'
+      preLoaderRoute: typeof BrandsLogisticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/brands/global-tech': {
+      id: '/brands/global-tech'
+      path: '/brands/global-tech'
+      fullPath: '/brands/global-tech'
+      preLoaderRoute: typeof BrandsGlobalTechRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/brands/derma': {
+      id: '/brands/derma'
+      path: '/brands/derma'
+      fullPath: '/brands/derma'
+      preLoaderRoute: typeof BrandsDermaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/brands/dental': {
+      id: '/brands/dental'
+      path: '/brands/dental'
+      fullPath: '/brands/dental'
+      preLoaderRoute: typeof BrandsDentalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai/social': {
+      id: '/ai/social'
+      path: '/ai/social'
+      fullPath: '/ai/social'
+      preLoaderRoute: typeof AiSocialRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai/records': {
+      id: '/ai/records'
+      path: '/ai/records'
+      fullPath: '/ai/records'
+      preLoaderRoute: typeof AiRecordsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai/nurses': {
+      id: '/ai/nurses'
+      path: '/ai/nurses'
+      fullPath: '/ai/nurses'
+      preLoaderRoute: typeof AiNursesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai/manager': {
+      id: '/ai/manager'
+      path: '/ai/manager'
+      fullPath: '/ai/manager'
+      preLoaderRoute: typeof AiManagerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai/logistics': {
+      id: '/ai/logistics'
+      path: '/ai/logistics'
+      fullPath: '/ai/logistics'
+      preLoaderRoute: typeof AiLogisticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai/client': {
+      id: '/ai/client'
+      path: '/ai/client'
+      fullPath: '/ai/client'
+      preLoaderRoute: typeof AiClientRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai/ceo': {
+      id: '/ai/ceo'
+      path: '/ai/ceo'
+      fullPath: '/ai/ceo'
+      preLoaderRoute: typeof AiCeoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai/accountant': {
+      id: '/ai/accountant'
+      path: '/ai/accountant'
+      fullPath: '/ai/accountant'
+      preLoaderRoute: typeof AiAccountantRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -225,17 +525,22 @@ const rootRouteChildren: RootRouteChildren = {
   MobileRoute: MobileRoute,
   SkinAnalysisRoute: SkinAnalysisRoute,
   SuiteRoute: SuiteRoute,
+  AiAccountantRoute: AiAccountantRoute,
+  AiCeoRoute: AiCeoRoute,
+  AiClientRoute: AiClientRoute,
+  AiLogisticsRoute: AiLogisticsRoute,
+  AiManagerRoute: AiManagerRoute,
+  AiNursesRoute: AiNursesRoute,
+  AiRecordsRoute: AiRecordsRoute,
+  AiSocialRoute: AiSocialRoute,
+  BrandsDentalRoute: BrandsDentalRoute,
+  BrandsDermaRoute: BrandsDermaRoute,
+  BrandsGlobalTechRoute: BrandsGlobalTechRoute,
+  BrandsLogisticsRoute: BrandsLogisticsRoute,
+  BrandsRejuvenatingRoute: BrandsRejuvenatingRoute,
+  BrandsSkincareKitchenRoute: BrandsSkincareKitchenRoute,
+  BrandsSkinclinicRoute: BrandsSkinclinicRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
