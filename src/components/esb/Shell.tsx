@@ -37,7 +37,7 @@ const aiRoles: readonly MenuItem[] = [
   { to: "/ai/accountant", label: "Accountant AI", icon: Calculator, staff: true },
   { to: "/ai/logistics", label: "Logistics AI", icon: Truck, staff: true },
   { to: "/ai/records", label: "Records AI", icon: ClipboardCheck, sub: "Sign-in & tasks", staff: true },
-  { to: "/ai/client", label: "Client AI Suite", icon: Smartphone, sub: "WhatsApp ready" },
+  { to: "/ai/customer", label: "Client AI Suite", icon: Smartphone, sub: "WhatsApp ready" },
 ];
 
 export function Shell({ children, requireStaff = false }: { children: ReactNode; requireStaff?: boolean }) {
