@@ -3,7 +3,7 @@ import { Shell } from "@/components/esb/Shell";
 import { StubPage } from "@/components/esb/StubPage";
 import { Smartphone, Activity, Bot, ShieldCheck, ListChecks, Zap, BellRing } from "lucide-react";
 
-export const Route = createFileRoute("/ai/client")({
+export const Route = createFileRoute("/ai/customer")({
   head: () => ({
     meta: [
       { title: "Client AI Suite — ESB Brand" },

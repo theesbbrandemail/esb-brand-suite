@@ -30,7 +30,7 @@ import { Route as AiRecordsRouteImport } from './routes/ai.records'
 import { Route as AiNursesRouteImport } from './routes/ai.nurses'
 import { Route as AiManagerRouteImport } from './routes/ai.manager'
 import { Route as AiLogisticsRouteImport } from './routes/ai.logistics'
-import { Route as AiClientRouteImport } from './routes/ai.client'
+import { Route as AiCustomerRouteImport } from './routes/ai.customer'
 import { Route as AiCeoRouteImport } from './routes/ai.ceo'
 import { Route as AiAccountantRouteImport } from './routes/ai.accountant'
 
@@ -139,9 +139,9 @@ const AiLogisticsRoute = AiLogisticsRouteImport.update({
   path: '/ai/logistics',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AiClientRoute = AiClientRouteImport.update({
-  id: '/ai/client',
-  path: '/ai/client',
+const AiCustomerRoute = AiCustomerRouteImport.update({
+  id: '/ai/customer',
+  path: '/ai/customer',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AiCeoRoute = AiCeoRouteImport.update({
@@ -167,7 +167,7 @@ export interface FileRoutesByFullPath {
   '/suite': typeof SuiteRoute
   '/ai/accountant': typeof AiAccountantRoute
   '/ai/ceo': typeof AiCeoRoute
-  '/ai/client': typeof AiClientRoute
+  '/ai/customer': typeof AiCustomerRoute
   '/ai/logistics': typeof AiLogisticsRoute
   '/ai/manager': typeof AiManagerRoute
   '/ai/nurses': typeof AiNursesRoute
@@ -193,7 +193,7 @@ export interface FileRoutesByTo {
   '/suite': typeof SuiteRoute
   '/ai/accountant': typeof AiAccountantRoute
   '/ai/ceo': typeof AiCeoRoute
-  '/ai/client': typeof AiClientRoute
+  '/ai/customer': typeof AiCustomerRoute
   '/ai/logistics': typeof AiLogisticsRoute
   '/ai/manager': typeof AiManagerRoute
   '/ai/nurses': typeof AiNursesRoute
@@ -220,7 +220,7 @@ export interface FileRoutesById {
   '/suite': typeof SuiteRoute
   '/ai/accountant': typeof AiAccountantRoute
   '/ai/ceo': typeof AiCeoRoute
-  '/ai/client': typeof AiClientRoute
+  '/ai/customer': typeof AiCustomerRoute
   '/ai/logistics': typeof AiLogisticsRoute
   '/ai/manager': typeof AiManagerRoute
   '/ai/nurses': typeof AiNursesRoute
@@ -248,7 +248,7 @@ export interface FileRouteTypes {
     | '/suite'
     | '/ai/accountant'
     | '/ai/ceo'
-    | '/ai/client'
+    | '/ai/customer'
     | '/ai/logistics'
     | '/ai/manager'
     | '/ai/nurses'
@@ -274,7 +274,7 @@ export interface FileRouteTypes {
     | '/suite'
     | '/ai/accountant'
     | '/ai/ceo'
-    | '/ai/client'
+    | '/ai/customer'
     | '/ai/logistics'
     | '/ai/manager'
     | '/ai/nurses'
@@ -300,7 +300,7 @@ export interface FileRouteTypes {
     | '/suite'
     | '/ai/accountant'
     | '/ai/ceo'
-    | '/ai/client'
+    | '/ai/customer'
     | '/ai/logistics'
     | '/ai/manager'
     | '/ai/nurses'
@@ -327,7 +327,7 @@ export interface RootRouteChildren {
   SuiteRoute: typeof SuiteRoute
   AiAccountantRoute: typeof AiAccountantRoute
   AiCeoRoute: typeof AiCeoRoute
-  AiClientRoute: typeof AiClientRoute
+  AiCustomerRoute: typeof AiCustomerRoute
   AiLogisticsRoute: typeof AiLogisticsRoute
   AiManagerRoute: typeof AiManagerRoute
   AiNursesRoute: typeof AiNursesRoute
@@ -491,11 +491,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AiLogisticsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/ai/client': {
-      id: '/ai/client'
-      path: '/ai/client'
-      fullPath: '/ai/client'
-      preLoaderRoute: typeof AiClientRouteImport
+    '/ai/customer': {
+      id: '/ai/customer'
+      path: '/ai/customer'
+      fullPath: '/ai/customer'
+      preLoaderRoute: typeof AiCustomerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ai/ceo': {
@@ -527,7 +527,7 @@ const rootRouteChildren: RootRouteChildren = {
   SuiteRoute: SuiteRoute,
   AiAccountantRoute: AiAccountantRoute,
   AiCeoRoute: AiCeoRoute,
-  AiClientRoute: AiClientRoute,
+  AiCustomerRoute: AiCustomerRoute,
   AiLogisticsRoute: AiLogisticsRoute,
   AiManagerRoute: AiManagerRoute,
   AiNursesRoute: AiNursesRoute,
