@@ -5,7 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { analyzeSkin, type SkinAnalysis } from "@/lib/skin.functions";
 import {
   Camera, Upload, Loader2, Sparkles, ShieldCheck,
-  X, RefreshCcw, AlertCircle, ScanFace, Zap, Gauge, Brain,
+  X, RefreshCcw, AlertCircle, ScanFace, Zap, Gauge, Brain, MessageCircle, ShoppingBag, Copy, Check,
 } from "lucide-react";
 
 type Tier = "fast" | "balanced" | "precise";
