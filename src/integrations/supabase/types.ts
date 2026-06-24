@@ -68,6 +68,316 @@ export type Database = {
         }
         Relationships: []
       }
+      appointments: {
+        Row: {
+          branch_id: string
+          created_at: string
+          duration_minutes: number
+          id: string
+          notes: string | null
+          patient_email: string | null
+          patient_name: string
+          patient_phone: string | null
+          patient_user_id: string | null
+          scheduled_at: string
+          service: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          branch_id: string
+          created_at?: string
+          duration_minutes?: number
+          id?: string
+          notes?: string | null
+          patient_email?: string | null
+          patient_name: string
+          patient_phone?: string | null
+          patient_user_id?: string | null
+          scheduled_at: string
+          service: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          branch_id?: string
+          created_at?: string
+          duration_minutes?: number
+          id?: string
+          notes?: string | null
+          patient_email?: string | null
+          patient_name?: string
+          patient_phone?: string | null
+          patient_user_id?: string | null
+          scheduled_at?: string
+          service?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointments_branch_id_fkey"
+            columns: ["branch_id"]
+            isOneToOne: false
+            referencedRelation: "branches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      branches: {
+        Row: {
+          city: string | null
+          country: string | null
+          created_at: string
+          id: string
+          name: string
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      ceo_reminders: {
+        Row: {
+          body: string | null
+          category: string | null
+          created_at: string
+          due_at: string | null
+          id: string
+          priority: string
+          status: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          category?: string | null
+          created_at?: string
+          due_at?: string | null
+          id?: string
+          priority?: string
+          status?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          category?: string | null
+          created_at?: string
+          due_at?: string | null
+          id?: string
+          priority?: string
+          status?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      follow_ups: {
+        Row: {
+          appointment_id: string | null
+          channel: string
+          created_at: string
+          id: string
+          message: string
+          patient_email: string | null
+          patient_name: string
+          patient_phone: string | null
+          patient_user_id: string | null
+          scheduled_at: string
+          sent_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          appointment_id?: string | null
+          channel?: string
+          created_at?: string
+          id?: string
+          message: string
+          patient_email?: string | null
+          patient_name: string
+          patient_phone?: string | null
+          patient_user_id?: string | null
+          scheduled_at: string
+          sent_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          appointment_id?: string | null
+          channel?: string
+          created_at?: string
+          id?: string
+          message?: string
+          patient_email?: string | null
+          patient_name?: string
+          patient_phone?: string | null
+          patient_user_id?: string | null
+          scheduled_at?: string
+          sent_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "follow_ups_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      inventory: {
+        Row: {
+          branch_id: string
+          id: string
+          low_stock_threshold: number
+          product_id: string
+          qty: number
+          updated_at: string
+        }
+        Insert: {
+          branch_id: string
+          id?: string
+          low_stock_threshold?: number
+          product_id: string
+          qty?: number
+          updated_at?: string
+        }
+        Update: {
+          branch_id?: string
+          id?: string
+          low_stock_threshold?: number
+          product_id?: string
+          qty?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_branch_id_fkey"
+            columns: ["branch_id"]
+            isOneToOne: false
+            referencedRelation: "branches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inventory_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_recommendations: {
+        Row: {
+          created_at: string
+          id: string
+          product_id: string
+          rank: number
+          reason: string | null
+          skin_analysis_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          product_id: string
+          rank?: number
+          reason?: string | null
+          skin_analysis_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          product_id?: string
+          rank?: number
+          reason?: string | null
+          skin_analysis_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_recommendations_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_recommendations_skin_analysis_id_fkey"
+            columns: ["skin_analysis_id"]
+            isOneToOne: false
+            referencedRelation: "skin_analyses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      products: {
+        Row: {
+          active: boolean
+          brand: string | null
+          category: string | null
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          name: string
+          price: number | null
+          recommended_for: string[]
+          sku: string | null
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          brand?: string | null
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name: string
+          price?: number | null
+          recommended_for?: string[]
+          sku?: string | null
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          brand?: string | null
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          price?: number | null
+          recommended_for?: string[]
+          sku?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
