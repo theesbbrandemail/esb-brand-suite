@@ -5,7 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { analyzeSkin, type SkinAnalysis } from "@/lib/skin.functions";
 import {
   Camera, Upload, Loader2, Sparkles, ShieldCheck,
-  X, RefreshCcw, AlertCircle, ScanFace, Zap, Gauge, Brain,
+  X, RefreshCcw, AlertCircle, ScanFace, Zap, Gauge, Brain, MessageCircle, ShoppingBag, Copy, Check,
 } from "lucide-react";
 
 type Tier = "fast" | "balanced" | "precise";
@@ -320,6 +320,18 @@ function SkinPage() {
 function ResultView({
   result, imageData, onReset,
 }: { result: SkinAnalysis; imageData: string | null; onReset: () => void }) {
+  const [copied, setCopied] = useState(false);
+  const waText = result.whatsapp_summary ?? `My ESB skin scan: type ${result.skin_type}. ${result.summary}`;
+  const waUrl = `https://wa.me/?text=${encodeURIComponent(waText)}`;
+
+  async function copySummary() {
+    try {
+      await navigator.clipboard.writeText(waText);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch { /* noop */ }
+  }
+
   return (
     <div>
       <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
@@ -329,9 +341,26 @@ function ResultView({
             Type: <span className="gold-text capitalize">{result.skin_type}</span>
           </h2>
         </div>
-        <button onClick={onReset} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border text-xs">
-          <RefreshCcw className="h-3 w-3" /> New scan
-        </button>
+        <div className="flex items-center gap-2 flex-wrap">
+          <a
+            href={waUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[oklch(0.65_0.18_145)]/15 border border-[oklch(0.65_0.18_145)]/40 text-[oklch(0.75_0.18_145)] text-xs hover:bg-[oklch(0.65_0.18_145)]/25"
+          >
+            <MessageCircle className="h-3.5 w-3.5" /> Share on WhatsApp
+          </a>
+          <button
+            onClick={copySummary}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border text-xs hover:bg-secondary"
+          >
+            {copied ? <Check className="h-3.5 w-3.5 text-success" /> : <Copy className="h-3.5 w-3.5" />}
+            {copied ? "Copied" : "Copy summary"}
+          </button>
+          <button onClick={onReset} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border text-xs">
+            <RefreshCcw className="h-3 w-3" /> New scan
+          </button>
+        </div>
       </div>
 
       <div className="grid md:grid-cols-[180px_1fr] gap-4 mb-5">
@@ -342,6 +371,9 @@ function ResultView({
         )}
         <div className="p-4 rounded-2xl bg-secondary/40 border border-border">
           <p className="text-sm leading-relaxed">{result.summary}</p>
+          {result.model_used && (
+            <div className="text-[10px] text-muted-foreground mt-2">Model: {result.model_used}</div>
+          )}
         </div>
       </div>
 
@@ -380,6 +412,36 @@ function ResultView({
           ))}
         </div>
       </div>
+
+      {/* Recommended products */}
+      {result.recommendations && result.recommendations.length > 0 && (
+        <div className="mb-5">
+          <div className="flex items-center gap-2 mb-3">
+            <ShoppingBag className="h-3.5 w-3.5 text-gold" />
+            <div className="text-xs uppercase tracking-widest text-muted-foreground">Recommended for your skin</div>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {result.recommendations.map((p) => (
+              <div key={p.id} className="p-3 rounded-2xl bg-gradient-to-br from-[oklch(0.22_0.04_280)] to-[oklch(0.18_0.04_300)] border border-gold/20">
+                <div className="aspect-[4/3] rounded-xl overflow-hidden bg-gradient-to-br from-gold/20 to-violet/20 mb-2 flex items-center justify-center">
+                  {p.image_url ? (
+                    <img src={p.image_url} alt={p.name} className="h-full w-full object-cover" />
+                  ) : (
+                    <ShoppingBag className="h-8 w-8 text-gold/60" />
+                  )}
+                </div>
+                <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{p.brand} · {p.category}</div>
+                <div className="text-sm font-medium mt-0.5">{p.name}</div>
+                <div className="text-[11px] text-muted-foreground mt-1 line-clamp-2">{p.description}</div>
+                <div className="flex items-center justify-between mt-2">
+                  <span className="text-sm font-semibold gold-text">{p.price ? `$${p.price.toFixed(0)}` : "—"}</span>
+                  <span className="text-[10px] text-gold/80 truncate ml-2">{p.reason}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Routine */}
       <div>
