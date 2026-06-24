@@ -17,12 +17,26 @@ const Input = z.object({
   tier: z.enum(["fast", "balanced", "precise"]).optional(),
 });
 
+export type SkinProductRec = {
+  id: string;
+  name: string;
+  brand: string | null;
+  category: string | null;
+  price: number | null;
+  image_url: string | null;
+  description: string | null;
+  reason: string;
+};
+
 export type SkinAnalysis = {
+  analysis_id?: string;
   skin_type: string;
   summary: string;
   concerns: { name: string; severity: "low" | "moderate" | "high"; note: string }[];
   scores: Record<string, number>;
   routine: { step: string; product_type: string; ingredient_focus: string; when: "AM" | "PM" | "Both" }[];
+  recommendations?: SkinProductRec[];
+  whatsapp_summary?: string;
   model_used?: string;
 };
 
@@ -34,6 +48,25 @@ export type SkinAnalysisError = {
   retryAfterMs?: number;
 };
 export type SkinAnalysisResult = ({ ok: true } & SkinAnalysis) | SkinAnalysisError;
+
+/** Map free-form concern names from the AI to product tag tokens. */
+function concernKey(name: string): string[] {
+  const n = name.toLowerCase();
+  const tags: string[] = [];
+  if (/(acne|pimple|breakout|whitehead|blackhead)/.test(n)) tags.push("acne", "blackheads");
+  if (/(oil|sebum|shine)/.test(n)) tags.push("oiliness");
+  if (/(dry|dehydr|flak)/.test(n)) tags.push("dryness", "dehydration");
+  if (/(pigment|dark spot|melasma|hyperpig|uneven)/.test(n)) tags.push("pigmentation", "uneven_tone");
+  if (/(redness|rosacea|irritat)/.test(n)) tags.push("redness", "rosacea");
+  if (/(sensitiv)/.test(n)) tags.push("sensitivity");
+  if (/(pore)/.test(n)) tags.push("enlarged_pores");
+  if (/(wrinkle|fine line|aging|elastic)/.test(n)) tags.push("fine_lines", "texture");
+  if (/(dull|glow|radian)/.test(n)) tags.push("dullness");
+  if (/(dark circle|under.?eye|puffy|puffiness)/.test(n)) tags.push("dark_circles", "puffiness");
+  if (/(sun|uv)/.test(n)) tags.push("sun_damage");
+  if (/(texture|rough|bumpy)/.test(n)) tags.push("texture");
+  return tags.length ? tags : [n.replace(/[^a-z]+/g, "_")];
+}
 
 const SYSTEM = `You are a clinical-grade cosmetic dermatology AI. Analyze the uploaded selfie and return a precise, non-diagnostic skin assessment. Never provide medical diagnoses. If the photo is unclear or not a face, set skin_type to "unclear" and explain in summary. Output ONLY valid JSON matching the requested schema.`;
 
