@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { PageTransition } from "../components/esb/PageTransition";
 import { AuthProvider } from "../lib/auth";
+import { installClientDiagnostics } from "../lib/diagnostics";
 
 function NotFoundComponent() {
   return (
