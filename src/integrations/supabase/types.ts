@@ -196,14 +196,22 @@ export type Database = {
       follow_ups: {
         Row: {
           appointment_id: string | null
+          attempts: number
           channel: string
           created_at: string
+          delivery_status: string
           id: string
+          idempotency_key: string
+          last_attempt_at: string | null
+          last_error: string | null
+          locked_at: string | null
+          locked_by: string | null
           message: string
           patient_email: string | null
           patient_name: string
           patient_phone: string | null
           patient_user_id: string | null
+          processed_at: string | null
           scheduled_at: string
           sent_at: string | null
           status: string
@@ -211,14 +219,22 @@ export type Database = {
         }
         Insert: {
           appointment_id?: string | null
+          attempts?: number
           channel?: string
           created_at?: string
+          delivery_status?: string
           id?: string
+          idempotency_key: string
+          last_attempt_at?: string | null
+          last_error?: string | null
+          locked_at?: string | null
+          locked_by?: string | null
           message: string
           patient_email?: string | null
           patient_name: string
           patient_phone?: string | null
           patient_user_id?: string | null
+          processed_at?: string | null
           scheduled_at: string
           sent_at?: string | null
           status?: string
@@ -226,14 +242,22 @@ export type Database = {
         }
         Update: {
           appointment_id?: string | null
+          attempts?: number
           channel?: string
           created_at?: string
+          delivery_status?: string
           id?: string
+          idempotency_key?: string
+          last_attempt_at?: string | null
+          last_error?: string | null
+          locked_at?: string | null
+          locked_by?: string | null
           message?: string
           patient_email?: string | null
           patient_name?: string
           patient_phone?: string | null
           patient_user_id?: string | null
+          processed_at?: string | null
           scheduled_at?: string
           sent_at?: string | null
           status?: string
@@ -524,6 +548,38 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      claim_due_follow_ups: {
+        Args: { _limit?: number; _worker_id: string }
+        Returns: {
+          appointment_id: string | null
+          attempts: number
+          channel: string
+          created_at: string
+          delivery_status: string
+          id: string
+          idempotency_key: string
+          last_attempt_at: string | null
+          last_error: string | null
+          locked_at: string | null
+          locked_by: string | null
+          message: string
+          patient_email: string | null
+          patient_name: string
+          patient_phone: string | null
+          patient_user_id: string | null
+          processed_at: string | null
+          scheduled_at: string
+          sent_at: string | null
+          status: string
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "follow_ups"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       get_my_role: {
         Args: never
         Returns: Database["public"]["Enums"]["app_role"]

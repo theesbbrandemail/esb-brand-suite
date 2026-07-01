@@ -281,7 +281,14 @@ export const createAppointment = createServerFn({ method: "POST" })
     // Auto-schedule a follow-up 24h after appointment if phone is provided.
     if (row?.patient_phone) {
       const followAt = new Date(new Date(data.scheduled_at).getTime() + 24 * 3600000).toISOString();
-      await sb.from("follow_ups").insert({
+      // idempotency_key ensures we never enqueue two follow-ups for the same
+      // appointment+scheduled_at, even if createAppointment is retried.
+      const idemSource = `${row.id}:${followAt}`;
+      const idemBuf = new TextEncoder().encode(idemSource);
+      const hash = await crypto.subtle.digest("SHA-256", idemBuf);
+      const idempotency_key = Array.from(new Uint8Array(hash))
+        .map((b) => b.toString(16).padStart(2, "0")).join("");
+      await sb.from("follow_ups").upsert({
         appointment_id: row.id,
         patient_name: data.patient_name,
         patient_phone: data.patient_phone,
@@ -289,7 +296,8 @@ export const createAppointment = createServerFn({ method: "POST" })
         channel: "whatsapp",
         message: `Hi ${data.patient_name}, this is ESB Brand following up on your ${data.service} appointment. How are you feeling? Reply here to chat with our team.`,
         scheduled_at: followAt,
-      });
+        idempotency_key,
+      }, { onConflict: "idempotency_key", ignoreDuplicates: true });
     }
     return row as Appointment;
   });
@@ -317,12 +325,14 @@ export const listFollowUps = createServerFn({ method: "GET" })
     const sb = context.supabase as any;
     const { data } = await sb
       .from("follow_ups")
-      .select("id, appointment_id, patient_name, patient_phone, channel, message, scheduled_at, sent_at, status")
+      .select("id, appointment_id, patient_name, patient_phone, channel, message, scheduled_at, sent_at, status, delivery_status, attempts, last_error, last_attempt_at, processed_at")
       .order("scheduled_at", { ascending: true })
       .limit(50);
     return (data ?? []) as Array<{
       id: string; appointment_id: string | null; patient_name: string; patient_phone: string | null;
       channel: string; message: string; scheduled_at: string; sent_at: string | null; status: string;
+      delivery_status: string; attempts: number; last_error: string | null;
+      last_attempt_at: string | null; processed_at: string | null;
     }>;
   });
 
@@ -331,9 +341,10 @@ export const markFollowUpSent = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     const sb = context.supabase as any;
+    const now = new Date().toISOString();
     const { error } = await sb
       .from("follow_ups")
-      .update({ status: "sent", sent_at: new Date().toISOString() })
+      .update({ status: "sent", delivery_status: "delivered", sent_at: now, processed_at: now, locked_at: null, locked_by: null })
       .eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
