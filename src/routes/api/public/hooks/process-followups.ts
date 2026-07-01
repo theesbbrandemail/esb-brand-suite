@@ -76,7 +76,13 @@ async function handler({ request }: { request: Request }) {
   for (const job of jobs) {
     try {
       const outcome = await deliver(job);
-      const patch: Record<string, unknown> = {
+      const patch: {
+        delivery_status: string;
+        last_error: string | null;
+        locked_at: null;
+        locked_by: null;
+        processed_at?: string;
+      } = {
         delivery_status: outcome.status,
         last_error: outcome.error ?? null,
         locked_at: null,

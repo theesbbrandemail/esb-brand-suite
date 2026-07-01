@@ -33,6 +33,7 @@ import { Route as AiLogisticsRouteImport } from './routes/ai.logistics'
 import { Route as AiCustomerRouteImport } from './routes/ai.customer'
 import { Route as AiCeoRouteImport } from './routes/ai.ceo'
 import { Route as AiAccountantRouteImport } from './routes/ai.accountant'
+import { Route as ApiPublicHooksProcessFollowupsRouteImport } from './routes/api/public/hooks/process-followups'
 
 const SuiteRoute = SuiteRouteImport.update({
   id: '/suite',
@@ -154,6 +155,12 @@ const AiAccountantRoute = AiAccountantRouteImport.update({
   path: '/ai/accountant',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicHooksProcessFollowupsRoute =
+  ApiPublicHooksProcessFollowupsRouteImport.update({
+    id: '/api/public/hooks/process-followups',
+    path: '/api/public/hooks/process-followups',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -180,6 +187,7 @@ export interface FileRoutesByFullPath {
   '/brands/rejuvenating': typeof BrandsRejuvenatingRoute
   '/brands/skincare-kitchen': typeof BrandsSkincareKitchenRoute
   '/brands/skinclinic': typeof BrandsSkinclinicRoute
+  '/api/public/hooks/process-followups': typeof ApiPublicHooksProcessFollowupsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -206,6 +214,7 @@ export interface FileRoutesByTo {
   '/brands/rejuvenating': typeof BrandsRejuvenatingRoute
   '/brands/skincare-kitchen': typeof BrandsSkincareKitchenRoute
   '/brands/skinclinic': typeof BrandsSkinclinicRoute
+  '/api/public/hooks/process-followups': typeof ApiPublicHooksProcessFollowupsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -233,6 +242,7 @@ export interface FileRoutesById {
   '/brands/rejuvenating': typeof BrandsRejuvenatingRoute
   '/brands/skincare-kitchen': typeof BrandsSkincareKitchenRoute
   '/brands/skinclinic': typeof BrandsSkinclinicRoute
+  '/api/public/hooks/process-followups': typeof ApiPublicHooksProcessFollowupsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -261,6 +271,7 @@ export interface FileRouteTypes {
     | '/brands/rejuvenating'
     | '/brands/skincare-kitchen'
     | '/brands/skinclinic'
+    | '/api/public/hooks/process-followups'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -287,6 +298,7 @@ export interface FileRouteTypes {
     | '/brands/rejuvenating'
     | '/brands/skincare-kitchen'
     | '/brands/skinclinic'
+    | '/api/public/hooks/process-followups'
   id:
     | '__root__'
     | '/'
@@ -313,6 +325,7 @@ export interface FileRouteTypes {
     | '/brands/rejuvenating'
     | '/brands/skincare-kitchen'
     | '/brands/skinclinic'
+    | '/api/public/hooks/process-followups'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -340,6 +353,7 @@ export interface RootRouteChildren {
   BrandsRejuvenatingRoute: typeof BrandsRejuvenatingRoute
   BrandsSkincareKitchenRoute: typeof BrandsSkincareKitchenRoute
   BrandsSkinclinicRoute: typeof BrandsSkinclinicRoute
+  ApiPublicHooksProcessFollowupsRoute: typeof ApiPublicHooksProcessFollowupsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -512,6 +526,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AiAccountantRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/process-followups': {
+      id: '/api/public/hooks/process-followups'
+      path: '/api/public/hooks/process-followups'
+      fullPath: '/api/public/hooks/process-followups'
+      preLoaderRoute: typeof ApiPublicHooksProcessFollowupsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -540,6 +561,7 @@ const rootRouteChildren: RootRouteChildren = {
   BrandsRejuvenatingRoute: BrandsRejuvenatingRoute,
   BrandsSkincareKitchenRoute: BrandsSkincareKitchenRoute,
   BrandsSkinclinicRoute: BrandsSkinclinicRoute,
+  ApiPublicHooksProcessFollowupsRoute: ApiPublicHooksProcessFollowupsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
