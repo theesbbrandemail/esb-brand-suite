@@ -1,5 +1,9 @@
-import { type LucideIcon, Sparkles, ArrowUpRight, Activity } from "lucide-react";
+import { type LucideIcon, Sparkles, ArrowUpRight, Activity, Calendar, Package, ShieldCheck, MessageCircle } from "lucide-react";
 import { Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { getCeoKpis } from "@/lib/ops.functions";
+import { useAuth } from "@/lib/auth";
 
 export type StubKpi = { label: string; value: string; hint?: string };
 export type StubAction = { label: string; to?: string; href?: string };
@@ -91,14 +95,47 @@ export function StubPage(props: {
         })}
       </div>
 
-      <div className="card-elevated p-5 flex items-center gap-3 text-xs text-muted-foreground">
+      <LivePulse kind={kind} />
+    </div>
+  );
+}
+
+function LivePulse({ kind }: { kind: "Brand" | "AI Role" }) {
+  const { session, isStaff } = useAuth();
+  const kpisFn = useServerFn(getCeoKpis);
+  const q = useQuery({
+    queryKey: ["ceo-kpis", "stub-pulse"],
+    queryFn: () => kpisFn(),
+    enabled: !!session && isStaff,
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
+    retry: false,
+  });
+  const k = q.data;
+  const pill = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-border bg-secondary/40 text-xs";
+  return (
+    <div className="card-elevated p-5">
+      <div className="flex items-center gap-2 text-xs text-muted-foreground mb-3">
         <Activity className="h-4 w-4 text-gold animate-pulse" />
-        <span>
-          This module is wired to the ESB orchestrator. Detailed automations, KPIs and live data streams are being calibrated
-          for the {kind === "Brand" ? "brand" : "role"}.
-        </span>
+        <span>Live signals from the ESB orchestrator</span>
         <Sparkles className="h-3.5 w-3.5 text-violet ml-auto" />
       </div>
+      {q.isLoading && <div className="text-[11px] text-muted-foreground">Syncing live metrics…</div>}
+      {!q.isLoading && !k && (
+        <div className="text-[11px] text-muted-foreground">
+          This {kind === "Brand" ? "brand" : "role"} module is wired to the ESB orchestrator. Sign in as staff to see live signals.
+        </div>
+      )}
+      {k && (
+        <div className="flex flex-wrap gap-2">
+          <span className={pill}><Calendar className="h-3 w-3 text-gold" /> {k.appointmentsToday} appts today</span>
+          <span className={pill}><Calendar className="h-3 w-3 text-violet" /> {k.upcomingAppointments} upcoming</span>
+          <span className={pill}><MessageCircle className="h-3 w-3 text-[oklch(0.75_0.18_145)]" /> {k.followUpsPending} follow-ups pending</span>
+          <span className={pill}><Package className="h-3 w-3 text-warning" /> {k.lowStockItems} low-stock</span>
+          <span className={pill}><ShieldCheck className="h-3 w-3 text-gold" /> {k.pendingApprovals} awaiting approval</span>
+          <span className={pill}><Sparkles className="h-3 w-3 text-violet" /> AI autonomy {Math.round(k.aiAutonomy)}%</span>
+        </div>
+      )}
     </div>
   );
 }
