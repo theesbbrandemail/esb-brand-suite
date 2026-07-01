@@ -1,5 +1,9 @@
-import { type LucideIcon, Sparkles, ArrowUpRight, Activity } from "lucide-react";
+import { type LucideIcon, Sparkles, ArrowUpRight, Activity, Calendar, Package, ShieldCheck, MessageCircle } from "lucide-react";
 import { Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { getCeoKpis } from "@/lib/ops.functions";
+import { useAuth } from "@/lib/auth";
 
 export type StubKpi = { label: string; value: string; hint?: string };
 export type StubAction = { label: string; to?: string; href?: string };
