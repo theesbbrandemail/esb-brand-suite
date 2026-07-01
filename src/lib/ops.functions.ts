@@ -325,12 +325,14 @@ export const listFollowUps = createServerFn({ method: "GET" })
     const sb = context.supabase as any;
     const { data } = await sb
       .from("follow_ups")
-      .select("id, appointment_id, patient_name, patient_phone, channel, message, scheduled_at, sent_at, status")
+      .select("id, appointment_id, patient_name, patient_phone, channel, message, scheduled_at, sent_at, status, delivery_status, attempts, last_error, last_attempt_at, processed_at")
       .order("scheduled_at", { ascending: true })
       .limit(50);
     return (data ?? []) as Array<{
       id: string; appointment_id: string | null; patient_name: string; patient_phone: string | null;
       channel: string; message: string; scheduled_at: string; sent_at: string | null; status: string;
+      delivery_status: string; attempts: number; last_error: string | null;
+      last_attempt_at: string | null; processed_at: string | null;
     }>;
   });
 
