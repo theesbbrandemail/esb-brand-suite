@@ -281,7 +281,14 @@ export const createAppointment = createServerFn({ method: "POST" })
     // Auto-schedule a follow-up 24h after appointment if phone is provided.
     if (row?.patient_phone) {
       const followAt = new Date(new Date(data.scheduled_at).getTime() + 24 * 3600000).toISOString();
-      await sb.from("follow_ups").insert({
+      // idempotency_key ensures we never enqueue two follow-ups for the same
+      // appointment+scheduled_at, even if createAppointment is retried.
+      const idemSource = `${row.id}:${followAt}`;
+      const idemBuf = new TextEncoder().encode(idemSource);
+      const hash = await crypto.subtle.digest("SHA-256", idemBuf);
+      const idempotency_key = Array.from(new Uint8Array(hash))
+        .map((b) => b.toString(16).padStart(2, "0")).join("");
+      await sb.from("follow_ups").upsert({
         appointment_id: row.id,
         patient_name: data.patient_name,
         patient_phone: data.patient_phone,
@@ -289,7 +296,8 @@ export const createAppointment = createServerFn({ method: "POST" })
         channel: "whatsapp",
         message: `Hi ${data.patient_name}, this is ESB Brand following up on your ${data.service} appointment. How are you feeling? Reply here to chat with our team.`,
         scheduled_at: followAt,
-      });
+        idempotency_key,
+      }, { onConflict: "idempotency_key", ignoreDuplicates: true });
     }
     return row as Appointment;
   });
