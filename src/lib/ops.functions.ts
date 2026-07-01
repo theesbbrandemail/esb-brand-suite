@@ -341,9 +341,10 @@ export const markFollowUpSent = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     const sb = context.supabase as any;
+    const now = new Date().toISOString();
     const { error } = await sb
       .from("follow_ups")
-      .update({ status: "sent", sent_at: new Date().toISOString() })
+      .update({ status: "sent", delivery_status: "delivered", sent_at: now, processed_at: now, locked_at: null, locked_by: null })
       .eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
