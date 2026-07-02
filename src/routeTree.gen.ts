@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WhatsappRouteImport } from './routes/whatsapp'
 import { Route as SuiteRouteImport } from './routes/suite'
 import { Route as SkinAnalysisRouteImport } from './routes/skin-analysis'
 import { Route as MobileRouteImport } from './routes/mobile'
@@ -36,6 +37,11 @@ import { Route as AiCeoRouteImport } from './routes/ai.ceo'
 import { Route as AiAccountantRouteImport } from './routes/ai.accountant'
 import { Route as ApiPublicHooksProcessFollowupsRouteImport } from './routes/api/public/hooks/process-followups'
 
+const WhatsappRoute = WhatsappRouteImport.update({
+  id: '/whatsapp',
+  path: '/whatsapp',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SuiteRoute = SuiteRouteImport.update({
   id: '/suite',
   path: '/suite',
@@ -178,6 +184,7 @@ export interface FileRoutesByFullPath {
   '/mobile': typeof MobileRoute
   '/skin-analysis': typeof SkinAnalysisRoute
   '/suite': typeof SuiteRoute
+  '/whatsapp': typeof WhatsappRoute
   '/ai/accountant': typeof AiAccountantRoute
   '/ai/ceo': typeof AiCeoRoute
   '/ai/customer': typeof AiCustomerRoute
@@ -206,6 +213,7 @@ export interface FileRoutesByTo {
   '/mobile': typeof MobileRoute
   '/skin-analysis': typeof SkinAnalysisRoute
   '/suite': typeof SuiteRoute
+  '/whatsapp': typeof WhatsappRoute
   '/ai/accountant': typeof AiAccountantRoute
   '/ai/ceo': typeof AiCeoRoute
   '/ai/customer': typeof AiCustomerRoute
@@ -235,6 +243,7 @@ export interface FileRoutesById {
   '/mobile': typeof MobileRoute
   '/skin-analysis': typeof SkinAnalysisRoute
   '/suite': typeof SuiteRoute
+  '/whatsapp': typeof WhatsappRoute
   '/ai/accountant': typeof AiAccountantRoute
   '/ai/ceo': typeof AiCeoRoute
   '/ai/customer': typeof AiCustomerRoute
@@ -265,6 +274,7 @@ export interface FileRouteTypes {
     | '/mobile'
     | '/skin-analysis'
     | '/suite'
+    | '/whatsapp'
     | '/ai/accountant'
     | '/ai/ceo'
     | '/ai/customer'
@@ -293,6 +303,7 @@ export interface FileRouteTypes {
     | '/mobile'
     | '/skin-analysis'
     | '/suite'
+    | '/whatsapp'
     | '/ai/accountant'
     | '/ai/ceo'
     | '/ai/customer'
@@ -321,6 +332,7 @@ export interface FileRouteTypes {
     | '/mobile'
     | '/skin-analysis'
     | '/suite'
+    | '/whatsapp'
     | '/ai/accountant'
     | '/ai/ceo'
     | '/ai/customer'
@@ -350,6 +362,7 @@ export interface RootRouteChildren {
   MobileRoute: typeof MobileRoute
   SkinAnalysisRoute: typeof SkinAnalysisRoute
   SuiteRoute: typeof SuiteRoute
+  WhatsappRoute: typeof WhatsappRoute
   AiAccountantRoute: typeof AiAccountantRoute
   AiCeoRoute: typeof AiCeoRoute
   AiCustomerRoute: typeof AiCustomerRoute
@@ -371,6 +384,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/whatsapp': {
+      id: '/whatsapp'
+      path: '/whatsapp'
+      fullPath: '/whatsapp'
+      preLoaderRoute: typeof WhatsappRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/suite': {
       id: '/suite'
       path: '/suite'
@@ -566,6 +586,7 @@ const rootRouteChildren: RootRouteChildren = {
   MobileRoute: MobileRoute,
   SkinAnalysisRoute: SkinAnalysisRoute,
   SuiteRoute: SuiteRoute,
+  WhatsappRoute: WhatsappRoute,
   AiAccountantRoute: AiAccountantRoute,
   AiCeoRoute: AiCeoRoute,
   AiCustomerRoute: AiCustomerRoute,
