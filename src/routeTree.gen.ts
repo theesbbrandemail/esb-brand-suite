@@ -18,6 +18,7 @@ import { Route as ContentRouteImport } from './routes/content'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AppointmentsRouteImport } from './routes/appointments'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as BrandsStudiosRouteImport } from './routes/brands.studios'
 import { Route as BrandsSkinclinicRouteImport } from './routes/brands.skinclinic'
 import { Route as BrandsSkincareKitchenRouteImport } from './routes/brands.skincare-kitchen'
 import { Route as BrandsRejuvenatingRouteImport } from './routes/brands.rejuvenating'
@@ -78,6 +79,11 @@ const AppointmentsRoute = AppointmentsRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BrandsStudiosRoute = BrandsStudiosRouteImport.update({
+  id: '/brands/studios',
+  path: '/brands/studios',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BrandsSkinclinicRoute = BrandsSkinclinicRouteImport.update({
@@ -187,6 +193,7 @@ export interface FileRoutesByFullPath {
   '/brands/rejuvenating': typeof BrandsRejuvenatingRoute
   '/brands/skincare-kitchen': typeof BrandsSkincareKitchenRoute
   '/brands/skinclinic': typeof BrandsSkinclinicRoute
+  '/brands/studios': typeof BrandsStudiosRoute
   '/api/public/hooks/process-followups': typeof ApiPublicHooksProcessFollowupsRoute
 }
 export interface FileRoutesByTo {
@@ -214,6 +221,7 @@ export interface FileRoutesByTo {
   '/brands/rejuvenating': typeof BrandsRejuvenatingRoute
   '/brands/skincare-kitchen': typeof BrandsSkincareKitchenRoute
   '/brands/skinclinic': typeof BrandsSkinclinicRoute
+  '/brands/studios': typeof BrandsStudiosRoute
   '/api/public/hooks/process-followups': typeof ApiPublicHooksProcessFollowupsRoute
 }
 export interface FileRoutesById {
@@ -242,6 +250,7 @@ export interface FileRoutesById {
   '/brands/rejuvenating': typeof BrandsRejuvenatingRoute
   '/brands/skincare-kitchen': typeof BrandsSkincareKitchenRoute
   '/brands/skinclinic': typeof BrandsSkinclinicRoute
+  '/brands/studios': typeof BrandsStudiosRoute
   '/api/public/hooks/process-followups': typeof ApiPublicHooksProcessFollowupsRoute
 }
 export interface FileRouteTypes {
@@ -271,6 +280,7 @@ export interface FileRouteTypes {
     | '/brands/rejuvenating'
     | '/brands/skincare-kitchen'
     | '/brands/skinclinic'
+    | '/brands/studios'
     | '/api/public/hooks/process-followups'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -298,6 +308,7 @@ export interface FileRouteTypes {
     | '/brands/rejuvenating'
     | '/brands/skincare-kitchen'
     | '/brands/skinclinic'
+    | '/brands/studios'
     | '/api/public/hooks/process-followups'
   id:
     | '__root__'
@@ -325,6 +336,7 @@ export interface FileRouteTypes {
     | '/brands/rejuvenating'
     | '/brands/skincare-kitchen'
     | '/brands/skinclinic'
+    | '/brands/studios'
     | '/api/public/hooks/process-followups'
   fileRoutesById: FileRoutesById
 }
@@ -353,6 +365,7 @@ export interface RootRouteChildren {
   BrandsRejuvenatingRoute: typeof BrandsRejuvenatingRoute
   BrandsSkincareKitchenRoute: typeof BrandsSkincareKitchenRoute
   BrandsSkinclinicRoute: typeof BrandsSkinclinicRoute
+  BrandsStudiosRoute: typeof BrandsStudiosRoute
   ApiPublicHooksProcessFollowupsRoute: typeof ApiPublicHooksProcessFollowupsRoute
 }
 
@@ -419,6 +432,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/brands/studios': {
+      id: '/brands/studios'
+      path: '/brands/studios'
+      fullPath: '/brands/studios'
+      preLoaderRoute: typeof BrandsStudiosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/brands/skinclinic': {
@@ -561,18 +581,9 @@ const rootRouteChildren: RootRouteChildren = {
   BrandsRejuvenatingRoute: BrandsRejuvenatingRoute,
   BrandsSkincareKitchenRoute: BrandsSkincareKitchenRoute,
   BrandsSkinclinicRoute: BrandsSkinclinicRoute,
+  BrandsStudiosRoute: BrandsStudiosRoute,
   ApiPublicHooksProcessFollowupsRoute: ApiPublicHooksProcessFollowupsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
