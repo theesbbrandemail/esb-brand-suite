@@ -25,7 +25,8 @@ const brands: readonly MenuItem[] = [
   { to: "/brands/derma", label: "Derma Aesthetics", icon: ShoppingBag, sub: "Retail & preorder" },
   { to: "/brands/skinclinic", label: "Skin Clinic", icon: Stethoscope, sub: "Aesthetics procedures" },
   { to: "/brands/dental", label: "Dental Clinic", icon: Smile, sub: "Oral & dental care" },
-  { to: "/brands/rejuvenating", label: "Rejuvenating", icon: HeartPulse, sub: "Wellness & anti-aging" },
+  { to: "/brands/rejuvenating", label: "Rejuvenating Aesthetics", icon: HeartPulse, sub: "Procedures & anti-aging" },
+  { to: "/brands/studios", label: "ESB Studios", icon: Clapperboard, sub: "Studio services · photo/video" },
   { to: "/brands/global-tech", label: "Global Skin Tech", icon: Cpu, sub: "AI platform tier" },
   { to: "/brands/logistics", label: "Logistics", icon: Truck, sub: "Cross-branch sync" },
 ];
