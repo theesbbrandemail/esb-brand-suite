@@ -1,5 +1,5 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { LayoutGrid, Sparkles, Smartphone, Bell, Package, Calendar, Image as ImageIcon, ScanFace, ClipboardList, LogOut, Lock, ChevronDown, FlaskConical, ShoppingBag, Stethoscope, Smile, HeartPulse, Cpu, Truck, Crown, Briefcase, Megaphone, Syringe, Calculator, ClipboardCheck, Bot } from "lucide-react";
+import { LayoutGrid, Sparkles, Smartphone, Bell, Package, Calendar, Image as ImageIcon, ScanFace, ClipboardList, LogOut, Lock, ChevronDown, FlaskConical, ShoppingBag, Stethoscope, Smile, HeartPulse, Cpu, Truck, Crown, Briefcase, Megaphone, Syringe, Calculator, ClipboardCheck, Bot, Clapperboard, MessageCircle } from "lucide-react";
 import { EsbLogo } from "./Logo";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useAuth } from "@/lib/auth";
@@ -15,6 +15,7 @@ const tabs: readonly Tab[] = [
   { to: "/content", label: "Content", icon: ImageIcon, staff: true },
   { to: "/skin-analysis", label: "Skin AI", icon: ScanFace },
   { to: "/manager", label: "Manager", icon: ClipboardList, staff: true },
+  { to: "/whatsapp", label: "WhatsApp", icon: MessageCircle },
 ];
 
 type MenuItem = { to: string; label: string; icon: typeof LayoutGrid; staff?: boolean; sub?: string };
@@ -24,7 +25,8 @@ const brands: readonly MenuItem[] = [
   { to: "/brands/derma", label: "Derma Aesthetics", icon: ShoppingBag, sub: "Retail & preorder" },
   { to: "/brands/skinclinic", label: "Skin Clinic", icon: Stethoscope, sub: "Aesthetics procedures" },
   { to: "/brands/dental", label: "Dental Clinic", icon: Smile, sub: "Oral & dental care" },
-  { to: "/brands/rejuvenating", label: "Rejuvenating", icon: HeartPulse, sub: "Wellness & anti-aging" },
+  { to: "/brands/rejuvenating", label: "Rejuvenating Aesthetics", icon: HeartPulse, sub: "Procedures & anti-aging" },
+  { to: "/brands/studios", label: "ESB Studios", icon: Clapperboard, sub: "Studio services · photo/video" },
   { to: "/brands/global-tech", label: "Global Skin Tech", icon: Cpu, sub: "AI platform tier" },
   { to: "/brands/logistics", label: "Logistics", icon: Truck, sub: "Cross-branch sync" },
 ];

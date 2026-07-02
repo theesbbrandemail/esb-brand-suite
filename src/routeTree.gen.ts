@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WhatsappRouteImport } from './routes/whatsapp'
 import { Route as SuiteRouteImport } from './routes/suite'
 import { Route as SkinAnalysisRouteImport } from './routes/skin-analysis'
 import { Route as MobileRouteImport } from './routes/mobile'
@@ -18,6 +19,7 @@ import { Route as ContentRouteImport } from './routes/content'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AppointmentsRouteImport } from './routes/appointments'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as BrandsStudiosRouteImport } from './routes/brands.studios'
 import { Route as BrandsSkinclinicRouteImport } from './routes/brands.skinclinic'
 import { Route as BrandsSkincareKitchenRouteImport } from './routes/brands.skincare-kitchen'
 import { Route as BrandsRejuvenatingRouteImport } from './routes/brands.rejuvenating'
@@ -35,6 +37,11 @@ import { Route as AiCeoRouteImport } from './routes/ai.ceo'
 import { Route as AiAccountantRouteImport } from './routes/ai.accountant'
 import { Route as ApiPublicHooksProcessFollowupsRouteImport } from './routes/api/public/hooks/process-followups'
 
+const WhatsappRoute = WhatsappRouteImport.update({
+  id: '/whatsapp',
+  path: '/whatsapp',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SuiteRoute = SuiteRouteImport.update({
   id: '/suite',
   path: '/suite',
@@ -78,6 +85,11 @@ const AppointmentsRoute = AppointmentsRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BrandsStudiosRoute = BrandsStudiosRouteImport.update({
+  id: '/brands/studios',
+  path: '/brands/studios',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BrandsSkinclinicRoute = BrandsSkinclinicRouteImport.update({
@@ -172,6 +184,7 @@ export interface FileRoutesByFullPath {
   '/mobile': typeof MobileRoute
   '/skin-analysis': typeof SkinAnalysisRoute
   '/suite': typeof SuiteRoute
+  '/whatsapp': typeof WhatsappRoute
   '/ai/accountant': typeof AiAccountantRoute
   '/ai/ceo': typeof AiCeoRoute
   '/ai/customer': typeof AiCustomerRoute
@@ -187,6 +200,7 @@ export interface FileRoutesByFullPath {
   '/brands/rejuvenating': typeof BrandsRejuvenatingRoute
   '/brands/skincare-kitchen': typeof BrandsSkincareKitchenRoute
   '/brands/skinclinic': typeof BrandsSkinclinicRoute
+  '/brands/studios': typeof BrandsStudiosRoute
   '/api/public/hooks/process-followups': typeof ApiPublicHooksProcessFollowupsRoute
 }
 export interface FileRoutesByTo {
@@ -199,6 +213,7 @@ export interface FileRoutesByTo {
   '/mobile': typeof MobileRoute
   '/skin-analysis': typeof SkinAnalysisRoute
   '/suite': typeof SuiteRoute
+  '/whatsapp': typeof WhatsappRoute
   '/ai/accountant': typeof AiAccountantRoute
   '/ai/ceo': typeof AiCeoRoute
   '/ai/customer': typeof AiCustomerRoute
@@ -214,6 +229,7 @@ export interface FileRoutesByTo {
   '/brands/rejuvenating': typeof BrandsRejuvenatingRoute
   '/brands/skincare-kitchen': typeof BrandsSkincareKitchenRoute
   '/brands/skinclinic': typeof BrandsSkinclinicRoute
+  '/brands/studios': typeof BrandsStudiosRoute
   '/api/public/hooks/process-followups': typeof ApiPublicHooksProcessFollowupsRoute
 }
 export interface FileRoutesById {
@@ -227,6 +243,7 @@ export interface FileRoutesById {
   '/mobile': typeof MobileRoute
   '/skin-analysis': typeof SkinAnalysisRoute
   '/suite': typeof SuiteRoute
+  '/whatsapp': typeof WhatsappRoute
   '/ai/accountant': typeof AiAccountantRoute
   '/ai/ceo': typeof AiCeoRoute
   '/ai/customer': typeof AiCustomerRoute
@@ -242,6 +259,7 @@ export interface FileRoutesById {
   '/brands/rejuvenating': typeof BrandsRejuvenatingRoute
   '/brands/skincare-kitchen': typeof BrandsSkincareKitchenRoute
   '/brands/skinclinic': typeof BrandsSkinclinicRoute
+  '/brands/studios': typeof BrandsStudiosRoute
   '/api/public/hooks/process-followups': typeof ApiPublicHooksProcessFollowupsRoute
 }
 export interface FileRouteTypes {
@@ -256,6 +274,7 @@ export interface FileRouteTypes {
     | '/mobile'
     | '/skin-analysis'
     | '/suite'
+    | '/whatsapp'
     | '/ai/accountant'
     | '/ai/ceo'
     | '/ai/customer'
@@ -271,6 +290,7 @@ export interface FileRouteTypes {
     | '/brands/rejuvenating'
     | '/brands/skincare-kitchen'
     | '/brands/skinclinic'
+    | '/brands/studios'
     | '/api/public/hooks/process-followups'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -283,6 +303,7 @@ export interface FileRouteTypes {
     | '/mobile'
     | '/skin-analysis'
     | '/suite'
+    | '/whatsapp'
     | '/ai/accountant'
     | '/ai/ceo'
     | '/ai/customer'
@@ -298,6 +319,7 @@ export interface FileRouteTypes {
     | '/brands/rejuvenating'
     | '/brands/skincare-kitchen'
     | '/brands/skinclinic'
+    | '/brands/studios'
     | '/api/public/hooks/process-followups'
   id:
     | '__root__'
@@ -310,6 +332,7 @@ export interface FileRouteTypes {
     | '/mobile'
     | '/skin-analysis'
     | '/suite'
+    | '/whatsapp'
     | '/ai/accountant'
     | '/ai/ceo'
     | '/ai/customer'
@@ -325,6 +348,7 @@ export interface FileRouteTypes {
     | '/brands/rejuvenating'
     | '/brands/skincare-kitchen'
     | '/brands/skinclinic'
+    | '/brands/studios'
     | '/api/public/hooks/process-followups'
   fileRoutesById: FileRoutesById
 }
@@ -338,6 +362,7 @@ export interface RootRouteChildren {
   MobileRoute: typeof MobileRoute
   SkinAnalysisRoute: typeof SkinAnalysisRoute
   SuiteRoute: typeof SuiteRoute
+  WhatsappRoute: typeof WhatsappRoute
   AiAccountantRoute: typeof AiAccountantRoute
   AiCeoRoute: typeof AiCeoRoute
   AiCustomerRoute: typeof AiCustomerRoute
@@ -353,11 +378,19 @@ export interface RootRouteChildren {
   BrandsRejuvenatingRoute: typeof BrandsRejuvenatingRoute
   BrandsSkincareKitchenRoute: typeof BrandsSkincareKitchenRoute
   BrandsSkinclinicRoute: typeof BrandsSkinclinicRoute
+  BrandsStudiosRoute: typeof BrandsStudiosRoute
   ApiPublicHooksProcessFollowupsRoute: typeof ApiPublicHooksProcessFollowupsRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/whatsapp': {
+      id: '/whatsapp'
+      path: '/whatsapp'
+      fullPath: '/whatsapp'
+      preLoaderRoute: typeof WhatsappRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/suite': {
       id: '/suite'
       path: '/suite'
@@ -419,6 +452,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/brands/studios': {
+      id: '/brands/studios'
+      path: '/brands/studios'
+      fullPath: '/brands/studios'
+      preLoaderRoute: typeof BrandsStudiosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/brands/skinclinic': {
@@ -546,6 +586,7 @@ const rootRouteChildren: RootRouteChildren = {
   MobileRoute: MobileRoute,
   SkinAnalysisRoute: SkinAnalysisRoute,
   SuiteRoute: SuiteRoute,
+  WhatsappRoute: WhatsappRoute,
   AiAccountantRoute: AiAccountantRoute,
   AiCeoRoute: AiCeoRoute,
   AiCustomerRoute: AiCustomerRoute,
@@ -561,6 +602,7 @@ const rootRouteChildren: RootRouteChildren = {
   BrandsRejuvenatingRoute: BrandsRejuvenatingRoute,
   BrandsSkincareKitchenRoute: BrandsSkincareKitchenRoute,
   BrandsSkinclinicRoute: BrandsSkinclinicRoute,
+  BrandsStudiosRoute: BrandsStudiosRoute,
   ApiPublicHooksProcessFollowupsRoute: ApiPublicHooksProcessFollowupsRoute,
 }
 export const routeTree = rootRouteImport
