@@ -15,6 +15,7 @@ const tabs: readonly Tab[] = [
   { to: "/content", label: "Content", icon: ImageIcon, staff: true },
   { to: "/skin-analysis", label: "Skin AI", icon: ScanFace },
   { to: "/manager", label: "Manager", icon: ClipboardList, staff: true },
+  { to: "/whatsapp", label: "WhatsApp", icon: MessageCircle },
 ];
 
 type MenuItem = { to: string; label: string; icon: typeof LayoutGrid; staff?: boolean; sub?: string };
