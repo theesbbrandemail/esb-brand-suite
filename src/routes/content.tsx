@@ -171,7 +171,10 @@ function ContentPage() {
 
 function ContentTile({ t, s, g }: { t: string; s: string; g: string }) {
   return (
-    <div className="rounded-2xl overflow-hidden relative">
+    <button
+      onClick={() => toast(t, { description: `Playing ${s} preview…` })}
+      className="rounded-2xl overflow-hidden relative text-left w-full"
+    >
       <div className={`aspect-[4/5] bg-gradient-to-br ${g} relative flex items-center justify-center`}>
         <div className="h-20 w-12 rounded-lg bg-white/30 backdrop-blur-sm border border-white/40" />
         <div className="absolute inset-0 flex items-center justify-center">
@@ -184,9 +187,10 @@ function ContentTile({ t, s, g }: { t: string; s: string; g: string }) {
         <div className="text-xs font-semibold text-white">{t}</div>
         <div className="text-[10px] text-white/70">{s}</div>
       </div>
-    </div>
+    </button>
   );
 }
+
 
 function EngagementCard() {
   return (
