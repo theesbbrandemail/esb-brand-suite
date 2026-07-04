@@ -131,12 +131,16 @@ function ManagerPage() {
 
 function SideItem({ icon: Icon, label, active }: { icon: React.ComponentType<{ className?: string }>; label: string; active?: boolean }) {
   return (
-    <button className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-[10px] ${active ? "bg-gold/90 text-gold-foreground font-semibold" : "text-muted-foreground hover:bg-white/5"}`}>
+    <button
+      onClick={() => toast(label, { description: `Opened ${label}` })}
+      className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-[10px] ${active ? "bg-gold/90 text-gold-foreground font-semibold" : "text-muted-foreground hover:bg-white/5"}`}
+    >
       <Icon className="h-3 w-3" />
       {label}
     </button>
   );
 }
+
 
 function MetricCard({ label, value }: { label: string; value: string }) {
   return (
