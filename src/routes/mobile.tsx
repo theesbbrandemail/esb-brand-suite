@@ -96,9 +96,10 @@ function Phone() {
               Optimize Marketing Spend — shift <span className="gold-text font-semibold">$2.4K</span> from display to retention.
             </div>
             <div className="flex items-center justify-between mt-3">
-              <button className="text-[11px] text-muted-foreground">Dismiss</button>
-              <button className="chip-gold text-[11px] flex items-center gap-1">Details <ChevronRight className="h-3 w-3" /></button>
+              <button onClick={() => toast("Dismissed")} className="text-[11px] text-muted-foreground">Dismiss</button>
+              <button onClick={() => toast.success("AI details", { description: "Shift $2.4K to retention. Est. +6% LTV." })} className="chip-gold text-[11px] flex items-center gap-1">Details <ChevronRight className="h-3 w-3" /></button>
             </div>
+
           </div>
 
           {/* Reminders list */}
