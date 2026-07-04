@@ -101,6 +101,7 @@ function classifyError(raw: string): FriendlyError {
 function AuthPage() {
   const { session, loading } = useAuth();
   const navigate = useNavigate();
+  const { next } = Route.useSearch();
   const [phase, setPhase] = useState<Phase>("idle");
   const [error, setError] = useState<FriendlyError | null>(null);
   const [online, setOnline] = useState(
@@ -119,7 +120,6 @@ function AuthPage() {
       hash.includes("error=");
     if (hasCallback) {
       setPhase("returning");
-      // Surface OAuth provider errors carried back in the URL
       const params = new URLSearchParams(search.startsWith("?") ? search.slice(1) : search);
       const oauthErr = params.get("error_description") || params.get("error");
       if (oauthErr) {
@@ -143,10 +143,13 @@ function AuthPage() {
   useEffect(() => {
     if (!loading && session) {
       setPhase("success");
-      const t = setTimeout(() => navigate({ to: "/" }), 450);
+      const t = setTimeout(() => {
+        if (next && next !== "/") window.location.href = next;
+        else navigate({ to: "/" });
+      }, 450);
       return () => clearTimeout(t);
     }
-  }, [loading, session, navigate]);
+  }, [loading, session, navigate, next]);
 
   async function signIn() {
     setError(null);
@@ -159,8 +162,9 @@ function AuthPage() {
 
     setPhase("starting");
     try {
+      const returnTo = window.location.origin + "/auth" + (next && next !== "/" ? `?next=${encodeURIComponent(next)}` : "");
       const result = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: window.location.origin + "/auth",
+        redirect_uri: returnTo,
       });
       if (result.error) {
         setError(classifyError(result.error.message || ""));
@@ -172,12 +176,14 @@ function AuthPage() {
         return;
       }
       setPhase("success");
-      navigate({ to: "/" });
+      if (next && next !== "/") window.location.href = next;
+      else navigate({ to: "/" });
     } catch (e) {
       setError(classifyError(e instanceof Error ? e.message : String(e)));
       setPhase("error");
     }
   }
+
 
   const busy = phase === "starting" || phase === "redirecting" || phase === "returning";
   const buttonLabel =
