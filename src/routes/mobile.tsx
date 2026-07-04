@@ -131,11 +131,22 @@ function Phone() {
         {/* Bottom nav */}
         <div className="absolute bottom-0 inset-x-0 px-4 pb-4">
           <div className="rounded-2xl bg-black/60 backdrop-blur-xl border border-white/10 flex items-center justify-around py-3">
-            {[Home, Calendar, Sparkles, Settings, User].map((Icon, i) => (
-              <button key={i} className={`h-9 w-9 rounded-xl flex items-center justify-center ${i === 2 ? "bg-gradient-to-br from-gold to-violet text-white" : "text-muted-foreground"}`}>
+            {[
+              { Icon: Home, l: "Home" },
+              { Icon: Calendar, l: "Agenda" },
+              { Icon: Sparkles, l: "AI Suite" },
+              { Icon: Settings, l: "Settings" },
+              { Icon: User, l: "Profile" },
+            ].map(({ Icon, l }, i) => (
+              <button
+                key={l}
+                onClick={() => toast(l, { description: `Opened ${l}` })}
+                className={`h-9 w-9 rounded-xl flex items-center justify-center ${i === 2 ? "bg-gradient-to-br from-gold to-violet text-white" : "text-muted-foreground"}`}
+              >
                 <Icon className="h-4 w-4" />
               </button>
             ))}
+
           </div>
         </div>
       </div>
