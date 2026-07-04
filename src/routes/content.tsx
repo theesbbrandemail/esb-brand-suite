@@ -1,7 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import { toast } from "sonner";
 import { Shell } from "@/components/esb/Shell";
 import { Phone, PhoneScroll } from "@/components/esb/Phone";
 import { Bell, Search, Wand2, Play, Image as ImageIcon, Home, Sparkles, User } from "lucide-react";
+
 
 export const Route = createFileRoute("/content")({
   head: () => ({
