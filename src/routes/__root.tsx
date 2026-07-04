@@ -14,6 +14,8 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { PageTransition } from "../components/esb/PageTransition";
 import { AuthProvider } from "../lib/auth";
 import { installClientDiagnostics } from "../lib/diagnostics";
+import { Toaster } from "../components/ui/sonner";
+
 
 function NotFoundComponent() {
   return (
