@@ -29,8 +29,11 @@ const tiles = [
 ];
 
 function ContentPage() {
+  const [caption, setCaption] = useState("");
+  const [tab, setTab] = useState("Home");
   return (
     <Shell requireStaff>
+
       <div className="flex justify-center">
         <Phone tone="pink">
           <div className="absolute -top-10 -right-10 h-48 w-48 rounded-full blur-3xl" style={{ background: PINK, opacity: 0.25 }} />
