@@ -82,12 +82,21 @@ function ManagerPage() {
                       </div>
                     ))}
                   </div>
-                  <button className="w-full mt-2 chip-gold text-[9px]">Sign In/Out</button>
+                  <button
+                    onClick={() => toast.success("Roster signed in", { description: "4 staff clocked in for today" })}
+                    className="w-full mt-2 chip-gold text-[9px]"
+                  >
+                    Sign In/Out
+                  </button>
                 </div>
               </div>
-              <button className="absolute -bottom-3 left-1/2 -translate-x-1/2 h-7 w-7 rounded-full bg-gold text-gold-foreground flex items-center justify-center shadow-lg">
+              <button
+                onClick={() => toast("Previous tasks", { description: "Loaded prior day's task set" })}
+                className="absolute -bottom-3 left-1/2 -translate-x-1/2 h-7 w-7 rounded-full bg-gold text-gold-foreground flex items-center justify-center shadow-lg"
+              >
                 <ChevronLeft className="h-3 w-3" />
               </button>
+
             </div>
 
             <div className="flex items-center justify-between mb-3 mt-6 pl-[130px]">
