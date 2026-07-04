@@ -42,9 +42,10 @@ function Phone() {
               <div className="h-6 w-6 rounded-md bg-gradient-to-br from-gold to-violet" />
               <span className="text-sm font-display gold-text">ESB Brand</span>
             </div>
-            <button className="h-8 w-8 rounded-full bg-white/5 flex items-center justify-center">
+            <button onClick={() => toast("3 alerts", { description: "Payroll, restock, marketing sync" })} className="h-8 w-8 rounded-full bg-white/5 flex items-center justify-center">
               <Bell className="h-4 w-4" />
             </button>
+
           </div>
 
           <div>
