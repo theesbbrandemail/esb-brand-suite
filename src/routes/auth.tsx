@@ -5,8 +5,14 @@ import { useAuth } from "@/lib/auth";
 import { EsbLogo } from "@/components/esb/Logo";
 import { Sparkles, Loader2, AlertCircle, CheckCircle2, RefreshCw, WifiOff } from "lucide-react";
 
+function safeNext(raw: unknown): string {
+  if (typeof raw !== "string" || !raw.startsWith("/") || raw.startsWith("//")) return "/";
+  return raw;
+}
+
 export const Route = createFileRoute("/auth")({
   ssr: false,
+  validateSearch: (s: Record<string, unknown>) => ({ next: safeNext(s.next) }),
   head: () => ({
     meta: [
       { title: "Sign in — ESB Brand" },

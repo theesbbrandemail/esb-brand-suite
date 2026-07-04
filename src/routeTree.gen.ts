@@ -39,6 +39,7 @@ import { Route as AiAccountantRouteImport } from './routes/ai.accountant'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
+import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as ApiPublicHooksProcessFollowupsRouteImport } from './routes/api/public/hooks/process-followups'
 
 const WhatsappRoute = WhatsappRouteImport.update({
@@ -194,6 +195,11 @@ const Char91DotmcpChar93InvokeToolToolRoute =
     path: '/.mcp/invoke-tool/$tool',
     getParentRoute: () => rootRouteImport,
   } as any)
+const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
+  id: '/.lovable/oauth/consent',
+  path: '/.lovable/oauth/consent',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicHooksProcessFollowupsRoute =
   ApiPublicHooksProcessFollowupsRouteImport.update({
     id: '/api/public/hooks/process-followups',
@@ -231,6 +237,7 @@ export interface FileRoutesByFullPath {
   '/brands/skincare-kitchen': typeof BrandsSkincareKitchenRoute
   '/brands/skinclinic': typeof BrandsSkinclinicRoute
   '/brands/studios': typeof BrandsStudiosRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/hooks/process-followups': typeof ApiPublicHooksProcessFollowupsRoute
 }
@@ -264,6 +271,7 @@ export interface FileRoutesByTo {
   '/brands/skincare-kitchen': typeof BrandsSkincareKitchenRoute
   '/brands/skinclinic': typeof BrandsSkinclinicRoute
   '/brands/studios': typeof BrandsStudiosRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/hooks/process-followups': typeof ApiPublicHooksProcessFollowupsRoute
 }
@@ -298,6 +306,7 @@ export interface FileRoutesById {
   '/brands/skincare-kitchen': typeof BrandsSkincareKitchenRoute
   '/brands/skinclinic': typeof BrandsSkinclinicRoute
   '/brands/studios': typeof BrandsStudiosRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/hooks/process-followups': typeof ApiPublicHooksProcessFollowupsRoute
 }
@@ -333,6 +342,7 @@ export interface FileRouteTypes {
     | '/brands/skincare-kitchen'
     | '/brands/skinclinic'
     | '/brands/studios'
+    | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/api/public/hooks/process-followups'
   fileRoutesByTo: FileRoutesByTo
@@ -366,6 +376,7 @@ export interface FileRouteTypes {
     | '/brands/skincare-kitchen'
     | '/brands/skinclinic'
     | '/brands/studios'
+    | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/api/public/hooks/process-followups'
   id:
@@ -399,6 +410,7 @@ export interface FileRouteTypes {
     | '/brands/skincare-kitchen'
     | '/brands/skinclinic'
     | '/brands/studios'
+    | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/api/public/hooks/process-followups'
   fileRoutesById: FileRoutesById
@@ -433,6 +445,7 @@ export interface RootRouteChildren {
   BrandsSkincareKitchenRoute: typeof BrandsSkincareKitchenRoute
   BrandsSkinclinicRoute: typeof BrandsSkinclinicRoute
   BrandsStudiosRoute: typeof BrandsStudiosRoute
+  DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
   ApiPublicHooksProcessFollowupsRoute: typeof ApiPublicHooksProcessFollowupsRoute
 }
@@ -649,6 +662,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/.lovable/oauth/consent': {
+      id: '/.lovable/oauth/consent'
+      path: '/.lovable/oauth/consent'
+      fullPath: '/.lovable/oauth/consent'
+      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/process-followups': {
       id: '/api/public/hooks/process-followups'
       path: '/api/public/hooks/process-followups'
@@ -690,6 +710,7 @@ const rootRouteChildren: RootRouteChildren = {
   BrandsSkincareKitchenRoute: BrandsSkincareKitchenRoute,
   BrandsSkinclinicRoute: BrandsSkinclinicRoute,
   BrandsStudiosRoute: BrandsStudiosRoute,
+  DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
   ApiPublicHooksProcessFollowupsRoute: ApiPublicHooksProcessFollowupsRoute,
 }
