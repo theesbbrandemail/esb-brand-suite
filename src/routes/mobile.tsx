@@ -106,7 +106,8 @@ function Phone() {
           <div className="rounded-2xl p-4 bg-white/[0.04] border border-white/10">
             <div className="flex items-center justify-between mb-3">
               <span className="font-display">Today</span>
-              <span className="text-[11px] text-muted-foreground">View all</span>
+              <button onClick={() => toast("Today's agenda", { description: "3 items due" })} className="text-[11px] text-muted-foreground">View all</button>
+
             </div>
             {[
               { t: "Team Meeting", s: "Quarterly review", time: "10:00", tag: "Auto" },
