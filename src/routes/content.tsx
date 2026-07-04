@@ -40,7 +40,10 @@ function ContentPage() {
           <PhoneScroll>
             <div className="flex items-center justify-between mb-4">
               <h1 className="font-display text-3xl font-bold">Content</h1>
-              <button className="h-9 w-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
+              <button
+                onClick={() => toast("3 new alerts", { description: "Approval queue, scheduled post, engagement spike." })}
+                className="h-9 w-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center"
+              >
                 <Bell className="h-4 w-4" />
               </button>
             </div>
@@ -50,9 +53,14 @@ function ContentPage() {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                 <input className="w-full pl-9 pr-3 py-2.5 rounded-full bg-white/5 border border-white/10 text-xs focus:outline-none" placeholder="Search content" />
               </div>
-              <button className="h-10 w-10 rounded-full flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${PINK}, oklch(0.45 0.2 340))` }}>
+              <button
+                onClick={() => toast.success("AI generating…", { description: "New caption + 4 image variants queued." })}
+                className="h-10 w-10 rounded-full flex items-center justify-center"
+                style={{ background: `linear-gradient(135deg, ${PINK}, oklch(0.45 0.2 340))` }}
+              >
                 <Wand2 className="h-4 w-4 text-white" />
               </button>
+
             </div>
 
             <div className="grid grid-cols-2 gap-2.5 mb-3">
