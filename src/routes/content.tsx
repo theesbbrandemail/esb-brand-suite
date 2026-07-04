@@ -1,7 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import { toast } from "sonner";
 import { Shell } from "@/components/esb/Shell";
 import { Phone, PhoneScroll } from "@/components/esb/Phone";
 import { Bell, Search, Wand2, Play, Image as ImageIcon, Home, Sparkles, User } from "lucide-react";
+
 
 export const Route = createFileRoute("/content")({
   head: () => ({
@@ -26,15 +29,21 @@ const tiles = [
 ];
 
 function ContentPage() {
+  const [caption, setCaption] = useState("");
+  const [tab, setTab] = useState("Home");
   return (
     <Shell requireStaff>
+
       <div className="flex justify-center">
         <Phone tone="pink">
           <div className="absolute -top-10 -right-10 h-48 w-48 rounded-full blur-3xl" style={{ background: PINK, opacity: 0.25 }} />
           <PhoneScroll>
             <div className="flex items-center justify-between mb-4">
               <h1 className="font-display text-3xl font-bold">Content</h1>
-              <button className="h-9 w-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
+              <button
+                onClick={() => toast("3 new alerts", { description: "Approval queue, scheduled post, engagement spike." })}
+                className="h-9 w-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center"
+              >
                 <Bell className="h-4 w-4" />
               </button>
             </div>
@@ -44,9 +53,14 @@ function ContentPage() {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                 <input className="w-full pl-9 pr-3 py-2.5 rounded-full bg-white/5 border border-white/10 text-xs focus:outline-none" placeholder="Search content" />
               </div>
-              <button className="h-10 w-10 rounded-full flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${PINK}, oklch(0.45 0.2 340))` }}>
+              <button
+                onClick={() => toast.success("AI generating…", { description: "New caption + 4 image variants queued." })}
+                className="h-10 w-10 rounded-full flex items-center justify-center"
+                style={{ background: `linear-gradient(135deg, ${PINK}, oklch(0.45 0.2 340))` }}
+              >
                 <Wand2 className="h-4 w-4 text-white" />
               </button>
+
             </div>
 
             <div className="grid grid-cols-2 gap-2.5 mb-3">
@@ -61,17 +75,47 @@ function ContentPage() {
 
             <div className="rounded-2xl p-3 bg-white/[0.04] border border-white/10 mb-3">
               <div className="flex items-center gap-2 mb-2">
-                <input className="flex-1 bg-transparent text-xs placeholder:text-muted-foreground focus:outline-none" placeholder="Write a caption..." />
-                <button className="h-7 w-7 rounded-full bg-white/5 flex items-center justify-center">
+                <input
+                  value={caption}
+                  onChange={(e) => setCaption(e.target.value)}
+                  className="flex-1 bg-transparent text-xs placeholder:text-muted-foreground focus:outline-none"
+                  placeholder="Write a caption..."
+                />
+                <button
+                  onClick={() => toast("Media picker", { description: "Pick from Skincare Kitchen library." })}
+                  className="h-7 w-7 rounded-full bg-white/5 flex items-center justify-center"
+                >
                   <ImageIcon className="h-3.5 w-3.5 text-muted-foreground" />
                 </button>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex gap-2">
-                  <button className="text-xs font-semibold" style={{ color: PINK }}>Approve</button>
-                  <button className="text-xs px-3 py-1 rounded-full border border-white/15 text-muted-foreground">Regenerate</button>
+                  <button
+                    onClick={() => toast.success("Approved", { description: "Sent to publishing queue." })}
+                    className="text-xs font-semibold"
+                    style={{ color: PINK }}
+                  >
+                    Approve
+                  </button>
+                  <button
+                    onClick={() => {
+                      setCaption("✨ Glow rituals for Wed–Fri. Book your Serum Bar slot in-app.");
+                      toast("Regenerated", { description: "New AI caption drafted." });
+                    }}
+                    className="text-xs px-3 py-1 rounded-full border border-white/15 text-muted-foreground"
+                  >
+                    Regenerate
+                  </button>
                 </div>
-                <button className="px-5 py-2 rounded-full text-white font-semibold text-xs" style={{ background: `linear-gradient(135deg, ${PINK}, oklch(0.5 0.22 350))`, boxShadow: `0 10px 30px -10px ${PINK}` }}>
+                <button
+                  onClick={() =>
+                    toast.success("Posted", {
+                      description: caption ? `“${caption.slice(0, 40)}…” live on IG + WhatsApp.` : "Draft posted to IG + WhatsApp.",
+                    })
+                  }
+                  className="px-5 py-2 rounded-full text-white font-semibold text-xs"
+                  style={{ background: `linear-gradient(135deg, ${PINK}, oklch(0.5 0.22 350))`, boxShadow: `0 10px 30px -10px ${PINK}` }}
+                >
                   Post
                 </button>
               </div>
@@ -90,15 +134,29 @@ function ContentPage() {
               ].map((t, i) => {
                 if ("create" in t) {
                   return (
-                    <button key={i} className="h-12 w-12 rounded-full flex items-center justify-center -mt-6 border-4 border-[oklch(0.14_0.02_300)]" style={{ background: `linear-gradient(135deg, ${PINK}, oklch(0.45 0.22 340))`, boxShadow: `0 10px 30px -8px ${PINK}` }}>
+                    <button
+                      key={i}
+                      onClick={() => toast.success("New post", { description: "AI drafting caption + visuals…" })}
+                      className="h-12 w-12 rounded-full flex items-center justify-center -mt-6 border-4 border-[oklch(0.14_0.02_300)]"
+                      style={{ background: `linear-gradient(135deg, ${PINK}, oklch(0.45 0.22 340))`, boxShadow: `0 10px 30px -8px ${PINK}` }}
+                    >
                       <Sparkles className="h-5 w-5 text-white" />
                     </button>
                   );
                 }
                 const Icon = t.i;
+                const active = tab === t.l;
                 return (
-                  <button key={i} className="flex flex-col items-center gap-0.5">
-                    <Icon className="h-4 w-4 text-muted-foreground" />
+                  <button
+                    key={i}
+                    onClick={() => {
+                      setTab(t.l);
+                      toast(t.l, { description: `Switched to ${t.l}` });
+                    }}
+                    className="flex flex-col items-center gap-0.5"
+                  >
+                    <Icon className={`h-4 w-4 ${active ? "text-foreground" : "text-muted-foreground"}`} />
+
                     <span className="text-[9px] text-muted-foreground">{t.l}</span>
                   </button>
                 );
@@ -113,7 +171,10 @@ function ContentPage() {
 
 function ContentTile({ t, s, g }: { t: string; s: string; g: string }) {
   return (
-    <div className="rounded-2xl overflow-hidden relative">
+    <button
+      onClick={() => toast(t, { description: `Playing ${s} preview…` })}
+      className="rounded-2xl overflow-hidden relative text-left w-full"
+    >
       <div className={`aspect-[4/5] bg-gradient-to-br ${g} relative flex items-center justify-center`}>
         <div className="h-20 w-12 rounded-lg bg-white/30 backdrop-blur-sm border border-white/40" />
         <div className="absolute inset-0 flex items-center justify-center">
@@ -126,9 +187,10 @@ function ContentTile({ t, s, g }: { t: string; s: string; g: string }) {
         <div className="text-xs font-semibold text-white">{t}</div>
         <div className="text-[10px] text-white/70">{s}</div>
       </div>
-    </div>
+    </button>
   );
 }
+
 
 function EngagementCard() {
   return (

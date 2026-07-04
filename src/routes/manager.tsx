@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { toast } from "sonner";
 import { Shell } from "@/components/esb/Shell";
 import { Phone, PhoneScroll } from "@/components/esb/Phone";
 import { Menu, LayoutDashboard, CheckSquare, ClipboardList, FileBarChart, Users, Settings, User as UserIcon, ChevronLeft, Sparkles, Info } from "lucide-react";
+
 
 export const Route = createFileRoute("/manager")({
   head: () => ({
@@ -39,7 +41,10 @@ function ManagerPage() {
           <PhoneScroll>
             <div className="flex items-center justify-between mb-4 pl-[130px]">
               <h1 className="font-display text-2xl">Dashboard</h1>
-              <button className="h-8 w-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
+              <button
+                onClick={() => toast("Menu", { description: "Manager quick menu opened" })}
+                className="h-8 w-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center"
+              >
                 <Menu className="h-3.5 w-3.5" />
               </button>
             </div>
@@ -48,8 +53,14 @@ function ManagerPage() {
             <div className="relative rounded-2xl border border-white/15 bg-white/[0.05] backdrop-blur-xl p-3 mb-4 pl-[130px]">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-xs font-medium">Tasks for Manager</span>
-                <button className="chip-gold text-[10px]">Sign In/Out</button>
+                <button
+                  onClick={() => toast.success("Signed in", { description: "Shift started at Port Harcourt" })}
+                  className="chip-gold text-[10px]"
+                >
+                  Sign In/Out
+                </button>
               </div>
+
               <div className="grid grid-cols-2 gap-2">
                 <div className="rounded-xl bg-white/[0.04] border border-white/10 p-2.5">
                   <div className="text-[11px] font-display mb-2">Staff Roster</div>
@@ -71,12 +82,21 @@ function ManagerPage() {
                       </div>
                     ))}
                   </div>
-                  <button className="w-full mt-2 chip-gold text-[9px]">Sign In/Out</button>
+                  <button
+                    onClick={() => toast.success("Roster signed in", { description: "4 staff clocked in for today" })}
+                    className="w-full mt-2 chip-gold text-[9px]"
+                  >
+                    Sign In/Out
+                  </button>
                 </div>
               </div>
-              <button className="absolute -bottom-3 left-1/2 -translate-x-1/2 h-7 w-7 rounded-full bg-gold text-gold-foreground flex items-center justify-center shadow-lg">
+              <button
+                onClick={() => toast("Previous tasks", { description: "Loaded prior day's task set" })}
+                className="absolute -bottom-3 left-1/2 -translate-x-1/2 h-7 w-7 rounded-full bg-gold text-gold-foreground flex items-center justify-center shadow-lg"
+              >
                 <ChevronLeft className="h-3 w-3" />
               </button>
+
             </div>
 
             <div className="flex items-center justify-between mb-3 mt-6 pl-[130px]">
@@ -111,12 +131,16 @@ function ManagerPage() {
 
 function SideItem({ icon: Icon, label, active }: { icon: React.ComponentType<{ className?: string }>; label: string; active?: boolean }) {
   return (
-    <button className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-[10px] ${active ? "bg-gold/90 text-gold-foreground font-semibold" : "text-muted-foreground hover:bg-white/5"}`}>
+    <button
+      onClick={() => toast(label, { description: `Opened ${label}` })}
+      className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-[10px] ${active ? "bg-gold/90 text-gold-foreground font-semibold" : "text-muted-foreground hover:bg-white/5"}`}
+    >
       <Icon className="h-3 w-3" />
       {label}
     </button>
   );
 }
+
 
 function MetricCard({ label, value }: { label: string; value: string }) {
   return (

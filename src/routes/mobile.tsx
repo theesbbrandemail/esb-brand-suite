@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { toast } from "sonner";
 import { Shell } from "@/components/esb/Shell";
 import { LineSpark } from "@/components/esb/charts";
 import { Bell, Sparkles, ChevronRight, Home, Calendar, Settings, User } from "lucide-react";
+
 
 export const Route = createFileRoute("/mobile")({
   head: () => ({
@@ -40,9 +42,10 @@ function Phone() {
               <div className="h-6 w-6 rounded-md bg-gradient-to-br from-gold to-violet" />
               <span className="text-sm font-display gold-text">ESB Brand</span>
             </div>
-            <button className="h-8 w-8 rounded-full bg-white/5 flex items-center justify-center">
+            <button onClick={() => toast("3 alerts", { description: "Payroll, restock, marketing sync" })} className="h-8 w-8 rounded-full bg-white/5 flex items-center justify-center">
               <Bell className="h-4 w-4" />
             </button>
+
           </div>
 
           <div>
@@ -93,16 +96,18 @@ function Phone() {
               Optimize Marketing Spend — shift <span className="gold-text font-semibold">$2.4K</span> from display to retention.
             </div>
             <div className="flex items-center justify-between mt-3">
-              <button className="text-[11px] text-muted-foreground">Dismiss</button>
-              <button className="chip-gold text-[11px] flex items-center gap-1">Details <ChevronRight className="h-3 w-3" /></button>
+              <button onClick={() => toast("Dismissed")} className="text-[11px] text-muted-foreground">Dismiss</button>
+              <button onClick={() => toast.success("AI details", { description: "Shift $2.4K to retention. Est. +6% LTV." })} className="chip-gold text-[11px] flex items-center gap-1">Details <ChevronRight className="h-3 w-3" /></button>
             </div>
+
           </div>
 
           {/* Reminders list */}
           <div className="rounded-2xl p-4 bg-white/[0.04] border border-white/10">
             <div className="flex items-center justify-between mb-3">
               <span className="font-display">Today</span>
-              <span className="text-[11px] text-muted-foreground">View all</span>
+              <button onClick={() => toast("Today's agenda", { description: "3 items due" })} className="text-[11px] text-muted-foreground">View all</button>
+
             </div>
             {[
               { t: "Team Meeting", s: "Quarterly review", time: "10:00", tag: "Auto" },
@@ -126,11 +131,22 @@ function Phone() {
         {/* Bottom nav */}
         <div className="absolute bottom-0 inset-x-0 px-4 pb-4">
           <div className="rounded-2xl bg-black/60 backdrop-blur-xl border border-white/10 flex items-center justify-around py-3">
-            {[Home, Calendar, Sparkles, Settings, User].map((Icon, i) => (
-              <button key={i} className={`h-9 w-9 rounded-xl flex items-center justify-center ${i === 2 ? "bg-gradient-to-br from-gold to-violet text-white" : "text-muted-foreground"}`}>
+            {[
+              { Icon: Home, l: "Home" },
+              { Icon: Calendar, l: "Agenda" },
+              { Icon: Sparkles, l: "AI Suite" },
+              { Icon: Settings, l: "Settings" },
+              { Icon: User, l: "Profile" },
+            ].map(({ Icon, l }, i) => (
+              <button
+                key={l}
+                onClick={() => toast(l, { description: `Opened ${l}` })}
+                className={`h-9 w-9 rounded-xl flex items-center justify-center ${i === 2 ? "bg-gradient-to-br from-gold to-violet text-white" : "text-muted-foreground"}`}
+              >
                 <Icon className="h-4 w-4" />
               </button>
             ))}
+
           </div>
         </div>
       </div>
