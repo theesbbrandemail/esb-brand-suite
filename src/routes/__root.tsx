@@ -134,7 +134,9 @@ function RootComponent() {
         <PageTransition>
           <Outlet />
         </PageTransition>
+        <Toaster />
       </AuthProvider>
     </QueryClientProvider>
+
   );
 }
