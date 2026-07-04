@@ -41,7 +41,10 @@ function ManagerPage() {
           <PhoneScroll>
             <div className="flex items-center justify-between mb-4 pl-[130px]">
               <h1 className="font-display text-2xl">Dashboard</h1>
-              <button className="h-8 w-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
+              <button
+                onClick={() => toast("Menu", { description: "Manager quick menu opened" })}
+                className="h-8 w-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center"
+              >
                 <Menu className="h-3.5 w-3.5" />
               </button>
             </div>
@@ -50,8 +53,14 @@ function ManagerPage() {
             <div className="relative rounded-2xl border border-white/15 bg-white/[0.05] backdrop-blur-xl p-3 mb-4 pl-[130px]">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-xs font-medium">Tasks for Manager</span>
-                <button className="chip-gold text-[10px]">Sign In/Out</button>
+                <button
+                  onClick={() => toast.success("Signed in", { description: "Shift started at Port Harcourt" })}
+                  className="chip-gold text-[10px]"
+                >
+                  Sign In/Out
+                </button>
               </div>
+
               <div className="grid grid-cols-2 gap-2">
                 <div className="rounded-xl bg-white/[0.04] border border-white/10 p-2.5">
                   <div className="text-[11px] font-display mb-2">Staff Roster</div>
