@@ -75,17 +75,47 @@ function ContentPage() {
 
             <div className="rounded-2xl p-3 bg-white/[0.04] border border-white/10 mb-3">
               <div className="flex items-center gap-2 mb-2">
-                <input className="flex-1 bg-transparent text-xs placeholder:text-muted-foreground focus:outline-none" placeholder="Write a caption..." />
-                <button className="h-7 w-7 rounded-full bg-white/5 flex items-center justify-center">
+                <input
+                  value={caption}
+                  onChange={(e) => setCaption(e.target.value)}
+                  className="flex-1 bg-transparent text-xs placeholder:text-muted-foreground focus:outline-none"
+                  placeholder="Write a caption..."
+                />
+                <button
+                  onClick={() => toast("Media picker", { description: "Pick from Skincare Kitchen library." })}
+                  className="h-7 w-7 rounded-full bg-white/5 flex items-center justify-center"
+                >
                   <ImageIcon className="h-3.5 w-3.5 text-muted-foreground" />
                 </button>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex gap-2">
-                  <button className="text-xs font-semibold" style={{ color: PINK }}>Approve</button>
-                  <button className="text-xs px-3 py-1 rounded-full border border-white/15 text-muted-foreground">Regenerate</button>
+                  <button
+                    onClick={() => toast.success("Approved", { description: "Sent to publishing queue." })}
+                    className="text-xs font-semibold"
+                    style={{ color: PINK }}
+                  >
+                    Approve
+                  </button>
+                  <button
+                    onClick={() => {
+                      setCaption("✨ Glow rituals for Wed–Fri. Book your Serum Bar slot in-app.");
+                      toast("Regenerated", { description: "New AI caption drafted." });
+                    }}
+                    className="text-xs px-3 py-1 rounded-full border border-white/15 text-muted-foreground"
+                  >
+                    Regenerate
+                  </button>
                 </div>
-                <button className="px-5 py-2 rounded-full text-white font-semibold text-xs" style={{ background: `linear-gradient(135deg, ${PINK}, oklch(0.5 0.22 350))`, boxShadow: `0 10px 30px -10px ${PINK}` }}>
+                <button
+                  onClick={() =>
+                    toast.success("Posted", {
+                      description: caption ? `“${caption.slice(0, 40)}…” live on IG + WhatsApp.` : "Draft posted to IG + WhatsApp.",
+                    })
+                  }
+                  className="px-5 py-2 rounded-full text-white font-semibold text-xs"
+                  style={{ background: `linear-gradient(135deg, ${PINK}, oklch(0.5 0.22 350))`, boxShadow: `0 10px 30px -10px ${PINK}` }}
+                >
                   Post
                 </button>
               </div>
@@ -104,15 +134,29 @@ function ContentPage() {
               ].map((t, i) => {
                 if ("create" in t) {
                   return (
-                    <button key={i} className="h-12 w-12 rounded-full flex items-center justify-center -mt-6 border-4 border-[oklch(0.14_0.02_300)]" style={{ background: `linear-gradient(135deg, ${PINK}, oklch(0.45 0.22 340))`, boxShadow: `0 10px 30px -8px ${PINK}` }}>
+                    <button
+                      key={i}
+                      onClick={() => toast.success("New post", { description: "AI drafting caption + visuals…" })}
+                      className="h-12 w-12 rounded-full flex items-center justify-center -mt-6 border-4 border-[oklch(0.14_0.02_300)]"
+                      style={{ background: `linear-gradient(135deg, ${PINK}, oklch(0.45 0.22 340))`, boxShadow: `0 10px 30px -8px ${PINK}` }}
+                    >
                       <Sparkles className="h-5 w-5 text-white" />
                     </button>
                   );
                 }
                 const Icon = t.i;
+                const active = tab === t.l;
                 return (
-                  <button key={i} className="flex flex-col items-center gap-0.5">
-                    <Icon className="h-4 w-4 text-muted-foreground" />
+                  <button
+                    key={i}
+                    onClick={() => {
+                      setTab(t.l);
+                      toast(t.l, { description: `Switched to ${t.l}` });
+                    }}
+                    className="flex flex-col items-center gap-0.5"
+                  >
+                    <Icon className={`h-4 w-4 ${active ? "text-foreground" : "text-muted-foreground"}`} />
+
                     <span className="text-[9px] text-muted-foreground">{t.l}</span>
                   </button>
                 );
