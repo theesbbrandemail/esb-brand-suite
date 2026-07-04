@@ -13,6 +13,7 @@ import { Route as WhatsappRouteImport } from './routes/whatsapp'
 import { Route as SuiteRouteImport } from './routes/suite'
 import { Route as SkinAnalysisRouteImport } from './routes/skin-analysis'
 import { Route as MobileRouteImport } from './routes/mobile'
+import { Route as McpRouteImport } from './routes/mcp'
 import { Route as ManagerRouteImport } from './routes/manager'
 import { Route as InventoryRouteImport } from './routes/inventory'
 import { Route as ContentRouteImport } from './routes/content'
@@ -35,6 +36,9 @@ import { Route as AiLogisticsRouteImport } from './routes/ai.logistics'
 import { Route as AiCustomerRouteImport } from './routes/ai.customer'
 import { Route as AiCeoRouteImport } from './routes/ai.ceo'
 import { Route as AiAccountantRouteImport } from './routes/ai.accountant'
+import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
+import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as ApiPublicHooksProcessFollowupsRouteImport } from './routes/api/public/hooks/process-followups'
 
 const WhatsappRoute = WhatsappRouteImport.update({
@@ -55,6 +59,11 @@ const SkinAnalysisRoute = SkinAnalysisRouteImport.update({
 const MobileRoute = MobileRouteImport.update({
   id: '/mobile',
   path: '/mobile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const McpRoute = McpRouteImport.update({
+  id: '/mcp',
+  path: '/mcp',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ManagerRoute = ManagerRouteImport.update({
@@ -167,6 +176,24 @@ const AiAccountantRoute = AiAccountantRouteImport.update({
   path: '/ai/accountant',
   getParentRoute: () => rootRouteImport,
 } as any)
+const Char91DotwellKnownChar93OauthProtectedResourceRoute =
+  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
+    id: '/.well-known/oauth-protected-resource',
+    path: '/.well-known/oauth-protected-resource',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const Char91DotmcpChar93ListToolsRoute =
+  Char91DotmcpChar93ListToolsRouteImport.update({
+    id: '/.mcp/list-tools',
+    path: '/.mcp/list-tools',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const Char91DotmcpChar93InvokeToolToolRoute =
+  Char91DotmcpChar93InvokeToolToolRouteImport.update({
+    id: '/.mcp/invoke-tool/$tool',
+    path: '/.mcp/invoke-tool/$tool',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksProcessFollowupsRoute =
   ApiPublicHooksProcessFollowupsRouteImport.update({
     id: '/api/public/hooks/process-followups',
@@ -181,10 +208,13 @@ export interface FileRoutesByFullPath {
   '/content': typeof ContentRoute
   '/inventory': typeof InventoryRoute
   '/manager': typeof ManagerRoute
+  '/mcp': typeof McpRoute
   '/mobile': typeof MobileRoute
   '/skin-analysis': typeof SkinAnalysisRoute
   '/suite': typeof SuiteRoute
   '/whatsapp': typeof WhatsappRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/ai/accountant': typeof AiAccountantRoute
   '/ai/ceo': typeof AiCeoRoute
   '/ai/customer': typeof AiCustomerRoute
@@ -201,6 +231,7 @@ export interface FileRoutesByFullPath {
   '/brands/skincare-kitchen': typeof BrandsSkincareKitchenRoute
   '/brands/skinclinic': typeof BrandsSkinclinicRoute
   '/brands/studios': typeof BrandsStudiosRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/hooks/process-followups': typeof ApiPublicHooksProcessFollowupsRoute
 }
 export interface FileRoutesByTo {
@@ -210,10 +241,13 @@ export interface FileRoutesByTo {
   '/content': typeof ContentRoute
   '/inventory': typeof InventoryRoute
   '/manager': typeof ManagerRoute
+  '/mcp': typeof McpRoute
   '/mobile': typeof MobileRoute
   '/skin-analysis': typeof SkinAnalysisRoute
   '/suite': typeof SuiteRoute
   '/whatsapp': typeof WhatsappRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/ai/accountant': typeof AiAccountantRoute
   '/ai/ceo': typeof AiCeoRoute
   '/ai/customer': typeof AiCustomerRoute
@@ -230,6 +264,7 @@ export interface FileRoutesByTo {
   '/brands/skincare-kitchen': typeof BrandsSkincareKitchenRoute
   '/brands/skinclinic': typeof BrandsSkinclinicRoute
   '/brands/studios': typeof BrandsStudiosRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/hooks/process-followups': typeof ApiPublicHooksProcessFollowupsRoute
 }
 export interface FileRoutesById {
@@ -240,10 +275,13 @@ export interface FileRoutesById {
   '/content': typeof ContentRoute
   '/inventory': typeof InventoryRoute
   '/manager': typeof ManagerRoute
+  '/mcp': typeof McpRoute
   '/mobile': typeof MobileRoute
   '/skin-analysis': typeof SkinAnalysisRoute
   '/suite': typeof SuiteRoute
   '/whatsapp': typeof WhatsappRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/ai/accountant': typeof AiAccountantRoute
   '/ai/ceo': typeof AiCeoRoute
   '/ai/customer': typeof AiCustomerRoute
@@ -260,6 +298,7 @@ export interface FileRoutesById {
   '/brands/skincare-kitchen': typeof BrandsSkincareKitchenRoute
   '/brands/skinclinic': typeof BrandsSkinclinicRoute
   '/brands/studios': typeof BrandsStudiosRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/hooks/process-followups': typeof ApiPublicHooksProcessFollowupsRoute
 }
 export interface FileRouteTypes {
@@ -271,10 +310,13 @@ export interface FileRouteTypes {
     | '/content'
     | '/inventory'
     | '/manager'
+    | '/mcp'
     | '/mobile'
     | '/skin-analysis'
     | '/suite'
     | '/whatsapp'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/ai/accountant'
     | '/ai/ceo'
     | '/ai/customer'
@@ -291,6 +333,7 @@ export interface FileRouteTypes {
     | '/brands/skincare-kitchen'
     | '/brands/skinclinic'
     | '/brands/studios'
+    | '/.mcp/invoke-tool/$tool'
     | '/api/public/hooks/process-followups'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -300,10 +343,13 @@ export interface FileRouteTypes {
     | '/content'
     | '/inventory'
     | '/manager'
+    | '/mcp'
     | '/mobile'
     | '/skin-analysis'
     | '/suite'
     | '/whatsapp'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/ai/accountant'
     | '/ai/ceo'
     | '/ai/customer'
@@ -320,6 +366,7 @@ export interface FileRouteTypes {
     | '/brands/skincare-kitchen'
     | '/brands/skinclinic'
     | '/brands/studios'
+    | '/.mcp/invoke-tool/$tool'
     | '/api/public/hooks/process-followups'
   id:
     | '__root__'
@@ -329,10 +376,13 @@ export interface FileRouteTypes {
     | '/content'
     | '/inventory'
     | '/manager'
+    | '/mcp'
     | '/mobile'
     | '/skin-analysis'
     | '/suite'
     | '/whatsapp'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/ai/accountant'
     | '/ai/ceo'
     | '/ai/customer'
@@ -349,6 +399,7 @@ export interface FileRouteTypes {
     | '/brands/skincare-kitchen'
     | '/brands/skinclinic'
     | '/brands/studios'
+    | '/.mcp/invoke-tool/$tool'
     | '/api/public/hooks/process-followups'
   fileRoutesById: FileRoutesById
 }
@@ -359,10 +410,13 @@ export interface RootRouteChildren {
   ContentRoute: typeof ContentRoute
   InventoryRoute: typeof InventoryRoute
   ManagerRoute: typeof ManagerRoute
+  McpRoute: typeof McpRoute
   MobileRoute: typeof MobileRoute
   SkinAnalysisRoute: typeof SkinAnalysisRoute
   SuiteRoute: typeof SuiteRoute
   WhatsappRoute: typeof WhatsappRoute
+  Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
+  Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   AiAccountantRoute: typeof AiAccountantRoute
   AiCeoRoute: typeof AiCeoRoute
   AiCustomerRoute: typeof AiCustomerRoute
@@ -379,6 +433,7 @@ export interface RootRouteChildren {
   BrandsSkincareKitchenRoute: typeof BrandsSkincareKitchenRoute
   BrandsSkinclinicRoute: typeof BrandsSkinclinicRoute
   BrandsStudiosRoute: typeof BrandsStudiosRoute
+  Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
   ApiPublicHooksProcessFollowupsRoute: typeof ApiPublicHooksProcessFollowupsRoute
 }
 
@@ -410,6 +465,13 @@ declare module '@tanstack/react-router' {
       path: '/mobile'
       fullPath: '/mobile'
       preLoaderRoute: typeof MobileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mcp': {
+      id: '/mcp'
+      path: '/mcp'
+      fullPath: '/mcp'
+      preLoaderRoute: typeof McpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/manager': {
@@ -566,6 +628,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AiAccountantRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/.well-known/oauth-protected-resource': {
+      id: '/.well-known/oauth-protected-resource'
+      path: '/.well-known/oauth-protected-resource'
+      fullPath: '/.well-known/oauth-protected-resource'
+      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.mcp/list-tools': {
+      id: '/.mcp/list-tools'
+      path: '/.mcp/list-tools'
+      fullPath: '/.mcp/list-tools'
+      preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.mcp/invoke-tool/$tool': {
+      id: '/.mcp/invoke-tool/$tool'
+      path: '/.mcp/invoke-tool/$tool'
+      fullPath: '/.mcp/invoke-tool/$tool'
+      preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/process-followups': {
       id: '/api/public/hooks/process-followups'
       path: '/api/public/hooks/process-followups'
@@ -583,10 +666,14 @@ const rootRouteChildren: RootRouteChildren = {
   ContentRoute: ContentRoute,
   InventoryRoute: InventoryRoute,
   ManagerRoute: ManagerRoute,
+  McpRoute: McpRoute,
   MobileRoute: MobileRoute,
   SkinAnalysisRoute: SkinAnalysisRoute,
   SuiteRoute: SuiteRoute,
   WhatsappRoute: WhatsappRoute,
+  Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
+  Char91DotwellKnownChar93OauthProtectedResourceRoute:
+    Char91DotwellKnownChar93OauthProtectedResourceRoute,
   AiAccountantRoute: AiAccountantRoute,
   AiCeoRoute: AiCeoRoute,
   AiCustomerRoute: AiCustomerRoute,
@@ -603,6 +690,7 @@ const rootRouteChildren: RootRouteChildren = {
   BrandsSkincareKitchenRoute: BrandsSkincareKitchenRoute,
   BrandsSkinclinicRoute: BrandsSkinclinicRoute,
   BrandsStudiosRoute: BrandsStudiosRoute,
+  Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
   ApiPublicHooksProcessFollowupsRoute: ApiPublicHooksProcessFollowupsRoute,
 }
 export const routeTree = rootRouteImport

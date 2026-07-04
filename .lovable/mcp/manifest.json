@@ -1,0 +1,184 @@
+{
+  "version": 1,
+  "sdk_version": "0.20.0",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://wnpiesghilaidsyptbbh.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "esb-brand-mcp",
+      "version": "0.1.0",
+      "title": "ESB Brand MCP"
+    },
+    "tools": [
+      {
+        "name": "list_appointments",
+        "title": "List appointments",
+        "description": "List ESB appointments visible to the signed-in staff member, optionally filtered by branch or by an upcoming window in days.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "branch": {
+              "type": "string",
+              "description": "Optional branch name filter (e.g. Lagos, Abuja, Port Harcourt)."
+            },
+            "upcomingDays": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 90,
+              "description": "If set, only return appointments scheduled within the next N days."
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200,
+              "default": 50
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "create_appointment",
+        "title": "Create appointment",
+        "description": "Book an ESB appointment for a patient at a specific branch and time.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "patient_name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "patient_phone": {
+              "type": "string",
+              "minLength": 5
+            },
+            "service": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Service name, e.g. 'Skin Consult', 'Facial', 'Dental Cleaning'."
+            },
+            "branch": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Branch name, e.g. Lagos, Abuja, Port Harcourt."
+            },
+            "scheduled_at": {
+              "type": "string",
+              "format": "date-time",
+              "description": "ISO 8601 UTC datetime."
+            }
+          },
+          "required": [
+            "patient_name",
+            "patient_phone",
+            "service",
+            "branch",
+            "scheduled_at"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_follow_ups",
+        "title": "List WhatsApp follow-ups",
+        "description": "List queued WhatsApp follow-ups, filterable by delivery status.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "ready",
+                "delivered",
+                "failed",
+                "skipped"
+              ]
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200,
+              "default": 50
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_kpis",
+        "title": "Get operational KPIs",
+        "description": "Return today's ESB operational KPIs: appointments today, upcoming appointments, pending follow-ups, and low-stock item count.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "whatsapp_deeplink",
+        "title": "Build WhatsApp deep link",
+        "description": "Build a wa.me deep link for a phone number with a pre-filled message. Useful for staff to hand off a follow-up to WhatsApp.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "phone": {
+              "type": "string",
+              "description": "E.164 phone, digits only (leading + optional)."
+            },
+            "message": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "phone",
+            "message"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
