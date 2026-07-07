@@ -1,6 +1,7 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { LayoutGrid, Sparkles, Smartphone, Bell, Package, Calendar, Image as ImageIcon, ScanFace, ClipboardList, LogOut, Lock, ChevronDown, FlaskConical, ShoppingBag, Stethoscope, Smile, HeartPulse, Cpu, Truck, Crown, Briefcase, Megaphone, Syringe, Calculator, ClipboardCheck, Bot, Clapperboard, MessageCircle } from "lucide-react";
 import { EsbLogo } from "./Logo";
+import { DemoTour } from "./DemoTour";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useAuth } from "@/lib/auth";
 
@@ -223,6 +224,7 @@ export function Shell({ children, requireStaff = false }: { children: ReactNode;
         </nav>
       </header>
       <main className="max-w-[1400px] mx-auto px-4 sm:px-6 py-8">{children}</main>
+      <DemoTour />
     </div>
   );
 }
