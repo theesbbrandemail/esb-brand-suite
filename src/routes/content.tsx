@@ -3,6 +3,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Shell } from "@/components/esb/Shell";
 import { Phone, PhoneScroll } from "@/components/esb/Phone";
+import { ContentAssistant } from "@/components/esb/ContentAssistant";
 import { Bell, Search, Wand2, Play, Image as ImageIcon, Home, Sparkles, User } from "lucide-react";
 
 
@@ -34,7 +35,7 @@ function ContentPage() {
   return (
     <Shell requireStaff>
 
-      <div className="flex justify-center">
+      <div className="flex flex-col lg:flex-row items-start justify-center gap-6">
         <Phone tone="pink">
           <div className="absolute -top-10 -right-10 h-48 w-48 rounded-full blur-3xl" style={{ background: PINK, opacity: 0.25 }} />
           <PhoneScroll>
@@ -164,6 +165,7 @@ function ContentPage() {
             </div>
           </div>
         </Phone>
+        <ContentAssistant caption={caption} onApplyCaption={setCaption} />
       </div>
     </Shell>
   );
