@@ -224,6 +224,7 @@ export function Shell({ children, requireStaff = false }: { children: ReactNode;
         </nav>
       </header>
       <main className="max-w-[1400px] mx-auto px-4 sm:px-6 py-8">{children}</main>
+      <DemoTour />
     </div>
   );
 }
