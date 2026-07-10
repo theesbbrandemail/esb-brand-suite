@@ -205,7 +205,7 @@ function ContentPage() {
             </div>
           </div>
         </Phone>
-        <ContentAssistant caption={caption} onApplyCaption={setCaption} />
+        <ContentAssistant caption={caption} onApplyCaption={setCaption} canPublish={isStaff} />
       </div>
     </Shell>
   );
