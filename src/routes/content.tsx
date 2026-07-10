@@ -4,7 +4,8 @@ import { toast } from "sonner";
 import { Shell } from "@/components/esb/Shell";
 import { Phone, PhoneScroll } from "@/components/esb/Phone";
 import { ContentAssistant } from "@/components/esb/ContentAssistant";
-import { Bell, Search, Wand2, Play, Image as ImageIcon, Home, Sparkles, User } from "lucide-react";
+import { useAuth } from "@/lib/auth";
+import { Bell, Search, Wand2, Play, Image as ImageIcon, Home, Sparkles, User, Lock } from "lucide-react";
 
 
 export const Route = createFileRoute("/content")({
@@ -32,8 +33,23 @@ const tiles = [
 function ContentPage() {
   const [caption, setCaption] = useState("");
   const [tab, setTab] = useState("Home");
+  const { isStaff, role } = useAuth();
+  const denyPublic = (action: string) => {
+    toast.error("Staff only", {
+      description: `${action} is restricted to staff accounts. You're signed in as ${role ?? "public"}.`,
+    });
+  };
   return (
-    <Shell requireStaff>
+    <Shell>
+      {!isStaff && (
+        <div className="max-w-2xl mx-auto mb-4 rounded-2xl border border-violet/30 bg-violet/10 px-4 py-3 flex items-center gap-3">
+          <Lock className="h-4 w-4 text-violet shrink-0" />
+          <div className="text-xs text-muted-foreground">
+            <span className="text-foreground font-medium">Read-only preview.</span> Scheduling,
+            approving and publishing are limited to Staff accounts.
+          </div>
+        </div>
+      )}
 
       <div className="flex flex-col lg:flex-row items-start justify-center gap-6">
         <Phone tone="pink">
@@ -55,11 +71,17 @@ function ContentPage() {
                 <input className="w-full pl-9 pr-3 py-2.5 rounded-full bg-white/5 border border-white/10 text-xs focus:outline-none" placeholder="Search content" />
               </div>
               <button
-                onClick={() => toast.success("AI generating…", { description: "New caption + 4 image variants queued." })}
-                className="h-10 w-10 rounded-full flex items-center justify-center"
+                onClick={() =>
+                  isStaff
+                    ? toast.success("AI generating…", { description: "New caption + 4 image variants queued." })
+                    : denyPublic("AI generation")
+                }
+                disabled={!isStaff}
+                title={isStaff ? "Generate" : "Staff only"}
+                className="h-10 w-10 rounded-full flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{ background: `linear-gradient(135deg, ${PINK}, oklch(0.45 0.2 340))` }}
               >
-                <Wand2 className="h-4 w-4 text-white" />
+                {isStaff ? <Wand2 className="h-4 w-4 text-white" /> : <Lock className="h-4 w-4 text-white" />}
               </button>
 
             </div>
@@ -92,32 +114,44 @@ function ContentPage() {
               <div className="flex items-center justify-between">
                 <div className="flex gap-2">
                   <button
-                    onClick={() => toast.success("Approved", { description: "Sent to publishing queue." })}
-                    className="text-xs font-semibold"
+                    onClick={() =>
+                      isStaff
+                        ? toast.success("Approved", { description: "Sent to publishing queue." })
+                        : denyPublic("Approving posts")
+                    }
+                    disabled={!isStaff}
+                    className="text-xs font-semibold disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-1"
                     style={{ color: PINK }}
                   >
+                    {!isStaff && <Lock className="h-3 w-3" />}
                     Approve
                   </button>
                   <button
                     onClick={() => {
+                      if (!isStaff) return denyPublic("Regenerating captions");
                       setCaption("✨ Glow rituals for Wed–Fri. Book your Serum Bar slot in-app.");
                       toast("Regenerated", { description: "New AI caption drafted." });
                     }}
-                    className="text-xs px-3 py-1 rounded-full border border-white/15 text-muted-foreground"
+                    disabled={!isStaff}
+                    className="text-xs px-3 py-1 rounded-full border border-white/15 text-muted-foreground disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Regenerate
                   </button>
                 </div>
                 <button
                   onClick={() =>
-                    toast.success("Posted", {
-                      description: caption ? `“${caption.slice(0, 40)}…” live on IG + WhatsApp.` : "Draft posted to IG + WhatsApp.",
-                    })
+                    isStaff
+                      ? toast.success("Posted", {
+                          description: caption ? `“${caption.slice(0, 40)}…” live on IG + WhatsApp.` : "Draft posted to IG + WhatsApp.",
+                        })
+                      : denyPublic("Publishing")
                   }
-                  className="px-5 py-2 rounded-full text-white font-semibold text-xs"
+                  disabled={!isStaff}
+                  className="px-5 py-2 rounded-full text-white font-semibold text-xs inline-flex items-center gap-1.5 disabled:opacity-60 disabled:cursor-not-allowed"
                   style={{ background: `linear-gradient(135deg, ${PINK}, oklch(0.5 0.22 350))`, boxShadow: `0 10px 30px -10px ${PINK}` }}
                 >
-                  Post
+                  {!isStaff && <Lock className="h-3 w-3" />}
+                  {isStaff ? "Post" : "Post (staff)"}
                 </button>
               </div>
             </div>
@@ -137,11 +171,17 @@ function ContentPage() {
                   return (
                     <button
                       key={i}
-                      onClick={() => toast.success("New post", { description: "AI drafting caption + visuals…" })}
-                      className="h-12 w-12 rounded-full flex items-center justify-center -mt-6 border-4 border-[oklch(0.14_0.02_300)]"
+                      onClick={() =>
+                        isStaff
+                          ? toast.success("New post", { description: "AI drafting caption + visuals…" })
+                          : denyPublic("Creating posts")
+                      }
+                      disabled={!isStaff}
+                      title={isStaff ? "New post" : "Staff only"}
+                      className="h-12 w-12 rounded-full flex items-center justify-center -mt-6 border-4 border-[oklch(0.14_0.02_300)] disabled:opacity-60 disabled:cursor-not-allowed"
                       style={{ background: `linear-gradient(135deg, ${PINK}, oklch(0.45 0.22 340))`, boxShadow: `0 10px 30px -8px ${PINK}` }}
                     >
-                      <Sparkles className="h-5 w-5 text-white" />
+                      {isStaff ? <Sparkles className="h-5 w-5 text-white" /> : <Lock className="h-5 w-5 text-white" />}
                     </button>
                   );
                 }
@@ -165,7 +205,7 @@ function ContentPage() {
             </div>
           </div>
         </Phone>
-        <ContentAssistant caption={caption} onApplyCaption={setCaption} />
+        <ContentAssistant caption={caption} onApplyCaption={setCaption} canPublish={isStaff} />
       </div>
     </Shell>
   );

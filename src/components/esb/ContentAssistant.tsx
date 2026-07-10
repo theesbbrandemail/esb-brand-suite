@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Sparkles, Wand2, Hash, Clock, Check, Send, Trash2, CalendarClock, Loader2 } from "lucide-react";
+import { Sparkles, Wand2, Hash, Clock, Check, Send, Trash2, CalendarClock, Loader2, Lock } from "lucide-react";
 
 const PINK = "oklch(0.65 0.25 5)";
 const STORAGE_KEY = "esb.content.scheduled";
@@ -53,10 +53,15 @@ function saveQueue(q: Scheduled[]) {
 export function ContentAssistant({
   caption,
   onApplyCaption,
+  canPublish = true,
 }: {
   caption: string;
   onApplyCaption: (c: string) => void;
+  canPublish?: boolean;
 }) {
+  const denyPublic = (action: string) => {
+    toast.error("Staff only", { description: `${action} is limited to staff accounts.` });
+  };
   const [generating, setGenerating] = useState(false);
   const [draftCaption, setDraftCaption] = useState(CAPTION_TEMPLATES[0]);
   const [tags, setTags] = useState<string[]>(HASHTAG_SETS[0]);
@@ -90,6 +95,7 @@ export function ContentAssistant({
   }, []);
 
   function regenerate() {
+    if (!canPublish) return denyPublic("Regenerating drafts");
     setGenerating(true);
     setTimeout(() => {
       const c = CAPTION_TEMPLATES[Math.floor(Math.random() * CAPTION_TEMPLATES.length)];
@@ -102,16 +108,19 @@ export function ContentAssistant({
   }
 
   function applyCaption() {
+    if (!canPublish) return denyPublic("Applying to composer");
     onApplyCaption(draftCaption);
     toast.success("Applied to composer", { description: "Caption inserted — tap Post or schedule." });
   }
 
   function applyAll() {
+    if (!canPublish) return denyPublic("Applying to composer");
     onApplyCaption(`${draftCaption}\n\n${tags.join(" ")}`);
     toast.success("Applied caption + hashtags", { description: "Ready to Post or Schedule." });
   }
 
   function schedule(offsetMin: number, label: string) {
+    if (!canPublish) return denyPublic("Scheduling posts");
     const text = (caption || draftCaption).trim();
     if (!text) {
       toast.error("Nothing to schedule", { description: "Type or apply a caption first." });
@@ -131,12 +140,14 @@ export function ContentAssistant({
   }
 
   function removeFromQueue(id: string) {
+    if (!canPublish) return denyPublic("Editing the queue");
     const next = queue.filter((q) => q.id !== id);
     setQueue(next);
     saveQueue(next);
   }
 
   function publishNow(id: string) {
+    if (!canPublish) return denyPublic("Publishing");
     const next = queue.map((q) =>
       q.id === id ? { ...q, status: "published" as const, scheduledAt: Date.now() } : q,
     );
@@ -163,13 +174,23 @@ export function ContentAssistant({
           </div>
           <button
             onClick={regenerate}
-            disabled={generating}
-            className="text-[11px] px-3 py-1.5 rounded-full border border-white/15 hover:border-white/30 transition flex items-center gap-1.5 disabled:opacity-60"
+            disabled={generating || !canPublish}
+            title={canPublish ? "Regenerate draft" : "Staff only"}
+            className="text-[11px] px-3 py-1.5 rounded-full border border-white/15 hover:border-white/30 transition flex items-center gap-1.5 disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {generating ? <Loader2 className="h-3 w-3 animate-spin" /> : <Wand2 className="h-3 w-3" />}
             {generating ? "Drafting…" : "Regenerate"}
           </button>
         </div>
+
+        {!canPublish && (
+          <div className="rounded-xl border border-violet/30 bg-violet/10 px-3 py-2 flex items-center gap-2">
+            <Lock className="h-3.5 w-3.5 text-violet shrink-0" />
+            <div className="text-[11px] text-muted-foreground">
+              Public account — apply, schedule and publish are disabled.
+            </div>
+          </div>
+        )}
 
         {/* Caption draft */}
         <div>
@@ -180,16 +201,18 @@ export function ContentAssistant({
           <div className="flex gap-2 mt-2">
             <button
               onClick={applyCaption}
-              className="flex-1 text-xs font-semibold py-2 rounded-full border border-white/15 hover:border-white/30 transition flex items-center justify-center gap-1.5"
+              disabled={!canPublish}
+              className="flex-1 text-xs font-semibold py-2 rounded-full border border-white/15 hover:border-white/30 transition flex items-center justify-center gap-1.5 disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              <Check className="h-3 w-3" /> Apply caption
+              {canPublish ? <Check className="h-3 w-3" /> : <Lock className="h-3 w-3" />} Apply caption
             </button>
             <button
               onClick={applyAll}
-              className="flex-1 text-xs font-semibold py-2 rounded-full text-white flex items-center justify-center gap-1.5"
+              disabled={!canPublish}
+              className="flex-1 text-xs font-semibold py-2 rounded-full text-white flex items-center justify-center gap-1.5 disabled:opacity-60 disabled:cursor-not-allowed"
               style={{ background: `linear-gradient(135deg, ${PINK}, oklch(0.45 0.2 340))` }}
             >
-              <Sparkles className="h-3 w-3" /> Apply all
+              {canPublish ? <Sparkles className="h-3 w-3" /> : <Lock className="h-3 w-3" />} Apply all
             </button>
           </div>
         </div>
@@ -226,13 +249,14 @@ export function ContentAssistant({
               <button
                 key={s.label}
                 onClick={() => schedule(s.offsetMin, s.label)}
-                className="w-full text-left rounded-xl px-3 py-2 bg-white/[0.03] border border-white/10 hover:border-white/25 transition flex items-center justify-between"
+                disabled={!canPublish}
+                className="w-full text-left rounded-xl px-3 py-2 bg-white/[0.03] border border-white/10 hover:border-white/25 transition flex items-center justify-between disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <div>
                   <div className="text-xs font-semibold">{s.label}</div>
                   <div className="text-[10px] text-muted-foreground">{s.desc}</div>
                 </div>
-                <CalendarClock className="h-3.5 w-3.5 text-muted-foreground" />
+                {canPublish ? <CalendarClock className="h-3.5 w-3.5 text-muted-foreground" /> : <Lock className="h-3.5 w-3.5 text-muted-foreground" />}
               </button>
             ))}
           </div>
@@ -251,7 +275,8 @@ export function ContentAssistant({
               <button
                 key={o.l}
                 onClick={() => schedule(o.m, o.l)}
-                className="flex-1 text-[10px] font-medium py-1.5 rounded-full bg-white/5 border border-white/10 hover:border-white/25 transition"
+                disabled={!canPublish}
+                className="flex-1 text-[10px] font-medium py-1.5 rounded-full bg-white/5 border border-white/10 hover:border-white/25 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {o.l}
               </button>
