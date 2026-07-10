@@ -71,11 +71,17 @@ function ContentPage() {
                 <input className="w-full pl-9 pr-3 py-2.5 rounded-full bg-white/5 border border-white/10 text-xs focus:outline-none" placeholder="Search content" />
               </div>
               <button
-                onClick={() => toast.success("AI generating…", { description: "New caption + 4 image variants queued." })}
-                className="h-10 w-10 rounded-full flex items-center justify-center"
+                onClick={() =>
+                  isStaff
+                    ? toast.success("AI generating…", { description: "New caption + 4 image variants queued." })
+                    : denyPublic("AI generation")
+                }
+                disabled={!isStaff}
+                title={isStaff ? "Generate" : "Staff only"}
+                className="h-10 w-10 rounded-full flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{ background: `linear-gradient(135deg, ${PINK}, oklch(0.45 0.2 340))` }}
               >
-                <Wand2 className="h-4 w-4 text-white" />
+                {isStaff ? <Wand2 className="h-4 w-4 text-white" /> : <Lock className="h-4 w-4 text-white" />}
               </button>
 
             </div>
