@@ -249,13 +249,14 @@ export function ContentAssistant({
               <button
                 key={s.label}
                 onClick={() => schedule(s.offsetMin, s.label)}
-                className="w-full text-left rounded-xl px-3 py-2 bg-white/[0.03] border border-white/10 hover:border-white/25 transition flex items-center justify-between"
+                disabled={!canPublish}
+                className="w-full text-left rounded-xl px-3 py-2 bg-white/[0.03] border border-white/10 hover:border-white/25 transition flex items-center justify-between disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <div>
                   <div className="text-xs font-semibold">{s.label}</div>
                   <div className="text-[10px] text-muted-foreground">{s.desc}</div>
                 </div>
-                <CalendarClock className="h-3.5 w-3.5 text-muted-foreground" />
+                {canPublish ? <CalendarClock className="h-3.5 w-3.5 text-muted-foreground" /> : <Lock className="h-3.5 w-3.5 text-muted-foreground" />}
               </button>
             ))}
           </div>
