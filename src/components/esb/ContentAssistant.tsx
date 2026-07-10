@@ -95,6 +95,7 @@ export function ContentAssistant({
   }, []);
 
   function regenerate() {
+    if (!canPublish) return denyPublic("Regenerating drafts");
     setGenerating(true);
     setTimeout(() => {
       const c = CAPTION_TEMPLATES[Math.floor(Math.random() * CAPTION_TEMPLATES.length)];
@@ -107,16 +108,19 @@ export function ContentAssistant({
   }
 
   function applyCaption() {
+    if (!canPublish) return denyPublic("Applying to composer");
     onApplyCaption(draftCaption);
     toast.success("Applied to composer", { description: "Caption inserted — tap Post or schedule." });
   }
 
   function applyAll() {
+    if (!canPublish) return denyPublic("Applying to composer");
     onApplyCaption(`${draftCaption}\n\n${tags.join(" ")}`);
     toast.success("Applied caption + hashtags", { description: "Ready to Post or Schedule." });
   }
 
   function schedule(offsetMin: number, label: string) {
+    if (!canPublish) return denyPublic("Scheduling posts");
     const text = (caption || draftCaption).trim();
     if (!text) {
       toast.error("Nothing to schedule", { description: "Type or apply a caption first." });
@@ -136,12 +140,14 @@ export function ContentAssistant({
   }
 
   function removeFromQueue(id: string) {
+    if (!canPublish) return denyPublic("Editing the queue");
     const next = queue.filter((q) => q.id !== id);
     setQueue(next);
     saveQueue(next);
   }
 
   function publishNow(id: string) {
+    if (!canPublish) return denyPublic("Publishing");
     const next = queue.map((q) =>
       q.id === id ? { ...q, status: "published" as const, scheduledAt: Date.now() } : q,
     );
