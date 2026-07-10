@@ -171,11 +171,17 @@ function ContentPage() {
                   return (
                     <button
                       key={i}
-                      onClick={() => toast.success("New post", { description: "AI drafting caption + visuals…" })}
-                      className="h-12 w-12 rounded-full flex items-center justify-center -mt-6 border-4 border-[oklch(0.14_0.02_300)]"
+                      onClick={() =>
+                        isStaff
+                          ? toast.success("New post", { description: "AI drafting caption + visuals…" })
+                          : denyPublic("Creating posts")
+                      }
+                      disabled={!isStaff}
+                      title={isStaff ? "New post" : "Staff only"}
+                      className="h-12 w-12 rounded-full flex items-center justify-center -mt-6 border-4 border-[oklch(0.14_0.02_300)] disabled:opacity-60 disabled:cursor-not-allowed"
                       style={{ background: `linear-gradient(135deg, ${PINK}, oklch(0.45 0.22 340))`, boxShadow: `0 10px 30px -8px ${PINK}` }}
                     >
-                      <Sparkles className="h-5 w-5 text-white" />
+                      {isStaff ? <Sparkles className="h-5 w-5 text-white" /> : <Lock className="h-5 w-5 text-white" />}
                     </button>
                   );
                 }
