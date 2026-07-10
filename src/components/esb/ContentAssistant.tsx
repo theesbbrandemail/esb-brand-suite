@@ -174,8 +174,9 @@ export function ContentAssistant({
           </div>
           <button
             onClick={regenerate}
-            disabled={generating}
-            className="text-[11px] px-3 py-1.5 rounded-full border border-white/15 hover:border-white/30 transition flex items-center gap-1.5 disabled:opacity-60"
+            disabled={generating || !canPublish}
+            title={canPublish ? "Regenerate draft" : "Staff only"}
+            className="text-[11px] px-3 py-1.5 rounded-full border border-white/15 hover:border-white/30 transition flex items-center gap-1.5 disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {generating ? <Loader2 className="h-3 w-3 animate-spin" /> : <Wand2 className="h-3 w-3" />}
             {generating ? "Drafting…" : "Regenerate"}
