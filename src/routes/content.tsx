@@ -114,32 +114,44 @@ function ContentPage() {
               <div className="flex items-center justify-between">
                 <div className="flex gap-2">
                   <button
-                    onClick={() => toast.success("Approved", { description: "Sent to publishing queue." })}
-                    className="text-xs font-semibold"
+                    onClick={() =>
+                      isStaff
+                        ? toast.success("Approved", { description: "Sent to publishing queue." })
+                        : denyPublic("Approving posts")
+                    }
+                    disabled={!isStaff}
+                    className="text-xs font-semibold disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-1"
                     style={{ color: PINK }}
                   >
+                    {!isStaff && <Lock className="h-3 w-3" />}
                     Approve
                   </button>
                   <button
                     onClick={() => {
+                      if (!isStaff) return denyPublic("Regenerating captions");
                       setCaption("✨ Glow rituals for Wed–Fri. Book your Serum Bar slot in-app.");
                       toast("Regenerated", { description: "New AI caption drafted." });
                     }}
-                    className="text-xs px-3 py-1 rounded-full border border-white/15 text-muted-foreground"
+                    disabled={!isStaff}
+                    className="text-xs px-3 py-1 rounded-full border border-white/15 text-muted-foreground disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Regenerate
                   </button>
                 </div>
                 <button
                   onClick={() =>
-                    toast.success("Posted", {
-                      description: caption ? `“${caption.slice(0, 40)}…” live on IG + WhatsApp.` : "Draft posted to IG + WhatsApp.",
-                    })
+                    isStaff
+                      ? toast.success("Posted", {
+                          description: caption ? `“${caption.slice(0, 40)}…” live on IG + WhatsApp.` : "Draft posted to IG + WhatsApp.",
+                        })
+                      : denyPublic("Publishing")
                   }
-                  className="px-5 py-2 rounded-full text-white font-semibold text-xs"
+                  disabled={!isStaff}
+                  className="px-5 py-2 rounded-full text-white font-semibold text-xs inline-flex items-center gap-1.5 disabled:opacity-60 disabled:cursor-not-allowed"
                   style={{ background: `linear-gradient(135deg, ${PINK}, oklch(0.5 0.22 350))`, boxShadow: `0 10px 30px -10px ${PINK}` }}
                 >
-                  Post
+                  {!isStaff && <Lock className="h-3 w-3" />}
+                  {isStaff ? "Post" : "Post (staff)"}
                 </button>
               </div>
             </div>
