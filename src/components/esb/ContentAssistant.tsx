@@ -275,7 +275,8 @@ export function ContentAssistant({
               <button
                 key={o.l}
                 onClick={() => schedule(o.m, o.l)}
-                className="flex-1 text-[10px] font-medium py-1.5 rounded-full bg-white/5 border border-white/10 hover:border-white/25 transition"
+                disabled={!canPublish}
+                className="flex-1 text-[10px] font-medium py-1.5 rounded-full bg-white/5 border border-white/10 hover:border-white/25 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {o.l}
               </button>
