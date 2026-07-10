@@ -183,6 +183,15 @@ export function ContentAssistant({
           </button>
         </div>
 
+        {!canPublish && (
+          <div className="rounded-xl border border-violet/30 bg-violet/10 px-3 py-2 flex items-center gap-2">
+            <Lock className="h-3.5 w-3.5 text-violet shrink-0" />
+            <div className="text-[11px] text-muted-foreground">
+              Public account — apply, schedule and publish are disabled.
+            </div>
+          </div>
+        )}
+
         {/* Caption draft */}
         <div>
           <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">Caption draft</div>
@@ -192,16 +201,18 @@ export function ContentAssistant({
           <div className="flex gap-2 mt-2">
             <button
               onClick={applyCaption}
-              className="flex-1 text-xs font-semibold py-2 rounded-full border border-white/15 hover:border-white/30 transition flex items-center justify-center gap-1.5"
+              disabled={!canPublish}
+              className="flex-1 text-xs font-semibold py-2 rounded-full border border-white/15 hover:border-white/30 transition flex items-center justify-center gap-1.5 disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              <Check className="h-3 w-3" /> Apply caption
+              {canPublish ? <Check className="h-3 w-3" /> : <Lock className="h-3 w-3" />} Apply caption
             </button>
             <button
               onClick={applyAll}
-              className="flex-1 text-xs font-semibold py-2 rounded-full text-white flex items-center justify-center gap-1.5"
+              disabled={!canPublish}
+              className="flex-1 text-xs font-semibold py-2 rounded-full text-white flex items-center justify-center gap-1.5 disabled:opacity-60 disabled:cursor-not-allowed"
               style={{ background: `linear-gradient(135deg, ${PINK}, oklch(0.45 0.2 340))` }}
             >
-              <Sparkles className="h-3 w-3" /> Apply all
+              {canPublish ? <Sparkles className="h-3 w-3" /> : <Lock className="h-3 w-3" />} Apply all
             </button>
           </div>
         </div>
