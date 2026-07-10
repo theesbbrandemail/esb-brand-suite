@@ -33,8 +33,23 @@ const tiles = [
 function ContentPage() {
   const [caption, setCaption] = useState("");
   const [tab, setTab] = useState("Home");
+  const { isStaff, role } = useAuth();
+  const denyPublic = (action: string) => {
+    toast.error("Staff only", {
+      description: `${action} is restricted to staff accounts. You're signed in as ${role ?? "public"}.`,
+    });
+  };
   return (
-    <Shell requireStaff>
+    <Shell>
+      {!isStaff && (
+        <div className="max-w-2xl mx-auto mb-4 rounded-2xl border border-violet/30 bg-violet/10 px-4 py-3 flex items-center gap-3">
+          <Lock className="h-4 w-4 text-violet shrink-0" />
+          <div className="text-xs text-muted-foreground">
+            <span className="text-foreground font-medium">Read-only preview.</span> Scheduling,
+            approving and publishing are limited to Staff accounts.
+          </div>
+        </div>
+      )}
 
       <div className="flex flex-col lg:flex-row items-start justify-center gap-6">
         <Phone tone="pink">
