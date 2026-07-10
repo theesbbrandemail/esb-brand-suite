@@ -53,10 +53,15 @@ function saveQueue(q: Scheduled[]) {
 export function ContentAssistant({
   caption,
   onApplyCaption,
+  canPublish = true,
 }: {
   caption: string;
   onApplyCaption: (c: string) => void;
+  canPublish?: boolean;
 }) {
+  const denyPublic = (action: string) => {
+    toast.error("Staff only", { description: `${action} is limited to staff accounts.` });
+  };
   const [generating, setGenerating] = useState(false);
   const [draftCaption, setDraftCaption] = useState(CAPTION_TEMPLATES[0]);
   const [tags, setTags] = useState<string[]>(HASHTAG_SETS[0]);
