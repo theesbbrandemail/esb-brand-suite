@@ -1,0 +1,8 @@
+.vercelignore
+.env
+.env.local
+.supabase
+node_modules
+dist
+.vscode
+*.log

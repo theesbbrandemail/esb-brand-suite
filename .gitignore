@@ -30,3 +30,19 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Environment files (do NOT commit real secrets)
+.env
+.env.local
+.env.*.local
+
+# Supabase local and CLI files
+.supabase
+supabase/.cache
+
+# Vercel
+.vercel
+
+# Lockfile decision: keep one lockfile for deterministic builds
+# If you use Bun set BUN_INSTALLER; otherwise keep package-lock.json
+
