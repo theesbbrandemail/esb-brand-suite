@@ -5,6 +5,8 @@
   ],
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/$1" },
+    { "source": "/auth", "destination": "/auth-callback.html" },
+    { "source": "/auth/(.*)", "destination": "/auth-callback.html" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
