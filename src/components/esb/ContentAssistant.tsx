@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Sparkles, Wand2, Hash, Clock, Check, Send, Trash2, CalendarClock, Loader2, Lock } from "lucide-react";
+import { Sparkles, Wand2, Hash, Clock, Check, Send, Trash2, CalendarClock, Loader2, Lock, Undo2 } from "lucide-react";
 
 const PINK = "oklch(0.65 0.25 5)";
 const STORAGE_KEY = "esb.content.scheduled";
@@ -66,6 +66,7 @@ export function ContentAssistant({
   const [draftCaption, setDraftCaption] = useState(CAPTION_TEMPLATES[0]);
   const [tags, setTags] = useState<string[]>(HASHTAG_SETS[0]);
   const [queue, setQueue] = useState<Scheduled[]>([]);
+  const [lastApplied, setLastApplied] = useState<string | null>(null);
 
   useEffect(() => {
     setQueue(loadQueue());
@@ -109,14 +110,27 @@ export function ContentAssistant({
 
   function applyCaption() {
     if (!canPublish) return denyPublic("Applying to composer");
+    setLastApplied(caption);
     onApplyCaption(draftCaption);
     toast.success("Applied to composer", { description: "Caption inserted — tap Post or schedule." });
   }
 
   function applyAll() {
     if (!canPublish) return denyPublic("Applying to composer");
+    setLastApplied(caption);
     onApplyCaption(`${draftCaption}\n\n${tags.join(" ")}`);
     toast.success("Applied caption + hashtags", { description: "Ready to Post or Schedule." });
+  }
+
+  function undoLastApply() {
+    if (!canPublish) return denyPublic("Undoing changes");
+    if (lastApplied === null) {
+      toast.error("Nothing to undo", { description: "No caption has been applied yet." });
+      return;
+    }
+    onApplyCaption(lastApplied);
+    setLastApplied(null);
+    toast("Undone", { description: "Reverted the caption to its previous state." });
   }
 
   function schedule(offsetMin: number, label: string) {
