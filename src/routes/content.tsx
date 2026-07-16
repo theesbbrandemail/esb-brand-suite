@@ -52,6 +52,10 @@ function ContentPage() {
         </div>
       )}
 
+      <div className="max-w-2xl mx-auto lg:max-w-none flex items-center justify-end gap-2 mb-3">
+        <ScheduledPreviewDrawer />
+      </div>
+
       <div className="flex flex-col lg:flex-row items-start justify-center gap-6">
         <Phone tone="pink">
           <div className="absolute -top-10 -right-10 h-48 w-48 rounded-full blur-3xl" style={{ background: PINK, opacity: 0.25 }} />
