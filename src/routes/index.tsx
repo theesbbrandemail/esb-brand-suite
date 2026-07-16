@@ -3,19 +3,84 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Shell } from "@/components/esb/Shell";
 import { LineSpark } from "@/components/esb/charts";
-import { ChevronRight, Sparkles, Package, Camera, ChevronDown, MapPin } from "lucide-react";
+import { ChevronRight, Sparkles, Package, Camera, ChevronDown, MapPin, MessageCircle, Scan, ShoppingBag, CalendarCheck, LogIn, Loader2 } from "lucide-react";
+import { useAuth } from "@/lib/auth";
+import { EsbLogo } from "@/components/esb/Logo";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "ESB Brand — Overview" },
-      { name: "description", content: "ESB CEO AI Suite: branch overview with inventory, appointments, AI insights, and revenue." },
-      { property: "og:title", content: "ESB Brand — Overview" },
-      { property: "og:description", content: "Operational overview for beauty brand operations." },
+      { title: "ESB Brand — Skincare, Skin AI & Consultations" },
+      { name: "description", content: "Chat on WhatsApp AI, run a Skin AI analysis, shop products, and book a consultation with ESB Brand." },
+      { property: "og:title", content: "ESB Brand — Skincare, Skin AI & Consultations" },
+      { property: "og:description", content: "WhatsApp AI, Skin AI analysis, product ordering and consultation booking." },
     ],
   }),
-  component: OverviewPage,
+  component: HomeRouter,
 });
+
+function HomeRouter() {
+  const { loading, isStaff } = useAuth();
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+  return isStaff ? <OverviewPage /> : <PublicLanding />;
+}
+
+function PublicLanding() {
+  const tiles = [
+    { to: "/whatsapp" as const, icon: MessageCircle, title: "WhatsApp AI", desc: "Chat with our AI concierge for instant help, product picks and bookings.", color: "gold" as const },
+    { to: "/skin-analysis" as const, icon: Scan, title: "Skin AI Analysis", desc: "Snap a selfie and get a personalised skin report in seconds.", color: "violet" as const },
+    { to: "/brands/skincare-kitchen" as const, icon: ShoppingBag, title: "Shop Products", desc: "Order from Skincare Kitchen, Derma Aesthetics and more.", color: "gold" as const },
+    { to: "/appointments" as const, icon: CalendarCheck, title: "Book Consultation", desc: "Reserve a slot with a specialist at your nearest branch.", color: "violet" as const },
+  ];
+  return (
+    <div className="min-h-screen bg-background">
+      <header className="max-w-6xl mx-auto flex items-center justify-between px-5 py-5">
+        <EsbLogo />
+        <Link to="/auth" className="chip-violet flex items-center gap-1.5 hover:opacity-90 transition">
+          <LogIn className="h-3.5 w-3.5" /> Staff sign in
+        </Link>
+      </header>
+      <main className="max-w-6xl mx-auto px-5 pt-8 pb-16">
+        <h1 className="text-4xl md:text-6xl font-display font-semibold tracking-tight mb-3">
+          Beauty, powered by <span className="gold-text">AI</span>.
+        </h1>
+        <p className="text-muted-foreground max-w-xl mb-10">
+          Everything you need to start your ESB journey — talk to our AI, analyse your skin, shop, and book a consultation.
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {tiles.map((t) => {
+            const Icon = t.icon;
+            return (
+              <Link key={t.title} to={t.to} className="card-elevated p-6 block hover:border-gold/40 transition group">
+                <div className="flex items-start gap-4">
+                  <div className={`h-12 w-12 rounded-xl flex items-center justify-center shrink-0 ${t.color === "gold" ? "bg-gold/15 text-gold" : "bg-violet/15 text-violet"}`}>
+                    <Icon className="h-6 w-6" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="font-display text-xl mb-1 flex items-center gap-2">
+                      {t.title}
+                      <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-0.5 transition" />
+                    </div>
+                    <p className="text-sm text-muted-foreground">{t.desc}</p>
+                  </div>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+        <p className="text-xs text-muted-foreground mt-10">
+          Are you a team member? <Link to="/auth" className="underline hover:text-foreground">Sign in for staff tools →</Link>
+        </p>
+      </main>
+    </div>
+  );
+}
 
 const BRANCHES = ["Port Harcourt", "Abuja", "Lagos"] as const;
 type Branch = (typeof BRANCHES)[number];
