@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Sparkles, Wand2, Hash, Clock, Check, Send, Trash2, CalendarClock, Loader2, Lock } from "lucide-react";
+import { Sparkles, Wand2, Hash, Clock, Check, Send, Trash2, CalendarClock, Loader2, Lock, Undo2 } from "lucide-react";
 
 const PINK = "oklch(0.65 0.25 5)";
 const STORAGE_KEY = "esb.content.scheduled";
