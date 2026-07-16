@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { Shell } from "@/components/esb/Shell";
 import { Phone, PhoneScroll } from "@/components/esb/Phone";
 import { ContentAssistant } from "@/components/esb/ContentAssistant";
+import { ScheduledPreviewDrawer } from "@/components/esb/ScheduledPreviewDrawer";
 import { useAuth } from "@/lib/auth";
 import { Bell, Search, Wand2, Play, Image as ImageIcon, Home, Sparkles, User, Lock } from "lucide-react";
 
