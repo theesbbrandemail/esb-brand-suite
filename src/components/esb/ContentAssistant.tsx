@@ -110,14 +110,27 @@ export function ContentAssistant({
 
   function applyCaption() {
     if (!canPublish) return denyPublic("Applying to composer");
+    setLastApplied(caption);
     onApplyCaption(draftCaption);
     toast.success("Applied to composer", { description: "Caption inserted — tap Post or schedule." });
   }
 
   function applyAll() {
     if (!canPublish) return denyPublic("Applying to composer");
+    setLastApplied(caption);
     onApplyCaption(`${draftCaption}\n\n${tags.join(" ")}`);
     toast.success("Applied caption + hashtags", { description: "Ready to Post or Schedule." });
+  }
+
+  function undoLastApply() {
+    if (!canPublish) return denyPublic("Undoing changes");
+    if (lastApplied === null) {
+      toast.error("Nothing to undo", { description: "No caption has been applied yet." });
+      return;
+    }
+    onApplyCaption(lastApplied);
+    setLastApplied(null);
+    toast("Undone", { description: "Reverted the caption to its previous state." });
   }
 
   function schedule(offsetMin: number, label: string) {
