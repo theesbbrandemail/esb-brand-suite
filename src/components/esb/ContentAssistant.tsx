@@ -66,6 +66,7 @@ export function ContentAssistant({
   const [draftCaption, setDraftCaption] = useState(CAPTION_TEMPLATES[0]);
   const [tags, setTags] = useState<string[]>(HASHTAG_SETS[0]);
   const [queue, setQueue] = useState<Scheduled[]>([]);
+  const [lastApplied, setLastApplied] = useState<string | null>(null);
 
   useEffect(() => {
     setQueue(loadQueue());
