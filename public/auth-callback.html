@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Auth Callback</title>
+    <style>
+      body { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; padding: 24px; }
+      pre { background:#f6f8fa;padding:12px;border-radius:6px;overflow:auto }
+      .ok { color: green }
+      .err { color: #b91c1c }
+    </style>
+  </head>
+  <body>
+    <h1>Authentication callback</h1>
+    <p>This page captures the OAuth redirect, stores a short-lived token in memory, and redirects you back to the app.</p>
+    <div id="status">Processing...</div>
+    <pre id="debug"></pre>
+
+    <script>
+      function parseHashToken() {
+        try {
+          const hash = (location.hash || '').replace(/^#/, '');
+          const params = new URLSearchParams(hash);
+          return params.get('access_token') || params.get('token') || null;
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function parseQueryToken() {
+        try {
+          const params = new URLSearchParams(location.search);
+          return params.get('access_token') || params.get('token') || null;
+        } catch (e) {
+          return null;
+        }
+      }
+
+      (function(){
+        const statusEl = document.getElementById('status');
+        const debugEl = document.getElementById('debug');
+
+        const token = parseHashToken() || parseQueryToken();
+        const search = new URLSearchParams(location.search);
+        const next = search.get('next') || '/';
+
+        debugEl.textContent = JSON.stringify({ url: location.href, tokenPresent: !!token, next }, null, 2);
+
+        if (token) {
+          try {
+            // Store a temporary in-memory cache that the app middleware will read.
+            // Our attachSupabaseAuth middleware looks for window.__supabase_cached_token.
+            (window).__supabase_cached_token = token;
+            try { localStorage.setItem('__supabase_cached_token', token); } catch(e) {}
+            statusEl.innerHTML = '<span class="ok">Token captured — redirecting...</span>';
+
+            // Redirect back to `next` path after a short delay so the app can finish loading
+            setTimeout(() => {
+              location.replace(next);
+            }, 600);
+            return;
+          } catch (err) {
+            console.error(err);
+          }
+        }
+
+        statusEl.innerHTML = '<span class="err">No token found in URL. If you expected a token, check Supabase redirect settings.</span>';
+      })();
+    </script>
+  </body>
+</html>
