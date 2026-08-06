@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import { useDemoMode } from "@/lib/demo";
+
 
 export type AppRole = "admin" | "staff" | "public";
 
@@ -63,12 +65,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
+  const [demo] = useDemoMode();
+
   const value: AuthCtx = {
     loading,
     session,
     user: session?.user ?? null,
     role,
-    isStaff: role === "staff" || role === "admin",
+    isStaff: role === "staff" || role === "admin" || demo,
+
     signOut: async () => {
       await supabase.auth.signOut();
       window.location.href = "/auth";
