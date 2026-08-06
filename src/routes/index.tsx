@@ -180,7 +180,7 @@ function AppointmentsCard() {
         </div>
         <span className="chip-gold">Met</span>
       </div>
-      <div className="grid grid-cols-4 gap-1.5 text-center">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 text-center">
         {[
           { v: "4.1k", l: "Booked" },
           { v: "26k", l: "Repeat" },

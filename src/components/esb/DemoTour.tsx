@@ -50,6 +50,9 @@ export function DemoTour() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [open, setOpen] = useState(false);
   const [i, setI] = useState(0);
+  // Only steer the router once the user actively drives the tour, so the
+  // auto-opened intro never yanks people off the page they landed on.
+  const [guided, setGuided] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -60,19 +63,21 @@ export function DemoTour() {
   }, []);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open || !guided) return;
     const step = STEPS[i];
     if (pathname !== step.route) nav({ to: step.route });
-  }, [open, i, nav, pathname]);
+  }, [open, guided, i, nav, pathname]);
 
   function start() {
     setI(0);
+    setGuided(true);
     setOpen(true);
     toast.success("Demo walkthrough started", { description: "5 quick stops across the suite." });
   }
 
   function next() {
     if (i < STEPS.length - 1) {
+      setGuided(true);
       setI(i + 1);
     } else {
       close(true);
@@ -81,11 +86,12 @@ export function DemoTour() {
   }
 
   function prev() {
-    if (i > 0) setI(i - 1);
+    if (i > 0) { setGuided(true); setI(i - 1); }
   }
 
   function close(seen = false) {
     setOpen(false);
+    setGuided(false);
     if (seen && typeof window !== "undefined") localStorage.setItem(KEY, "1");
   }
 
