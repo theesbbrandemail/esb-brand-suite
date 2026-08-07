@@ -48,13 +48,19 @@ export function CeoAssistant({
       reorder_at: r.low_stock_threshold,
       low: r.qty <= r.low_stock_threshold,
     }));
-    return JSON.stringify({
-      generated_at: new Date().toISOString(),
-      kpis: kpis ?? null,
-      inventory: inv,
-      inventory_low_count: inv.filter((i) => i.low).length,
-    }).slice(0, 11500);
+    const usingDemo = !kpis && inv.length === 0;
+    const payload = usingDemo
+      ? { ...DEMO_SNAPSHOT, mode: "demo" as const }
+      : {
+          mode: "live" as const,
+          kpis: kpis ?? null,
+          inventory: inv,
+          inventory_low_count: inv.filter((i) => i.low).length,
+        };
+    return JSON.stringify({ generated_at: new Date().toISOString(), ...payload }).slice(0, 11500);
   }, [kpis, invQ.data]);
+
+
 
   const send = useMutation({
     mutationFn: async (text: string) => {
