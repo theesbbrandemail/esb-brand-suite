@@ -6,6 +6,7 @@ import {
   Plus, CheckCircle2, AlertTriangle, Package, Users, Bell, Loader2,
 } from "lucide-react";
 import { CeoGate } from "@/components/esb/CeoGate";
+import { CeoAssistant } from "@/components/esb/CeoAssistant";
 import { AutomationApprovalQueue } from "@/components/esb/AutomationApprovalQueue";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -42,6 +43,7 @@ export default function SuitePage() {
   });
 
   const k = kpisQ.data;
+  const [assistantOpen, setAssistantOpen] = useState(false);
 
   return (
     <Shell requireStaff>
@@ -79,13 +81,16 @@ export default function SuitePage() {
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                   <input
-                    className="pl-9 pr-4 py-2.5 rounded-full bg-card/80 backdrop-blur border border-border text-sm w-64 focus:outline-none focus:ring-2 focus:ring-ring"
+                    onFocus={() => setAssistantOpen(true)}
+                    readOnly
+                    className="pl-9 pr-4 py-2.5 rounded-full bg-card/80 backdrop-blur border border-border text-sm w-64 cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring"
                     placeholder="Ask intelligence…"
                   />
                 </div>
-                <button className="chip-gold flex items-center gap-1.5 px-4 py-2">
+                <button onClick={() => setAssistantOpen(true)} className="chip-gold flex items-center gap-1.5 px-4 py-2 hover:scale-105">
                   <Brain className="h-3.5 w-3.5" /> Ask AI
                 </button>
+
               </div>
             </div>
 
@@ -127,6 +132,8 @@ export default function SuitePage() {
             <IntelligencePanel k={k} />
             <OperationsPulsePanel k={k} />
           </div>
+
+          <CeoAssistant kpis={k} open={assistantOpen} onOpenChange={setAssistantOpen} />
         </div>
       </CeoGate>
     </Shell>
