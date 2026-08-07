@@ -7,6 +7,37 @@ import { listInventory, type CeoKpis } from "@/lib/ops.functions";
 
 type Turn = { role: "user" | "assistant"; content: string };
 
+/** Grounding data used when no live backend session is available (demo mode). */
+const DEMO_SNAPSHOT = {
+  kpis: {
+    revenue30d: 41250,
+    appointments30d: 224,
+    appointmentsToday: 12,
+    upcomingAppointments: 38,
+    followUpsPending: 9,
+    lowStockItems: 4,
+    totalSkus: 86,
+    activeBranches: 3,
+    customers: 1482,
+    staff: 24,
+    pendingApprovals: 3,
+    approvalRate: 92,
+    tasksAutoRun: 168,
+    aiAutonomy: 78,
+  },
+  branches: ["Lagos", "Abuja", "Port Harcourt"],
+  inventory: [
+    { product: "Vitamin C Brightening Serum", brand: "Skincare Kitchen", branch: "Lagos", qty: 4, reorder_at: 10, low: true },
+    { product: "Retinol Night Repair", brand: "Derma Aesthetics", branch: "Abuja", qty: 6, reorder_at: 12, low: true },
+    { product: "Hydrafacial Solution Kit", brand: "SkinClinic", branch: "Lagos", qty: 2, reorder_at: 8, low: true },
+    { product: "Whitening Gel Pro", brand: "Dental Clinic", branch: "Port Harcourt", qty: 5, reorder_at: 10, low: true },
+    { product: "Ceramide Barrier Cream", brand: "Skincare Kitchen", branch: "Abuja", qty: 48, reorder_at: 12, low: false },
+    { product: "Chemical Peel Solution", brand: "Rejuvenating Aesthetics", branch: "Lagos", qty: 31, reorder_at: 10, low: false },
+  ],
+  inventory_low_count: 4,
+  top_services_30d: ["Hydrafacial", "Chemical Peel", "Dental Scaling", "Skin Consultation"],
+};
+
 const SUGGESTIONS = [
   "What needs my attention today?",
   "Which SKUs are at risk of stock-out?",
