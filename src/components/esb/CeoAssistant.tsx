@@ -133,7 +133,7 @@ export function CeoAssistant({
 
       {/* Slide-over panel */}
       <div
-        className={`fixed inset-y-0 right-0 z-40 w-full max-w-[420px] p-3 sm:p-4 transition-all duration-500 ease-out ${
+        className={`fixed inset-y-0 right-0 z-40 w-full max-w-[420px] p-3 sm:p-4 pb-20 transition-all duration-500 ease-out ${
           open ? "translate-x-0 opacity-100" : "translate-x-full opacity-0 pointer-events-none"
         }`}
       >
