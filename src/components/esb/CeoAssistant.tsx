@@ -236,3 +236,26 @@ export function CeoAssistant({
     </>
   );
 }
+
+/** Minimal markdown-lite renderer: **bold** and leading bullets. */
+function renderLite(text: string) {
+  return text.split("\n").map((line, i) => {
+    const clean = line.replace(/^\s*[*-]\s+/, "");
+    const isBullet = clean !== line.trim() || /^\s*[*-]\s/.test(line);
+    const parts = clean.split(/(\*\*[^*]+\*\*)/g).filter(Boolean);
+    const body = parts.map((p, j) =>
+      p.startsWith("**") && p.endsWith("**") ? (
+        <strong key={j} className="text-gold font-semibold">{p.slice(2, -2)}</strong>
+      ) : (
+        <span key={j}>{p}</span>
+      ),
+    );
+    if (!clean.trim()) return <div key={i} className="h-2" />;
+    return (
+      <div key={i} className={isBullet ? "flex gap-2 mb-1" : "mb-1"}>
+        {isBullet && <span className="text-gold mt-[2px]">•</span>}
+        <span>{body}</span>
+      </div>
+    );
+  });
+}
