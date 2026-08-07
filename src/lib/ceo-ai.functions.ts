@@ -38,7 +38,7 @@ export const askCeoAi = createServerFn({ method: "POST" })
             ...data.messages,
           ],
           temperature: 0.4,
-          max_tokens: 700,
+          max_tokens: 2000,
         },
         { fallbackModels: ["google/gemini-2.5-flash"], timeoutMs: 40000 },
       );
