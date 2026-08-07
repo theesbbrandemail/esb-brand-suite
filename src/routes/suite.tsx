@@ -43,6 +43,7 @@ export default function SuitePage() {
   });
 
   const k = kpisQ.data;
+  const [assistantOpen, setAssistantOpen] = useState(false);
 
   return (
     <Shell requireStaff>
