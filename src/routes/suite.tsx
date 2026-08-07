@@ -6,6 +6,7 @@ import {
   Plus, CheckCircle2, AlertTriangle, Package, Users, Bell, Loader2,
 } from "lucide-react";
 import { CeoGate } from "@/components/esb/CeoGate";
+import { CeoAssistant } from "@/components/esb/CeoAssistant";
 import { AutomationApprovalQueue } from "@/components/esb/AutomationApprovalQueue";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
