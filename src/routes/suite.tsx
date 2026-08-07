@@ -132,6 +132,8 @@ export default function SuitePage() {
             <IntelligencePanel k={k} />
             <OperationsPulsePanel k={k} />
           </div>
+
+          <CeoAssistant kpis={k} open={assistantOpen} onOpenChange={setAssistantOpen} />
         </div>
       </CeoGate>
     </Shell>
