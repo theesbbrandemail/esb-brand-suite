@@ -168,3 +168,61 @@
 @utility glow-gold {
   box-shadow: 0 0 40px -8px oklch(0.82 0.13 82 / 0.45);
 }
+
+/* ---------- Luxury motion layer ---------- */
+@keyframes esb-fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes esb-breathe {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.08); opacity: 0.85; }
+}
+@keyframes esb-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@utility animate-fade-up {
+  animation: esb-fade-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@utility animate-breathe {
+  animation: esb-breathe 3s ease-in-out infinite;
+}
+
+@utility shimmer-gold {
+  background-image: linear-gradient(
+    100deg,
+    transparent 20%,
+    oklch(0.82 0.13 82 / 0.18) 45%,
+    transparent 70%
+  );
+  background-size: 200% 100%;
+  animation: esb-shimmer 3.2s linear infinite;
+}
+
+@utility hover-lift {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border-color 0.35s ease;
+}
+
+@layer base {
+  .card-elevated {
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease, border-color 0.4s ease;
+  }
+  .card-elevated:hover {
+    transform: translateY(-2px);
+    border-color: oklch(0.82 0.13 82 / 0.22);
+    box-shadow: var(--shadow-elevated), 0 18px 50px -25px oklch(0.82 0.13 82 / 0.35);
+  }
+  button, a {
+    transition: color 0.25s ease, background-color 0.25s ease, opacity 0.25s ease, transform 0.25s ease;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
