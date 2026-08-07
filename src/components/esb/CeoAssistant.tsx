@@ -191,7 +191,7 @@ export function CeoAssistant({
                 }`}
                 style={t.role === "user" ? { background: "var(--gradient-gold)", color: "var(--gold-foreground)" } : undefined}
               >
-                {t.content}
+                {t.role === "assistant" ? renderLite(t.content) : t.content}
               </div>
             ))}
 
