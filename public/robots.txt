@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /suite
+Disallow: /manager
+Disallow: /auth
+Disallow: /mcp
+Disallow: /api/
+
+Sitemap: https://esb-brand-suite.lovable.app/sitemap.xml
