@@ -251,11 +251,12 @@ export function CeoAssistant({
             />
             <button
               type="submit"
-              disabled={!input.trim() || send.isPending}
+              disabled={!input.trim() || busy}
               className="h-10 w-10 rounded-full flex items-center justify-center disabled:opacity-40 transition-transform hover:scale-105 active:scale-95"
               style={{ background: "var(--gradient-gold)", color: "var(--gold-foreground)" }}
             >
-              {send.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+              {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+
             </button>
           </form>
         </div>
