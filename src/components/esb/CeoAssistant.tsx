@@ -91,33 +91,52 @@ export function CeoAssistant({
     return JSON.stringify({ generated_at: new Date().toISOString(), ...payload }).slice(0, 11500);
   }, [kpis, invQ.data]);
 
-
-
-  const send = useMutation({
-    mutationFn: async (text: string) => {
-      const next: Turn[] = [...turns, { role: "user", content: text }];
-      setTurns(next);
-      const res = await ask({ data: { messages: next, snapshot } });
-      if (res.error) throw new Error(res.error);
-      return res.text;
-    },
-    onSuccess: (text) => {
-      setError(null);
-      setTurns((t) => [...t, { role: "assistant", content: text }]);
-    },
-    onError: (e: Error) => setError(e.message),
-  });
+  const [streaming, setStreaming] = useState("");
+  const [busy, setBusy] = useState(false);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
-  }, [turns, send.isPending]);
+  }, [turns, streaming, busy]);
 
-  function submit(text: string) {
+  async function submit(text: string) {
     const t = text.trim();
-    if (!t || send.isPending) return;
+    if (!t || busy) return;
     setInput("");
-    send.mutate(t);
+    setError(null);
+    const next: Turn[] = [...turns, { role: "user", content: t }];
+    setTurns(next);
+    setBusy(true);
+    setStreaming("");
+
+    let acc = "";
+    try {
+      const res = await fetch("/api/ceo-chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: next, snapshot }),
+      });
+      if (!res.ok || !res.body) {
+        throw new Error((await res.text().catch(() => "")) || "The AI assistant is unavailable right now.");
+      }
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        acc += decoder.decode(value, { stream: true });
+        setStreaming(acc);
+      }
+      if (!acc.trim()) throw new Error("The AI returned an empty response. Please try again.");
+      setTurns((prev) => [...prev, { role: "assistant", content: acc }]);
+    } catch (e) {
+      if (acc.trim()) setTurns((prev) => [...prev, { role: "assistant", content: acc }]);
+      else setError(e instanceof Error ? e.message : "Something went wrong. Please try again.");
+    } finally {
+      setStreaming("");
+      setBusy(false);
+    }
   }
+
 
   return (
     <>
