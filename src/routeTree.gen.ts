@@ -28,6 +28,7 @@ import { Route as BrandsLogisticsRouteImport } from './routes/brands.logistics'
 import { Route as BrandsGlobalTechRouteImport } from './routes/brands.global-tech'
 import { Route as BrandsDermaRouteImport } from './routes/brands.derma'
 import { Route as BrandsDentalRouteImport } from './routes/brands.dental'
+import { Route as ApiCeoChatRouteImport } from './routes/api/ceo-chat'
 import { Route as AiSocialRouteImport } from './routes/ai.social'
 import { Route as AiRecordsRouteImport } from './routes/ai.records'
 import { Route as AiNursesRouteImport } from './routes/ai.nurses'
@@ -137,6 +138,11 @@ const BrandsDentalRoute = BrandsDentalRouteImport.update({
   path: '/brands/dental',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiCeoChatRoute = ApiCeoChatRouteImport.update({
+  id: '/api/ceo-chat',
+  path: '/api/ceo-chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AiSocialRoute = AiSocialRouteImport.update({
   id: '/ai/social',
   path: '/ai/social',
@@ -229,6 +235,7 @@ export interface FileRoutesByFullPath {
   '/ai/nurses': typeof AiNursesRoute
   '/ai/records': typeof AiRecordsRoute
   '/ai/social': typeof AiSocialRoute
+  '/api/ceo-chat': typeof ApiCeoChatRoute
   '/brands/dental': typeof BrandsDentalRoute
   '/brands/derma': typeof BrandsDermaRoute
   '/brands/global-tech': typeof BrandsGlobalTechRoute
@@ -263,6 +270,7 @@ export interface FileRoutesByTo {
   '/ai/nurses': typeof AiNursesRoute
   '/ai/records': typeof AiRecordsRoute
   '/ai/social': typeof AiSocialRoute
+  '/api/ceo-chat': typeof ApiCeoChatRoute
   '/brands/dental': typeof BrandsDentalRoute
   '/brands/derma': typeof BrandsDermaRoute
   '/brands/global-tech': typeof BrandsGlobalTechRoute
@@ -298,6 +306,7 @@ export interface FileRoutesById {
   '/ai/nurses': typeof AiNursesRoute
   '/ai/records': typeof AiRecordsRoute
   '/ai/social': typeof AiSocialRoute
+  '/api/ceo-chat': typeof ApiCeoChatRoute
   '/brands/dental': typeof BrandsDentalRoute
   '/brands/derma': typeof BrandsDermaRoute
   '/brands/global-tech': typeof BrandsGlobalTechRoute
@@ -334,6 +343,7 @@ export interface FileRouteTypes {
     | '/ai/nurses'
     | '/ai/records'
     | '/ai/social'
+    | '/api/ceo-chat'
     | '/brands/dental'
     | '/brands/derma'
     | '/brands/global-tech'
@@ -368,6 +378,7 @@ export interface FileRouteTypes {
     | '/ai/nurses'
     | '/ai/records'
     | '/ai/social'
+    | '/api/ceo-chat'
     | '/brands/dental'
     | '/brands/derma'
     | '/brands/global-tech'
@@ -402,6 +413,7 @@ export interface FileRouteTypes {
     | '/ai/nurses'
     | '/ai/records'
     | '/ai/social'
+    | '/api/ceo-chat'
     | '/brands/dental'
     | '/brands/derma'
     | '/brands/global-tech'
@@ -437,6 +449,7 @@ export interface RootRouteChildren {
   AiNursesRoute: typeof AiNursesRoute
   AiRecordsRoute: typeof AiRecordsRoute
   AiSocialRoute: typeof AiSocialRoute
+  ApiCeoChatRoute: typeof ApiCeoChatRoute
   BrandsDentalRoute: typeof BrandsDentalRoute
   BrandsDermaRoute: typeof BrandsDermaRoute
   BrandsGlobalTechRoute: typeof BrandsGlobalTechRoute
@@ -585,6 +598,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BrandsDentalRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/ceo-chat': {
+      id: '/api/ceo-chat'
+      path: '/api/ceo-chat'
+      fullPath: '/api/ceo-chat'
+      preLoaderRoute: typeof ApiCeoChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/ai/social': {
       id: '/ai/social'
       path: '/ai/social'
@@ -702,6 +722,7 @@ const rootRouteChildren: RootRouteChildren = {
   AiNursesRoute: AiNursesRoute,
   AiRecordsRoute: AiRecordsRoute,
   AiSocialRoute: AiSocialRoute,
+  ApiCeoChatRoute: ApiCeoChatRoute,
   BrandsDentalRoute: BrandsDentalRoute,
   BrandsDermaRoute: BrandsDermaRoute,
   BrandsGlobalTechRoute: BrandsGlobalTechRoute,

@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Brain, X, Send, Loader2, Sparkles, AlertTriangle } from "lucide-react";
-import { askCeoAi } from "@/lib/ceo-ai.functions";
 import { listInventory, type CeoKpis } from "@/lib/ops.functions";
+
 
 type Turn = { role: "user" | "assistant"; content: string };
 
@@ -54,7 +54,7 @@ export function CeoAssistant({
   open: boolean;
   onOpenChange: (v: boolean) => void;
 }) {
-  const ask = useServerFn(askCeoAi);
+
   const inventoryFn = useServerFn(listInventory);
   const [input, setInput] = useState("");
   const [turns, setTurns] = useState<Turn[]>([]);
@@ -91,33 +91,52 @@ export function CeoAssistant({
     return JSON.stringify({ generated_at: new Date().toISOString(), ...payload }).slice(0, 11500);
   }, [kpis, invQ.data]);
 
-
-
-  const send = useMutation({
-    mutationFn: async (text: string) => {
-      const next: Turn[] = [...turns, { role: "user", content: text }];
-      setTurns(next);
-      const res = await ask({ data: { messages: next, snapshot } });
-      if (res.error) throw new Error(res.error);
-      return res.text;
-    },
-    onSuccess: (text) => {
-      setError(null);
-      setTurns((t) => [...t, { role: "assistant", content: text }]);
-    },
-    onError: (e: Error) => setError(e.message),
-  });
+  const [streaming, setStreaming] = useState("");
+  const [busy, setBusy] = useState(false);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
-  }, [turns, send.isPending]);
+  }, [turns, streaming, busy]);
 
-  function submit(text: string) {
+  async function submit(text: string) {
     const t = text.trim();
-    if (!t || send.isPending) return;
+    if (!t || busy) return;
     setInput("");
-    send.mutate(t);
+    setError(null);
+    const next: Turn[] = [...turns, { role: "user", content: t }];
+    setTurns(next);
+    setBusy(true);
+    setStreaming("");
+
+    let acc = "";
+    try {
+      const res = await fetch("/api/ceo-chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: next, snapshot }),
+      });
+      if (!res.ok || !res.body) {
+        throw new Error((await res.text().catch(() => "")) || "The AI assistant is unavailable right now.");
+      }
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        acc += decoder.decode(value, { stream: true });
+        setStreaming(acc);
+      }
+      if (!acc.trim()) throw new Error("The AI returned an empty response. Please try again.");
+      setTurns((prev) => [...prev, { role: "assistant", content: acc }]);
+    } catch (e) {
+      if (acc.trim()) setTurns((prev) => [...prev, { role: "assistant", content: acc }]);
+      else setError(e instanceof Error ? e.message : "Something went wrong. Please try again.");
+    } finally {
+      setStreaming("");
+      setBusy(false);
+    }
   }
+
 
   return (
     <>
@@ -195,11 +214,19 @@ export function CeoAssistant({
               </div>
             ))}
 
-            {send.isPending && (
+            {streaming && (
+              <div className="animate-fade-up text-sm leading-relaxed max-w-full text-foreground/90 whitespace-pre-wrap">
+                {renderLite(streaming)}
+                <span className="inline-block w-1.5 h-3.5 ml-0.5 align-middle bg-gold animate-pulse rounded-sm" />
+              </div>
+            )}
+
+            {busy && !streaming && (
               <div className="flex items-center gap-2 text-xs text-muted-foreground animate-fade-up">
                 <Loader2 className="h-3.5 w-3.5 animate-spin text-gold" /> Analysing operations…
               </div>
             )}
+
 
             {error && (
               <div className="flex items-start gap-2 text-xs text-danger p-3 rounded-xl bg-danger/10 border border-danger/30 animate-fade-up">
@@ -224,11 +251,12 @@ export function CeoAssistant({
             />
             <button
               type="submit"
-              disabled={!input.trim() || send.isPending}
+              disabled={!input.trim() || busy}
               className="h-10 w-10 rounded-full flex items-center justify-center disabled:opacity-40 transition-transform hover:scale-105 active:scale-95"
               style={{ background: "var(--gradient-gold)", color: "var(--gold-foreground)" }}
             >
-              {send.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+              {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+
             </button>
           </form>
         </div>
