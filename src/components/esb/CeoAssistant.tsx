@@ -54,7 +54,6 @@ export function CeoAssistant({
   open: boolean;
   onOpenChange: (v: boolean) => void;
 }) {
-  const ask = useServerFn(askCeoAi);
 
   const inventoryFn = useServerFn(listInventory);
   const [input, setInput] = useState("");
