@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Brain, X, Send, Loader2, Sparkles, AlertTriangle } from "lucide-react";
-import { askCeoAi } from "@/lib/ceo-ai.functions";
 import { listInventory, type CeoKpis } from "@/lib/ops.functions";
+
 
 type Turn = { role: "user" | "assistant"; content: string };
 
