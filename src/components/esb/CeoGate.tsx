@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Fingerprint, ScanFace, ShieldCheck, ShieldAlert, Loader2, Camera, X, Sparkles } from "lucide-react";
 import { useAuth } from "@/lib/auth";
+import { useDemoMode } from "@/lib/demo";
 import {
   authenticateBiometric,
   isBiometricSupported,
@@ -12,45 +13,78 @@ type Phase = "checking" | "needs-enroll" | "ready" | "scanning" | "verifying" | 
 
 export function CeoGate({ children }: { children: React.ReactNode }) {
   const { user, role } = useAuth();
+  const [demo] = useDemoMode();
   const [phase, setPhase] = useState<Phase>("checking");
   const [error, setError] = useState<string | null>(null);
   const [hasCreds, setHasCreds] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const [faceProgress, setFaceProgress] = useState(0);
+  const mockRef = useRef(false);
 
-  // CEO = admin role only
-  const isCeo = role === "admin";
+  // CEO = admin role, or anyone while demo (mock) mode is on
+  const isCeo = role === "admin" || demo;
 
   useEffect(() => {
-    if (!user || !isCeo) return;
+    if (!isCeo) return;
+    if (!user) {
+      if (demo) {
+        setHasCreds(false);
+        setPhase("ready");
+      }
+      return;
+    }
+
     (async () => {
       try {
         if (!isBiometricSupported()) {
+          if (demo) {
+            setHasCreds(false);
+            setPhase("ready");
+            return;
+          }
           setError("This device or browser does not support secure biometric authentication.");
           setPhase("error");
           return;
         }
         const creds = await listCredentials(user.id);
         setHasCreds(creds.length > 0);
-        setPhase(creds.length > 0 ? "ready" : "needs-enroll");
+        setPhase(creds.length > 0 || demo ? "ready" : "needs-enroll");
       } catch (e: any) {
+        if (demo) {
+          setPhase("ready");
+          return;
+        }
         setError(e.message ?? "Unable to load credentials");
         setPhase("error");
       }
     })();
-  }, [user, isCeo]);
+  }, [user, isCeo, demo]);
 
   useEffect(() => {
     return () => stopCamera();
   }, []);
+
 
   function stopCamera() {
     streamRef.current?.getTracks().forEach((t) => t.stop());
     streamRef.current = null;
   }
 
-  async function startLiveness() {
+  function runProgress() {
+    const start = Date.now();
+    const dur = mockRef.current ? 1800 : 3200;
+    const tick = () => {
+      const p = Math.min(100, ((Date.now() - start) / dur) * 100);
+      setFaceProgress(p);
+      if (p < 100) requestAnimationFrame(tick);
+      else void runBiometric();
+    };
+    requestAnimationFrame(tick);
+  }
+
+  async function startLiveness(mock = false) {
+    mockRef.current = mock;
     setError(null);
     setFaceProgress(0);
     setPhase("scanning");
@@ -64,22 +98,24 @@ export function CeoGate({ children }: { children: React.ReactNode }) {
         videoRef.current.srcObject = stream;
         await videoRef.current.play().catch(() => {});
       }
-      // simulated liveness progress (3.2s)
-      const start = Date.now();
-      const tick = () => {
-        const p = Math.min(100, ((Date.now() - start) / 3200) * 100);
-        setFaceProgress(p);
-        if (p < 100) requestAnimationFrame(tick);
-        else void runBiometric();
-      };
-      requestAnimationFrame(tick);
+      runProgress();
     } catch (e: any) {
+      if (mock) {
+        // demo unlock does not require a camera
+        runProgress();
+        return;
+      }
       setError("Camera access denied. Liveness check is required.");
       setPhase("ready");
     }
   }
 
   async function runBiometric() {
+    if (mockRef.current) {
+      stopCamera();
+      setPhase("unlocked");
+      return;
+    }
     if (!user) return;
     setPhase("verifying");
     try {
@@ -92,6 +128,7 @@ export function CeoGate({ children }: { children: React.ReactNode }) {
       setPhase("denied");
     }
   }
+
 
   async function enroll() {
     if (!user) return;
@@ -223,16 +260,43 @@ export function CeoGate({ children }: { children: React.ReactNode }) {
             {phase === "ready" && (
               <>
                 <div className="text-sm text-muted-foreground">
-                  Position your face in the ring, then approve with fingerprint.
+                  {hasCreds
+                    ? "Position your face in the ring, then approve with fingerprint."
+                    : "Run the demo scan to preview the CEO vault, or enrol real biometrics."}
                 </div>
-                <button
-                  onClick={startLiveness}
-                  className="mt-3 inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-br from-[oklch(0.86_0.14_88)] to-[oklch(0.72_0.14_70)] text-[oklch(0.2_0.03_280)] font-semibold text-sm shadow-[0_10px_30px_-10px_oklch(0.82_0.13_82/0.6)]"
-                >
-                  <Camera className="h-4 w-4" /> Begin Secure Scan
-                </button>
+                <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+                  {hasCreds && (
+                    <button
+                      onClick={() => void startLiveness(false)}
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-br from-[oklch(0.86_0.14_88)] to-[oklch(0.72_0.14_70)] text-[oklch(0.2_0.03_280)] font-semibold text-sm shadow-[0_10px_30px_-10px_oklch(0.82_0.13_82/0.6)]"
+                    >
+                      <Camera className="h-4 w-4" /> Begin Secure Scan
+                    </button>
+                  )}
+                  {demo && (
+                    <button
+                      onClick={() => void startLiveness(true)}
+                      className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold ${
+                        hasCreds
+                          ? "border border-gold/40 text-gold bg-gold/10"
+                          : "bg-gradient-to-br from-[oklch(0.86_0.14_88)] to-[oklch(0.72_0.14_70)] text-[oklch(0.2_0.03_280)] shadow-[0_10px_30px_-10px_oklch(0.82_0.13_82/0.6)]"
+                      }`}
+                    >
+                      <Sparkles className="h-4 w-4" /> Demo unlock
+                    </button>
+                  )}
+                  {!hasCreds && (
+                    <button
+                      onClick={enroll}
+                      className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full border border-white/10 text-muted-foreground text-sm"
+                    >
+                      <Fingerprint className="h-4 w-4" /> Enrol biometrics
+                    </button>
+                  )}
+                </div>
               </>
             )}
+
             {phase === "scanning" && (
               <div className="text-xs uppercase tracking-[0.25em] text-gold">
                 Facial liveness · {Math.round(faceProgress)}%
@@ -257,8 +321,19 @@ export function CeoGate({ children }: { children: React.ReactNode }) {
               </>
             )}
             {phase === "error" && error && (
-              <div className="text-xs text-danger">{error}</div>
+              <>
+                <div className="text-xs text-danger">{error}</div>
+                {demo && (
+                  <button
+                    onClick={() => void startLiveness(true)}
+                    className="mt-3 inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-gold/40 bg-gold/10 text-gold text-sm font-semibold"
+                  >
+                    <Sparkles className="h-4 w-4" /> Demo unlock
+                  </button>
+                )}
+              </>
             )}
+
             {error && phase !== "error" && (
               <div className="mt-2 text-[11px] text-danger/80">{error}</div>
             )}

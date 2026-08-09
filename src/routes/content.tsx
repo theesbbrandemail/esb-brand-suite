@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { Shell } from "@/components/esb/Shell";
 import { Phone, PhoneScroll } from "@/components/esb/Phone";
 import { ContentAssistant } from "@/components/esb/ContentAssistant";
+import { ScheduledPreviewDrawer } from "@/components/esb/ScheduledPreviewDrawer";
 import { useAuth } from "@/lib/auth";
 import { Bell, Search, Wand2, Play, Image as ImageIcon, Home, Sparkles, User, Lock } from "lucide-react";
 
@@ -50,6 +51,10 @@ function ContentPage() {
           </div>
         </div>
       )}
+
+      <div className="max-w-2xl mx-auto lg:max-w-none flex items-center justify-end gap-2 mb-3">
+        <ScheduledPreviewDrawer />
+      </div>
 
       <div className="flex flex-col lg:flex-row items-start justify-center gap-6">
         <Phone tone="pink">

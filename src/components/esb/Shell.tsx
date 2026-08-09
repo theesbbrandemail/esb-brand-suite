@@ -4,6 +4,8 @@ import { EsbLogo } from "./Logo";
 import { DemoTour } from "./DemoTour";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useAuth } from "@/lib/auth";
+import { useDemoMode } from "@/lib/demo";
+
 
 type Tab = { to: string; label: string; icon: typeof LayoutGrid; staff?: boolean };
 
@@ -46,14 +48,20 @@ const aiRoles: readonly MenuItem[] = [
 export function Shell({ children, requireStaff = false }: { children: ReactNode; requireStaff?: boolean }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { loading, session, role, isStaff, user, signOut } = useAuth();
+  const [demo, setDemo, demoReady] = useDemoMode();
+  const realStaff = role === "staff" || role === "admin";
+
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<null | "brands" | "ai">(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+
   useEffect(() => {
-    if (!loading && !session) navigate({ to: "/auth" });
-  }, [loading, session, navigate]);
+    if (!loading && !session && demoReady && !demo) {
+      navigate({ to: "/auth", search: { next: pathname }, replace: true });
+    }
+  }, [loading, session, demo, demoReady, pathname, navigate]);
 
   useEffect(() => {
     function onClick(e: MouseEvent) {
@@ -67,13 +75,14 @@ export function Shell({ children, requireStaff = false }: { children: ReactNode;
     setOpenDropdown(null);
   }, [pathname]);
 
-  if (loading || !session) {
+  if (loading || !demoReady || (!session && !demo)) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="h-8 w-8 rounded-full border-2 border-gold border-t-transparent animate-spin" />
       </div>
     );
   }
+
 
   if (requireStaff && !isStaff) {
     return (
@@ -108,7 +117,7 @@ export function Shell({ children, requireStaff = false }: { children: ReactNode;
       <header className="sticky top-0 z-30 backdrop-blur-xl bg-background/40 border-b border-border">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
           <EsbLogo />
-          <nav className="hidden xl:flex items-center gap-0.5 p-1 rounded-full bg-card/60 border border-border" ref={dropdownRef}>
+          <nav className="hidden 2xl:flex items-center gap-0.5 p-1 rounded-full bg-card/60 border border-border" ref={dropdownRef}>
             {visibleTabs.map((t) => {
               const active = pathname === t.to;
               const Icon = t.icon;
@@ -141,7 +150,7 @@ export function Shell({ children, requireStaff = false }: { children: ReactNode;
               onClick={() => setOpenDropdown(openDropdown === "ai" ? null : "ai")}
             />
             {openDropdown && (
-              <div className="absolute left-1/2 -translate-x-1/2 top-14 w-[520px] rounded-2xl border border-border bg-card/95 backdrop-blur-xl shadow-2xl p-2 z-50 grid grid-cols-2 gap-1">
+              <div className="absolute left-1/2 -translate-x-1/2 top-14 w-[min(520px,calc(100vw-2rem))] rounded-2xl border border-border bg-card/95 backdrop-blur-xl shadow-2xl p-2 z-50 grid grid-cols-1 sm:grid-cols-2 gap-1">
                 {(openDropdown === "brands" ? visibleBrands : visibleAi).map((m) => {
                   const Icon = m.icon;
                   const active = pathname === m.to;
@@ -166,10 +175,21 @@ export function Shell({ children, requireStaff = false }: { children: ReactNode;
               </div>
             )}
           </nav>
-          <div className="flex items-center gap-3 relative">
-            <span className={`hidden sm:inline-flex text-[10px] px-2 py-0.5 rounded-full border ${isStaff ? "border-gold/40 text-gold bg-gold/10" : "border-violet/40 text-violet bg-violet/10"}`}>
-              {role === "admin" ? "Admin" : isStaff ? "Staff" : "Public"}
+          <div className="flex items-center gap-2 sm:gap-3 relative shrink-0">
+            <button
+              type="button"
+              onClick={() => setDemo(!demo)}
+              title={demo ? "Demo mode on — all panels unlocked" : "Demo mode off — real roles apply"}
+              className={`hidden sm:inline-flex items-center gap-1.5 text-[10px] px-2.5 py-1 rounded-full border transition ${
+                demo ? "border-gold/40 text-gold bg-gold/10" : "border-border text-muted-foreground"
+              }`}
+            >
+              <Sparkles className="h-3 w-3" /> {demo ? "Demo unlocked" : "Demo off"}
+            </button>
+            <span className={`hidden md:inline-flex text-[10px] px-2 py-0.5 rounded-full border ${isStaff ? "border-gold/40 text-gold bg-gold/10" : "border-violet/40 text-violet bg-violet/10"}`}>
+              {role === "admin" ? "Admin" : realStaff ? "Staff" : demo ? "Demo staff" : "Public"}
             </span>
+
             <button className="relative h-9 w-9 rounded-full bg-card/60 border border-border flex items-center justify-center hover:bg-card transition">
               <Bell className="h-4 w-4 text-muted-foreground" />
               <span className="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-gold" />
@@ -192,17 +212,24 @@ export function Shell({ children, requireStaff = false }: { children: ReactNode;
                   <div className="text-[11px] text-muted-foreground truncate">{user?.email}</div>
                 </div>
                 <button
+                  onClick={() => setDemo(!demo)}
+                  className="w-full flex items-center gap-2 px-2 py-2 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition"
+                >
+                  <Sparkles className="h-4 w-4" /> {demo ? "Disable demo mode" : "Enable demo mode"}
+                </button>
+                <button
                   onClick={signOut}
                   className="w-full flex items-center gap-2 px-2 py-2 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition"
                 >
                   <LogOut className="h-4 w-4" /> Sign out
                 </button>
+
               </div>
             )}
           </div>
         </div>
         {/* compact tabs (mobile + tablet) */}
-        <nav className="xl:hidden flex items-center gap-1 px-4 pb-3 overflow-x-auto">
+        <nav className="2xl:hidden flex items-center gap-1 px-3 sm:px-4 pb-3 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {visibleTabs.map((t) => {
             const active = pathname === t.to;
             return (
@@ -223,7 +250,7 @@ export function Shell({ children, requireStaff = false }: { children: ReactNode;
           <MobileGroup label="AI" items={visibleAi} pathname={pathname} />
         </nav>
       </header>
-      <main className="max-w-[1400px] mx-auto px-4 sm:px-6 py-8">{children}</main>
+      <main className="w-full max-w-[1400px] mx-auto px-3 sm:px-6 py-6 sm:py-8 overflow-x-hidden">{children}</main>
       <DemoTour />
     </div>
   );

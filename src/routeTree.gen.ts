@@ -9,82 +9,43 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as WhatsappRouteImport } from './routes/whatsapp'
-import { Route as SuiteRouteImport } from './routes/suite'
-import { Route as SkinAnalysisRouteImport } from './routes/skin-analysis'
-import { Route as MobileRouteImport } from './routes/mobile'
-import { Route as McpRouteImport } from './routes/mcp'
-import { Route as ManagerRouteImport } from './routes/manager'
-import { Route as InventoryRouteImport } from './routes/inventory'
-import { Route as ContentRouteImport } from './routes/content'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AppointmentsRouteImport } from './routes/appointments'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as BrandsStudiosRouteImport } from './routes/brands.studios'
-import { Route as BrandsSkinclinicRouteImport } from './routes/brands.skinclinic'
-import { Route as BrandsSkincareKitchenRouteImport } from './routes/brands.skincare-kitchen'
-import { Route as BrandsRejuvenatingRouteImport } from './routes/brands.rejuvenating'
-import { Route as BrandsLogisticsRouteImport } from './routes/brands.logistics'
-import { Route as BrandsGlobalTechRouteImport } from './routes/brands.global-tech'
-import { Route as BrandsDermaRouteImport } from './routes/brands.derma'
-import { Route as BrandsDentalRouteImport } from './routes/brands.dental'
-import { Route as AiSocialRouteImport } from './routes/ai.social'
-import { Route as AiRecordsRouteImport } from './routes/ai.records'
-import { Route as AiNursesRouteImport } from './routes/ai.nurses'
-import { Route as AiManagerRouteImport } from './routes/ai.manager'
-import { Route as AiLogisticsRouteImport } from './routes/ai.logistics'
-import { Route as AiCustomerRouteImport } from './routes/ai.customer'
-import { Route as AiCeoRouteImport } from './routes/ai.ceo'
-import { Route as AiAccountantRouteImport } from './routes/ai.accountant'
-import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as AppointmentsRouteImport } from './routes/appointments'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as ContentRouteImport } from './routes/content'
+import { Route as InventoryRouteImport } from './routes/inventory'
+import { Route as ManagerRouteImport } from './routes/manager'
+import { Route as McpRouteImport } from './routes/mcp'
+import { Route as MobileRouteImport } from './routes/mobile'
+import { Route as SkinAnalysisRouteImport } from './routes/skin-analysis'
+import { Route as SuiteRouteImport } from './routes/suite'
+import { Route as WhatsappRouteImport } from './routes/whatsapp'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
-import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
+import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as AiAccountantRouteImport } from './routes/ai.accountant'
+import { Route as AiCeoRouteImport } from './routes/ai.ceo'
+import { Route as AiCustomerRouteImport } from './routes/ai.customer'
+import { Route as AiLogisticsRouteImport } from './routes/ai.logistics'
+import { Route as AiManagerRouteImport } from './routes/ai.manager'
+import { Route as AiNursesRouteImport } from './routes/ai.nurses'
+import { Route as AiRecordsRouteImport } from './routes/ai.records'
+import { Route as AiSocialRouteImport } from './routes/ai.social'
+import { Route as ApiCeoChatRouteImport } from './routes/api/ceo-chat'
+import { Route as BrandsDentalRouteImport } from './routes/brands.dental'
+import { Route as BrandsDermaRouteImport } from './routes/brands.derma'
+import { Route as BrandsGlobalTechRouteImport } from './routes/brands.global-tech'
+import { Route as BrandsLogisticsRouteImport } from './routes/brands.logistics'
+import { Route as BrandsRejuvenatingRouteImport } from './routes/brands.rejuvenating'
+import { Route as BrandsSkincareKitchenRouteImport } from './routes/brands.skincare-kitchen'
+import { Route as BrandsSkinclinicRouteImport } from './routes/brands.skinclinic'
+import { Route as BrandsStudiosRouteImport } from './routes/brands.studios'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
+import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as ApiPublicHooksProcessFollowupsRouteImport } from './routes/api/public/hooks/process-followups'
 
-const WhatsappRoute = WhatsappRouteImport.update({
-  id: '/whatsapp',
-  path: '/whatsapp',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SuiteRoute = SuiteRouteImport.update({
-  id: '/suite',
-  path: '/suite',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SkinAnalysisRoute = SkinAnalysisRouteImport.update({
-  id: '/skin-analysis',
-  path: '/skin-analysis',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MobileRoute = MobileRouteImport.update({
-  id: '/mobile',
-  path: '/mobile',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const McpRoute = McpRouteImport.update({
-  id: '/mcp',
-  path: '/mcp',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ManagerRoute = ManagerRouteImport.update({
-  id: '/manager',
-  path: '/manager',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const InventoryRoute = InventoryRouteImport.update({
-  id: '/inventory',
-  path: '/inventory',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ContentRoute = ContentRouteImport.update({
-  id: '/content',
-  path: '/content',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppointmentsRoute = AppointmentsRouteImport.update({
@@ -92,79 +53,66 @@ const AppointmentsRoute = AppointmentsRouteImport.update({
   path: '/appointments',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BrandsStudiosRoute = BrandsStudiosRouteImport.update({
-  id: '/brands/studios',
-  path: '/brands/studios',
+const ContentRoute = ContentRouteImport.update({
+  id: '/content',
+  path: '/content',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BrandsSkinclinicRoute = BrandsSkinclinicRouteImport.update({
-  id: '/brands/skinclinic',
-  path: '/brands/skinclinic',
+const InventoryRoute = InventoryRouteImport.update({
+  id: '/inventory',
+  path: '/inventory',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BrandsSkincareKitchenRoute = BrandsSkincareKitchenRouteImport.update({
-  id: '/brands/skincare-kitchen',
-  path: '/brands/skincare-kitchen',
+const ManagerRoute = ManagerRouteImport.update({
+  id: '/manager',
+  path: '/manager',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BrandsRejuvenatingRoute = BrandsRejuvenatingRouteImport.update({
-  id: '/brands/rejuvenating',
-  path: '/brands/rejuvenating',
+const McpRoute = McpRouteImport.update({
+  id: '/mcp',
+  path: '/mcp',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BrandsLogisticsRoute = BrandsLogisticsRouteImport.update({
-  id: '/brands/logistics',
-  path: '/brands/logistics',
+const MobileRoute = MobileRouteImport.update({
+  id: '/mobile',
+  path: '/mobile',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BrandsGlobalTechRoute = BrandsGlobalTechRouteImport.update({
-  id: '/brands/global-tech',
-  path: '/brands/global-tech',
+const SkinAnalysisRoute = SkinAnalysisRouteImport.update({
+  id: '/skin-analysis',
+  path: '/skin-analysis',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BrandsDermaRoute = BrandsDermaRouteImport.update({
-  id: '/brands/derma',
-  path: '/brands/derma',
+const SuiteRoute = SuiteRouteImport.update({
+  id: '/suite',
+  path: '/suite',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BrandsDentalRoute = BrandsDentalRouteImport.update({
-  id: '/brands/dental',
-  path: '/brands/dental',
+const WhatsappRoute = WhatsappRouteImport.update({
+  id: '/whatsapp',
+  path: '/whatsapp',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AiSocialRoute = AiSocialRouteImport.update({
-  id: '/ai/social',
-  path: '/ai/social',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AiRecordsRoute = AiRecordsRouteImport.update({
-  id: '/ai/records',
-  path: '/ai/records',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AiNursesRoute = AiNursesRouteImport.update({
-  id: '/ai/nurses',
-  path: '/ai/nurses',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AiManagerRoute = AiManagerRouteImport.update({
-  id: '/ai/manager',
-  path: '/ai/manager',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AiLogisticsRoute = AiLogisticsRouteImport.update({
-  id: '/ai/logistics',
-  path: '/ai/logistics',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AiCustomerRoute = AiCustomerRouteImport.update({
-  id: '/ai/customer',
-  path: '/ai/customer',
+const Char91DotmcpChar93ListToolsRoute =
+  Char91DotmcpChar93ListToolsRouteImport.update({
+    id: '/.mcp/list-tools',
+    path: '/.mcp/list-tools',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const Char91DotwellKnownChar93OauthProtectedResourceRoute =
+  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
+    id: '/.well-known/oauth-protected-resource',
+    path: '/.well-known/oauth-protected-resource',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AiAccountantRoute = AiAccountantRouteImport.update({
+  id: '/ai/accountant',
+  path: '/ai/accountant',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AiCeoRoute = AiCeoRouteImport.update({
@@ -172,34 +120,92 @@ const AiCeoRoute = AiCeoRouteImport.update({
   path: '/ai/ceo',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AiAccountantRoute = AiAccountantRouteImport.update({
-  id: '/ai/accountant',
-  path: '/ai/accountant',
+const AiCustomerRoute = AiCustomerRouteImport.update({
+  id: '/ai/customer',
+  path: '/ai/customer',
   getParentRoute: () => rootRouteImport,
 } as any)
-const Char91DotwellKnownChar93OauthProtectedResourceRoute =
-  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
-    id: '/.well-known/oauth-protected-resource',
-    path: '/.well-known/oauth-protected-resource',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const Char91DotmcpChar93ListToolsRoute =
-  Char91DotmcpChar93ListToolsRouteImport.update({
-    id: '/.mcp/list-tools',
-    path: '/.mcp/list-tools',
-    getParentRoute: () => rootRouteImport,
-  } as any)
+const AiLogisticsRoute = AiLogisticsRouteImport.update({
+  id: '/ai/logistics',
+  path: '/ai/logistics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiManagerRoute = AiManagerRouteImport.update({
+  id: '/ai/manager',
+  path: '/ai/manager',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiNursesRoute = AiNursesRouteImport.update({
+  id: '/ai/nurses',
+  path: '/ai/nurses',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiRecordsRoute = AiRecordsRouteImport.update({
+  id: '/ai/records',
+  path: '/ai/records',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiSocialRoute = AiSocialRouteImport.update({
+  id: '/ai/social',
+  path: '/ai/social',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiCeoChatRoute = ApiCeoChatRouteImport.update({
+  id: '/api/ceo-chat',
+  path: '/api/ceo-chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BrandsDentalRoute = BrandsDentalRouteImport.update({
+  id: '/brands/dental',
+  path: '/brands/dental',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BrandsDermaRoute = BrandsDermaRouteImport.update({
+  id: '/brands/derma',
+  path: '/brands/derma',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BrandsGlobalTechRoute = BrandsGlobalTechRouteImport.update({
+  id: '/brands/global-tech',
+  path: '/brands/global-tech',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BrandsLogisticsRoute = BrandsLogisticsRouteImport.update({
+  id: '/brands/logistics',
+  path: '/brands/logistics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BrandsRejuvenatingRoute = BrandsRejuvenatingRouteImport.update({
+  id: '/brands/rejuvenating',
+  path: '/brands/rejuvenating',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BrandsSkincareKitchenRoute = BrandsSkincareKitchenRouteImport.update({
+  id: '/brands/skincare-kitchen',
+  path: '/brands/skincare-kitchen',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BrandsSkinclinicRoute = BrandsSkinclinicRouteImport.update({
+  id: '/brands/skinclinic',
+  path: '/brands/skinclinic',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BrandsStudiosRoute = BrandsStudiosRouteImport.update({
+  id: '/brands/studios',
+  path: '/brands/studios',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
+  id: '/.lovable/oauth/consent',
+  path: '/.lovable/oauth/consent',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const Char91DotmcpChar93InvokeToolToolRoute =
   Char91DotmcpChar93InvokeToolToolRouteImport.update({
     id: '/.mcp/invoke-tool/$tool',
     path: '/.mcp/invoke-tool/$tool',
     getParentRoute: () => rootRouteImport,
   } as any)
-const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
-  id: '/.lovable/oauth/consent',
-  path: '/.lovable/oauth/consent',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiPublicHooksProcessFollowupsRoute =
   ApiPublicHooksProcessFollowupsRouteImport.update({
     id: '/api/public/hooks/process-followups',
@@ -229,6 +235,7 @@ export interface FileRoutesByFullPath {
   '/ai/nurses': typeof AiNursesRoute
   '/ai/records': typeof AiRecordsRoute
   '/ai/social': typeof AiSocialRoute
+  '/api/ceo-chat': typeof ApiCeoChatRoute
   '/brands/dental': typeof BrandsDentalRoute
   '/brands/derma': typeof BrandsDermaRoute
   '/brands/global-tech': typeof BrandsGlobalTechRoute
@@ -263,6 +270,7 @@ export interface FileRoutesByTo {
   '/ai/nurses': typeof AiNursesRoute
   '/ai/records': typeof AiRecordsRoute
   '/ai/social': typeof AiSocialRoute
+  '/api/ceo-chat': typeof ApiCeoChatRoute
   '/brands/dental': typeof BrandsDentalRoute
   '/brands/derma': typeof BrandsDermaRoute
   '/brands/global-tech': typeof BrandsGlobalTechRoute
@@ -298,6 +306,7 @@ export interface FileRoutesById {
   '/ai/nurses': typeof AiNursesRoute
   '/ai/records': typeof AiRecordsRoute
   '/ai/social': typeof AiSocialRoute
+  '/api/ceo-chat': typeof ApiCeoChatRoute
   '/brands/dental': typeof BrandsDentalRoute
   '/brands/derma': typeof BrandsDermaRoute
   '/brands/global-tech': typeof BrandsGlobalTechRoute
@@ -334,6 +343,7 @@ export interface FileRouteTypes {
     | '/ai/nurses'
     | '/ai/records'
     | '/ai/social'
+    | '/api/ceo-chat'
     | '/brands/dental'
     | '/brands/derma'
     | '/brands/global-tech'
@@ -368,6 +378,7 @@ export interface FileRouteTypes {
     | '/ai/nurses'
     | '/ai/records'
     | '/ai/social'
+    | '/api/ceo-chat'
     | '/brands/dental'
     | '/brands/derma'
     | '/brands/global-tech'
@@ -402,6 +413,7 @@ export interface FileRouteTypes {
     | '/ai/nurses'
     | '/ai/records'
     | '/ai/social'
+    | '/api/ceo-chat'
     | '/brands/dental'
     | '/brands/derma'
     | '/brands/global-tech'
@@ -437,6 +449,7 @@ export interface RootRouteChildren {
   AiNursesRoute: typeof AiNursesRoute
   AiRecordsRoute: typeof AiRecordsRoute
   AiSocialRoute: typeof AiSocialRoute
+  ApiCeoChatRoute: typeof ApiCeoChatRoute
   BrandsDentalRoute: typeof BrandsDentalRoute
   BrandsDermaRoute: typeof BrandsDermaRoute
   BrandsGlobalTechRoute: typeof BrandsGlobalTechRoute
@@ -452,67 +465,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/whatsapp': {
-      id: '/whatsapp'
-      path: '/whatsapp'
-      fullPath: '/whatsapp'
-      preLoaderRoute: typeof WhatsappRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/suite': {
-      id: '/suite'
-      path: '/suite'
-      fullPath: '/suite'
-      preLoaderRoute: typeof SuiteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/skin-analysis': {
-      id: '/skin-analysis'
-      path: '/skin-analysis'
-      fullPath: '/skin-analysis'
-      preLoaderRoute: typeof SkinAnalysisRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/mobile': {
-      id: '/mobile'
-      path: '/mobile'
-      fullPath: '/mobile'
-      preLoaderRoute: typeof MobileRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/mcp': {
-      id: '/mcp'
-      path: '/mcp'
-      fullPath: '/mcp'
-      preLoaderRoute: typeof McpRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/manager': {
-      id: '/manager'
-      path: '/manager'
-      fullPath: '/manager'
-      preLoaderRoute: typeof ManagerRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/inventory': {
-      id: '/inventory'
-      path: '/inventory'
-      fullPath: '/inventory'
-      preLoaderRoute: typeof InventoryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/content': {
-      id: '/content'
-      path: '/content'
-      fullPath: '/content'
-      preLoaderRoute: typeof ContentRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/appointments': {
@@ -522,130 +479,67 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppointmentsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/brands/studios': {
-      id: '/brands/studios'
-      path: '/brands/studios'
-      fullPath: '/brands/studios'
-      preLoaderRoute: typeof BrandsStudiosRouteImport
+    '/content': {
+      id: '/content'
+      path: '/content'
+      fullPath: '/content'
+      preLoaderRoute: typeof ContentRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/brands/skinclinic': {
-      id: '/brands/skinclinic'
-      path: '/brands/skinclinic'
-      fullPath: '/brands/skinclinic'
-      preLoaderRoute: typeof BrandsSkinclinicRouteImport
+    '/inventory': {
+      id: '/inventory'
+      path: '/inventory'
+      fullPath: '/inventory'
+      preLoaderRoute: typeof InventoryRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/brands/skincare-kitchen': {
-      id: '/brands/skincare-kitchen'
-      path: '/brands/skincare-kitchen'
-      fullPath: '/brands/skincare-kitchen'
-      preLoaderRoute: typeof BrandsSkincareKitchenRouteImport
+    '/manager': {
+      id: '/manager'
+      path: '/manager'
+      fullPath: '/manager'
+      preLoaderRoute: typeof ManagerRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/brands/rejuvenating': {
-      id: '/brands/rejuvenating'
-      path: '/brands/rejuvenating'
-      fullPath: '/brands/rejuvenating'
-      preLoaderRoute: typeof BrandsRejuvenatingRouteImport
+    '/mcp': {
+      id: '/mcp'
+      path: '/mcp'
+      fullPath: '/mcp'
+      preLoaderRoute: typeof McpRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/brands/logistics': {
-      id: '/brands/logistics'
-      path: '/brands/logistics'
-      fullPath: '/brands/logistics'
-      preLoaderRoute: typeof BrandsLogisticsRouteImport
+    '/mobile': {
+      id: '/mobile'
+      path: '/mobile'
+      fullPath: '/mobile'
+      preLoaderRoute: typeof MobileRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/brands/global-tech': {
-      id: '/brands/global-tech'
-      path: '/brands/global-tech'
-      fullPath: '/brands/global-tech'
-      preLoaderRoute: typeof BrandsGlobalTechRouteImport
+    '/skin-analysis': {
+      id: '/skin-analysis'
+      path: '/skin-analysis'
+      fullPath: '/skin-analysis'
+      preLoaderRoute: typeof SkinAnalysisRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/brands/derma': {
-      id: '/brands/derma'
-      path: '/brands/derma'
-      fullPath: '/brands/derma'
-      preLoaderRoute: typeof BrandsDermaRouteImport
+    '/suite': {
+      id: '/suite'
+      path: '/suite'
+      fullPath: '/suite'
+      preLoaderRoute: typeof SuiteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/brands/dental': {
-      id: '/brands/dental'
-      path: '/brands/dental'
-      fullPath: '/brands/dental'
-      preLoaderRoute: typeof BrandsDentalRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/ai/social': {
-      id: '/ai/social'
-      path: '/ai/social'
-      fullPath: '/ai/social'
-      preLoaderRoute: typeof AiSocialRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/ai/records': {
-      id: '/ai/records'
-      path: '/ai/records'
-      fullPath: '/ai/records'
-      preLoaderRoute: typeof AiRecordsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/ai/nurses': {
-      id: '/ai/nurses'
-      path: '/ai/nurses'
-      fullPath: '/ai/nurses'
-      preLoaderRoute: typeof AiNursesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/ai/manager': {
-      id: '/ai/manager'
-      path: '/ai/manager'
-      fullPath: '/ai/manager'
-      preLoaderRoute: typeof AiManagerRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/ai/logistics': {
-      id: '/ai/logistics'
-      path: '/ai/logistics'
-      fullPath: '/ai/logistics'
-      preLoaderRoute: typeof AiLogisticsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/ai/customer': {
-      id: '/ai/customer'
-      path: '/ai/customer'
-      fullPath: '/ai/customer'
-      preLoaderRoute: typeof AiCustomerRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/ai/ceo': {
-      id: '/ai/ceo'
-      path: '/ai/ceo'
-      fullPath: '/ai/ceo'
-      preLoaderRoute: typeof AiCeoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/ai/accountant': {
-      id: '/ai/accountant'
-      path: '/ai/accountant'
-      fullPath: '/ai/accountant'
-      preLoaderRoute: typeof AiAccountantRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/.well-known/oauth-protected-resource': {
-      id: '/.well-known/oauth-protected-resource'
-      path: '/.well-known/oauth-protected-resource'
-      fullPath: '/.well-known/oauth-protected-resource'
-      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
+    '/whatsapp': {
+      id: '/whatsapp'
+      path: '/whatsapp'
+      fullPath: '/whatsapp'
+      preLoaderRoute: typeof WhatsappRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/.mcp/list-tools': {
@@ -655,11 +549,130 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/.mcp/invoke-tool/$tool': {
-      id: '/.mcp/invoke-tool/$tool'
-      path: '/.mcp/invoke-tool/$tool'
-      fullPath: '/.mcp/invoke-tool/$tool'
-      preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
+    '/.well-known/oauth-protected-resource': {
+      id: '/.well-known/oauth-protected-resource'
+      path: '/.well-known/oauth-protected-resource'
+      fullPath: '/.well-known/oauth-protected-resource'
+      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai/accountant': {
+      id: '/ai/accountant'
+      path: '/ai/accountant'
+      fullPath: '/ai/accountant'
+      preLoaderRoute: typeof AiAccountantRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai/ceo': {
+      id: '/ai/ceo'
+      path: '/ai/ceo'
+      fullPath: '/ai/ceo'
+      preLoaderRoute: typeof AiCeoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai/customer': {
+      id: '/ai/customer'
+      path: '/ai/customer'
+      fullPath: '/ai/customer'
+      preLoaderRoute: typeof AiCustomerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai/logistics': {
+      id: '/ai/logistics'
+      path: '/ai/logistics'
+      fullPath: '/ai/logistics'
+      preLoaderRoute: typeof AiLogisticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai/manager': {
+      id: '/ai/manager'
+      path: '/ai/manager'
+      fullPath: '/ai/manager'
+      preLoaderRoute: typeof AiManagerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai/nurses': {
+      id: '/ai/nurses'
+      path: '/ai/nurses'
+      fullPath: '/ai/nurses'
+      preLoaderRoute: typeof AiNursesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai/records': {
+      id: '/ai/records'
+      path: '/ai/records'
+      fullPath: '/ai/records'
+      preLoaderRoute: typeof AiRecordsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai/social': {
+      id: '/ai/social'
+      path: '/ai/social'
+      fullPath: '/ai/social'
+      preLoaderRoute: typeof AiSocialRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/ceo-chat': {
+      id: '/api/ceo-chat'
+      path: '/api/ceo-chat'
+      fullPath: '/api/ceo-chat'
+      preLoaderRoute: typeof ApiCeoChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/brands/dental': {
+      id: '/brands/dental'
+      path: '/brands/dental'
+      fullPath: '/brands/dental'
+      preLoaderRoute: typeof BrandsDentalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/brands/derma': {
+      id: '/brands/derma'
+      path: '/brands/derma'
+      fullPath: '/brands/derma'
+      preLoaderRoute: typeof BrandsDermaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/brands/global-tech': {
+      id: '/brands/global-tech'
+      path: '/brands/global-tech'
+      fullPath: '/brands/global-tech'
+      preLoaderRoute: typeof BrandsGlobalTechRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/brands/logistics': {
+      id: '/brands/logistics'
+      path: '/brands/logistics'
+      fullPath: '/brands/logistics'
+      preLoaderRoute: typeof BrandsLogisticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/brands/rejuvenating': {
+      id: '/brands/rejuvenating'
+      path: '/brands/rejuvenating'
+      fullPath: '/brands/rejuvenating'
+      preLoaderRoute: typeof BrandsRejuvenatingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/brands/skincare-kitchen': {
+      id: '/brands/skincare-kitchen'
+      path: '/brands/skincare-kitchen'
+      fullPath: '/brands/skincare-kitchen'
+      preLoaderRoute: typeof BrandsSkincareKitchenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/brands/skinclinic': {
+      id: '/brands/skinclinic'
+      path: '/brands/skinclinic'
+      fullPath: '/brands/skinclinic'
+      preLoaderRoute: typeof BrandsSkinclinicRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/brands/studios': {
+      id: '/brands/studios'
+      path: '/brands/studios'
+      fullPath: '/brands/studios'
+      preLoaderRoute: typeof BrandsStudiosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/.lovable/oauth/consent': {
@@ -667,6 +680,13 @@ declare module '@tanstack/react-router' {
       path: '/.lovable/oauth/consent'
       fullPath: '/.lovable/oauth/consent'
       preLoaderRoute: typeof DotlovableOauthConsentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.mcp/invoke-tool/$tool': {
+      id: '/.mcp/invoke-tool/$tool'
+      path: '/.mcp/invoke-tool/$tool'
+      fullPath: '/.mcp/invoke-tool/$tool'
+      preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/hooks/process-followups': {
@@ -702,6 +722,7 @@ const rootRouteChildren: RootRouteChildren = {
   AiNursesRoute: AiNursesRoute,
   AiRecordsRoute: AiRecordsRoute,
   AiSocialRoute: AiSocialRoute,
+  ApiCeoChatRoute: ApiCeoChatRoute,
   BrandsDentalRoute: BrandsDentalRoute,
   BrandsDermaRoute: BrandsDermaRoute,
   BrandsGlobalTechRoute: BrandsGlobalTechRoute,
