@@ -214,11 +214,19 @@ export function CeoAssistant({
               </div>
             ))}
 
-            {send.isPending && (
+            {streaming && (
+              <div className="animate-fade-up text-sm leading-relaxed max-w-full text-foreground/90 whitespace-pre-wrap">
+                {renderLite(streaming)}
+                <span className="inline-block w-1.5 h-3.5 ml-0.5 align-middle bg-gold animate-pulse rounded-sm" />
+              </div>
+            )}
+
+            {busy && !streaming && (
               <div className="flex items-center gap-2 text-xs text-muted-foreground animate-fade-up">
                 <Loader2 className="h-3.5 w-3.5 animate-spin text-gold" /> Analysing operations…
               </div>
             )}
+
 
             {error && (
               <div className="flex items-start gap-2 text-xs text-danger p-3 rounded-xl bg-danger/10 border border-danger/30 animate-fade-up">
