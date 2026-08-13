@@ -87,6 +87,17 @@ type Branch = (typeof BRANCHES)[number];
 
 function OverviewPage() {
   const [branch, setBranch] = useState<Branch>("Port Harcourt");
+  const { user } = useAuth();
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+  const rawName =
+    (user?.user_metadata?.full_name as string | undefined) ||
+    (user?.user_metadata?.name as string | undefined) ||
+    (user?.email ? user.email.split("@")[0] : "");
+  const displayName = rawName
+    ? rawName.split(/[.\s_-]+/)[0].replace(/^./, (c) => c.toUpperCase())
+    : "there";
+
   return (
     <Shell>
       <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
@@ -123,12 +134,13 @@ function OverviewPage() {
         </div>
       </div>
 
-      <h1 className="text-4xl md:text-5xl font-display font-semibold tracking-tight mb-1">
-        Good morning, <span className="gold-text">Adaeze</span>
+      <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-semibold tracking-tight mb-1">
+        {greeting}, <span className="gold-text">{displayName}</span>
       </h1>
       <p className="text-muted-foreground mb-8">
         Your suites generated <span className="text-foreground font-medium">12 actions</span> overnight — 9 auto-executed.
       </p>
+
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
         <InventoryCard />
