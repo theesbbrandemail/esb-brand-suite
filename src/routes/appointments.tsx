@@ -311,14 +311,15 @@ function BookingForm({
   const valid = branch && name.trim().length > 1 && service.trim().length > 1 && when;
 
   return (
-    <div className="card-elevated p-5 mb-5">
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="font-display text-lg flex items-center gap-2">
-          <CalendarDays className="h-4 w-4 text-gold" /> New booking
+    <div className="card-elevated p-3 sm:p-5 mb-4 sm:mb-5">
+      <div className="flex items-center justify-between gap-2 mb-3">
+        <h3 className="font-display text-base sm:text-lg flex items-center gap-2 min-w-0">
+          <CalendarDays className="h-4 w-4 text-gold shrink-0" /> <span className="truncate">New booking</span>
         </h3>
-        <button onClick={onClose} className="text-xs text-muted-foreground hover:text-foreground">Close</button>
+        <button onClick={onClose} className="text-xs text-muted-foreground hover:text-foreground shrink-0">Close</button>
       </div>
-      <div className="grid md:grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+
         <Field label="Branch">
           <select value={branch} onChange={(e) => setBranch(e.target.value)} className="w-full px-3 py-2 rounded-lg bg-card border border-border text-sm">
             {branches.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
