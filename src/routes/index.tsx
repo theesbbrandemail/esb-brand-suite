@@ -123,12 +123,13 @@ function OverviewPage() {
         </div>
       </div>
 
-      <h1 className="text-4xl md:text-5xl font-display font-semibold tracking-tight mb-1">
-        Good morning, <span className="gold-text">Adaeze</span>
+      <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-semibold tracking-tight mb-1">
+        {greeting}, <span className="gold-text">{displayName}</span>
       </h1>
       <p className="text-muted-foreground mb-8">
         Your suites generated <span className="text-foreground font-medium">12 actions</span> overnight — 9 auto-executed.
       </p>
+
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
         <InventoryCard />
