@@ -85,18 +85,47 @@ function PublicLanding() {
 const BRANCHES = ["Port Harcourt", "Abuja", "Lagos"] as const;
 type Branch = (typeof BRANCHES)[number];
 
+const GENERIC_LOCAL_PARTS = new Set([
+  "user", "admin", "test", "guest", "noreply", "no-reply", "info", "support",
+  "contact", "hello", "mail", "email", "me", "my", "example", "unknown",
+]);
+
+function deriveDisplayName(user: ReturnType<typeof useAuth>["user"]): string {
+  if (!user) return "there";
+
+  const rawName =
+    (user.user_metadata?.full_name as string | undefined)?.trim() ||
+    (user.user_metadata?.name as string | undefined)?.trim() ||
+    "";
+
+  if (rawName) {
+    const firstPart = rawName.split(/[.\s_-]+/)[0];
+    const cleaned = firstPart.replace(/[^a-zA-Z\u00C0-\u017F'-]/g, "").trim();
+    if (cleaned.length >= 1 && cleaned.length <= 20) {
+      return cleaned.replace(/^./, (c) => c.toUpperCase());
+    }
+  }
+
+  const email = user.email?.trim();
+  if (email?.includes("@")) {
+    const localPart = email.split("@")[0].toLowerCase().replace(/[^a-z0-9]/g, "");
+    if (localPart.length >= 2 && localPart.length <= 20 && !GENERIC_LOCAL_PARTS.has(localPart)) {
+      const nameLike = localPart.replace(/\d+$/, "");
+      if (nameLike.length >= 2) {
+        return nameLike.replace(/^./, (c) => c.toUpperCase());
+      }
+    }
+  }
+
+  return "there";
+}
+
 function OverviewPage() {
   const [branch, setBranch] = useState<Branch>("Port Harcourt");
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
-  const rawName =
-    (user?.user_metadata?.full_name as string | undefined) ||
-    (user?.user_metadata?.name as string | undefined) ||
-    (user?.email ? user.email.split("@")[0] : "");
-  const displayName = rawName
-    ? rawName.split(/[.\s_-]+/)[0].replace(/^./, (c) => c.toUpperCase())
-    : "there";
+  const displayName = loading ? "…" : deriveDisplayName(user);
 
   return (
     <Shell>
