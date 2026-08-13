@@ -87,6 +87,17 @@ type Branch = (typeof BRANCHES)[number];
 
 function OverviewPage() {
   const [branch, setBranch] = useState<Branch>("Port Harcourt");
+  const { user } = useAuth();
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+  const rawName =
+    (user?.user_metadata?.full_name as string | undefined) ||
+    (user?.user_metadata?.name as string | undefined) ||
+    (user?.email ? user.email.split("@")[0] : "");
+  const displayName = rawName
+    ? rawName.split(/[.\s_-]+/)[0].replace(/^./, (c) => c.toUpperCase())
+    : "there";
+
   return (
     <Shell>
       <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
