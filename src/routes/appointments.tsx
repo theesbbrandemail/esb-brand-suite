@@ -240,22 +240,23 @@ function ApptCard({ appt, onStatus }: {
       : "text-muted-foreground border-border bg-secondary";
 
   return (
-    <div className="p-4 rounded-2xl border border-border bg-secondary/30 hover:bg-secondary/50 transition">
-      <div className="flex items-start justify-between gap-3 mb-2">
+    <div className="p-3 sm:p-4 rounded-2xl border border-border bg-secondary/30 hover:bg-secondary/50 transition">
+      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2 sm:gap-3 mb-2">
         <div className="min-w-0">
-          <div className="text-sm font-medium">{appt.patient_name}</div>
-          <div className="text-[11px] text-muted-foreground">{appt.service}</div>
-          <div className="text-[10px] text-muted-foreground flex items-center gap-2 mt-1">
-            <span className="inline-flex items-center gap-1"><Clock className="h-3 w-3" />{time}</span>
+          <div className="text-sm font-medium truncate">{appt.patient_name}</div>
+          <div className="text-[11px] text-muted-foreground truncate">{appt.service}</div>
+          <div className="text-[10px] text-muted-foreground flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-1">
+            <span className="inline-flex items-center gap-1"><Clock className="h-3 w-3 shrink-0" />{time}</span>
             {appt.branch && (
-              <span className="inline-flex items-center gap-1"><MapPin className="h-3 w-3" />{appt.branch.name}</span>
+              <span className="inline-flex items-center gap-1 min-w-0"><MapPin className="h-3 w-3 shrink-0" /><span className="truncate">{appt.branch.name}</span></span>
             )}
           </div>
         </div>
-        <span className={`text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full border ${statusColor}`}>
+        <span className={`text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full border shrink-0 ${statusColor}`}>
           {appt.status}
         </span>
       </div>
+
       <div className="flex items-center gap-1.5 flex-wrap">
         {appt.patient_phone && (
           <a href={`tel:${appt.patient_phone}`} className="text-[11px] inline-flex items-center gap-1 px-2 py-1 rounded-lg border border-border hover:bg-card">
