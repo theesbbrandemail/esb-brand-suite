@@ -132,22 +132,23 @@ function AppointmentsPage() {
           />
         )}
 
-        <div className="grid lg:grid-cols-[1fr_360px] gap-5">
-          <div className="card-elevated p-5">
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="font-display text-lg">{format(date, "EEEE, MMM d")}</h2>
-              <span className="text-xs text-muted-foreground">{dayAppts.length} appointment{dayAppts.length === 1 ? "" : "s"}</span>
+        <div className="grid lg:grid-cols-[1fr_360px] gap-4 lg:gap-5">
+          <div className="card-elevated p-3 sm:p-5">
+            <div className="flex items-center justify-between gap-2 mb-3">
+              <h2 className="font-display text-base sm:text-lg truncate">{format(date, "EEE, MMM d")}</h2>
+              <span className="text-[11px] sm:text-xs text-muted-foreground shrink-0">{dayAppts.length} appt{dayAppts.length === 1 ? "" : "s"}</span>
             </div>
 
-            <div className="flex gap-1.5 mb-4 overflow-x-auto pb-1">
+            <div className="flex gap-1.5 mb-4 overflow-x-auto pb-1 -mx-1 px-1">
               {week.map((d) => {
                 const active = isSameDay(d, date);
                 return (
                   <button
                     key={d.toISOString()}
                     onClick={() => setDate(d)}
-                    className={`flex flex-col items-center justify-center min-w-[52px] py-2 rounded-xl border transition ${active ? "bg-gold text-gold-foreground border-transparent font-semibold" : "border-border text-muted-foreground hover:border-gold/40"}`}
+                    className={`flex flex-col items-center justify-center min-w-[44px] sm:min-w-[52px] shrink-0 py-2 rounded-xl border transition ${active ? "bg-gold text-gold-foreground border-transparent font-semibold" : "border-border text-muted-foreground hover:border-gold/40"}`}
                   >
+
                     <span className="text-[9px] uppercase">{format(d, "EEE")}</span>
                     <span className="text-base">{format(d, "d")}</span>
                   </button>
