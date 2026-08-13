@@ -38,6 +38,8 @@ const WA = (phone: string, msg: string) =>
 
 function AppointmentsPage() {
   const qc = useQueryClient();
+  const navigate = useNavigate({ from: "/appointments" });
+  const search = Route.useSearch();
   const branchesFn = useServerFn(listBranches);
   const apptsFn = useServerFn(listAppointments);
   const followFn = useServerFn(listFollowUps);
@@ -45,7 +47,7 @@ function AppointmentsPage() {
   const updateStatusFn = useServerFn(updateAppointmentStatus);
   const markSentFn = useServerFn(markFollowUpSent);
 
-  const [branchId, setBranchId] = useState<string | undefined>();
+  const branchId = search.branchId || undefined;
   const [date, setDate] = useState<Date>(new Date());
   const [showForm, setShowForm] = useState(false);
   const [pulse, setPulse] = useState(false);
@@ -82,10 +84,26 @@ function AppointmentsPage() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["follow-ups"] }),
   });
 
-  const dayAppts = useMemo(
-    () => (apptsQ.data ?? []).filter((a) => isSameDay(new Date(a.scheduled_at), date)),
-    [apptsQ.data, date],
-  );
+  const statusFilters = [
+    { value: "", label: "All" },
+    { value: "scheduled", label: "Scheduled" },
+    { value: "confirmed", label: "Confirmed" },
+    { value: "completed", label: "Completed" },
+    { value: "cancelled", label: "Cancelled" },
+  ];
+
+  const filteredAppts = useMemo(() => {
+    const term = search.q.trim().toLowerCase();
+    return (apptsQ.data ?? []).filter((a) => {
+      const matchesDay = isSameDay(new Date(a.scheduled_at), date);
+      if (!matchesDay) return false;
+      if (search.status && a.status !== search.status) return false;
+      if (!term) return true;
+      const hay = `${a.patient_name} ${a.patient_phone ?? ""} ${a.service}`.toLowerCase();
+      return hay.includes(term);
+    });
+  }, [apptsQ.data, date, search.q, search.status]);
+
   const week = useMemo(() => {
     const today = new Date();
     return Array.from({ length: 7 }, (_, i) => {
@@ -96,6 +114,8 @@ function AppointmentsPage() {
   }, []);
 
   const pendingFollowUps = (followQ.data ?? []).filter((f) => f.status === "pending");
+
+  const hasFilters = search.q || search.status || search.branchId;
 
   return (
     <Shell>
@@ -108,13 +128,13 @@ function AppointmentsPage() {
             </h1>
             <p className="text-xs sm:text-sm text-muted-foreground mt-1 flex items-center gap-1.5">
               <Radio className={`h-3 w-3 shrink-0 text-success ${pulse ? "animate-pulse" : ""}`} />
-              <span className="truncate">Live sync · {apptsQ.data?.length ?? 0} upcoming</span>
+              <span className="truncate">Live sync · {filteredAppts.length} shown · {apptsQ.data?.length ?? 0} total</span>
             </p>
           </div>
           <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-2 sm:flex sm:flex-wrap">
             <select
               value={branchId ?? ""}
-              onChange={(e) => setBranchId(e.target.value || undefined)}
+              onChange={(e) => navigate({ search: (prev) => ({ ...prev, branchId: e.target.value }) })}
               className="min-w-0 px-3 py-2 rounded-full bg-card border border-border text-sm"
             >
               <option value="">All branches</option>
@@ -125,6 +145,53 @@ function AppointmentsPage() {
             <button onClick={() => setShowForm((s) => !s)} className="chip-gold inline-flex items-center justify-center gap-1.5 px-3 py-2 shrink-0">
               <Plus className="h-3.5 w-3.5" /> <span className="whitespace-nowrap">New</span>
             </button>
+          </div>
+        </div>
+
+        <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm py-2 mb-3 -mx-1 px-1 rounded-2xl border border-transparent">
+          <div className="relative mb-2">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <input
+              value={search.q}
+              onChange={(e) => navigate({ search: (prev) => ({ ...prev, q: e.target.value }) })}
+              placeholder="Search patient, phone or service…"
+              className="w-full pl-9 pr-9 py-2.5 rounded-full bg-card border border-border text-sm"
+            />
+            {search.q && (
+              <button
+                onClick={() => navigate({ search: (prev) => ({ ...prev, q: "" }) })}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                aria-label="Clear search"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 -mx-1 px-1">
+            {statusFilters.map((f) => {
+              const active = search.status === f.value || (f.value === "" && !search.status);
+              return (
+                <button
+                  key={f.value}
+                  onClick={() => navigate({ search: (prev) => ({ ...prev, status: f.value }) })}
+                  className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border transition whitespace-nowrap ${
+                    active
+                      ? "bg-gold text-gold-foreground border-transparent"
+                      : "border-border text-muted-foreground hover:border-gold/40 hover:text-foreground"
+                  }`}
+                >
+                  {f.label}
+                </button>
+              );
+            })}
+            {hasFilters && (
+              <button
+                onClick={() => navigate({ search: { q: "", status: "", branchId: "" } })}
+                className="shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border border-border text-muted-foreground hover:text-foreground hover:border-gold/40 transition whitespace-nowrap inline-flex items-center gap-1"
+              >
+                <X className="h-3 w-3" /> Clear
+              </button>
+            )}
           </div>
         </div>
 
