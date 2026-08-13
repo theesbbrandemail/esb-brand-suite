@@ -90,33 +90,34 @@ function AppointmentsPage() {
   return (
     <Shell>
       <div className="max-w-6xl mx-auto">
-        <div className="flex flex-wrap items-end justify-between gap-3 mb-5">
-          <div>
+        <div className="grid grid-cols-1 gap-3 mb-4 sm:flex sm:flex-wrap sm:items-end sm:justify-between">
+          <div className="min-w-0">
             <div className="text-[10px] uppercase tracking-[0.3em] gold-text">Patient Scheduling</div>
-            <h1 className="text-3xl font-display font-semibold mt-1">
+            <h1 className="text-2xl sm:text-3xl font-display font-semibold mt-1">
               <span className="gold-text">Appointments</span> & Follow-ups
             </h1>
-            <p className="text-sm text-muted-foreground mt-1 flex items-center gap-1.5">
-              <Radio className={`h-3 w-3 text-success ${pulse ? "animate-pulse" : ""}`} />
-              Live cross-branch sync · {apptsQ.data?.length ?? 0} upcoming
+            <p className="text-xs sm:text-sm text-muted-foreground mt-1 flex items-center gap-1.5">
+              <Radio className={`h-3 w-3 shrink-0 text-success ${pulse ? "animate-pulse" : ""}`} />
+              <span className="truncate">Live sync · {apptsQ.data?.length ?? 0} upcoming</span>
             </p>
           </div>
-          <div className="flex gap-2 flex-wrap">
+          <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-2 sm:flex sm:flex-wrap">
             <select
               value={branchId ?? ""}
               onChange={(e) => setBranchId(e.target.value || undefined)}
-              className="px-3 py-2 rounded-full bg-card border border-border text-sm"
+              className="min-w-0 px-3 py-2 rounded-full bg-card border border-border text-sm"
             >
               <option value="">All branches</option>
               {(branchesQ.data ?? []).map((b) => (
                 <option key={b.id} value={b.id}>{b.name}</option>
               ))}
             </select>
-            <button onClick={() => setShowForm((s) => !s)} className="chip-gold inline-flex items-center gap-1.5 px-3 py-2">
-              <Plus className="h-3.5 w-3.5" /> New booking
+            <button onClick={() => setShowForm((s) => !s)} className="chip-gold inline-flex items-center justify-center gap-1.5 px-3 py-2 shrink-0">
+              <Plus className="h-3.5 w-3.5" /> <span className="whitespace-nowrap">New</span>
             </button>
           </div>
         </div>
+
 
         {showForm && (
           <BookingForm
