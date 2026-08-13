@@ -173,18 +173,19 @@ function AppointmentsPage() {
             </div>
           </div>
 
-          <div className="card-elevated p-5">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-gold" />
-                <h2 className="font-display text-lg">Follow-up Queue</h2>
+          <div className="card-elevated p-3 sm:p-5">
+            <div className="flex items-center justify-between gap-2 mb-3">
+              <div className="flex items-center gap-2 min-w-0">
+                <Sparkles className="h-4 w-4 text-gold shrink-0" />
+                <h2 className="font-display text-base sm:text-lg truncate">Follow-up Queue</h2>
               </div>
-              <span className="chip-violet">{pendingFollowUps.length} pending</span>
+              <span className="chip-violet shrink-0 whitespace-nowrap">{pendingFollowUps.length} pending</span>
             </div>
             <p className="text-[11px] text-muted-foreground mb-3">
               Auto-scheduled 24h after each appointment. Tap WhatsApp to send.
             </p>
-            <div className="space-y-2 max-h-[520px] overflow-y-auto">
+            <div className="space-y-2 max-h-[360px] lg:max-h-[520px] overflow-y-auto">
+
               {followQ.isLoading && <div className="text-xs text-muted-foreground">Loading…</div>}
               {!followQ.isLoading && pendingFollowUps.length === 0 && (
                 <div className="text-xs text-muted-foreground p-3 rounded-xl bg-secondary/30 border border-border/40">
