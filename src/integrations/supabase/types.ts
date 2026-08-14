@@ -71,6 +71,7 @@ export type Database = {
       appointments: {
         Row: {
           branch_id: string
+          cancel_reason: string | null
           created_at: string
           duration_minutes: number
           id: string
@@ -79,13 +80,17 @@ export type Database = {
           patient_name: string
           patient_phone: string | null
           patient_user_id: string | null
+          previous_scheduled_at: string | null
+          reschedule_reason: string | null
           scheduled_at: string
           service: string
           status: string
+          status_changed_at: string | null
           updated_at: string
         }
         Insert: {
           branch_id: string
+          cancel_reason?: string | null
           created_at?: string
           duration_minutes?: number
           id?: string
@@ -94,13 +99,17 @@ export type Database = {
           patient_name: string
           patient_phone?: string | null
           patient_user_id?: string | null
+          previous_scheduled_at?: string | null
+          reschedule_reason?: string | null
           scheduled_at: string
           service: string
           status?: string
+          status_changed_at?: string | null
           updated_at?: string
         }
         Update: {
           branch_id?: string
+          cancel_reason?: string | null
           created_at?: string
           duration_minutes?: number
           id?: string
@@ -109,9 +118,12 @@ export type Database = {
           patient_name?: string
           patient_phone?: string | null
           patient_user_id?: string | null
+          previous_scheduled_at?: string | null
+          reschedule_reason?: string | null
           scheduled_at?: string
           service?: string
           status?: string
+          status_changed_at?: string | null
           updated_at?: string
         }
         Relationships: [
