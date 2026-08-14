@@ -213,7 +213,7 @@ function AppointmentsPage() {
           <div className="card-elevated p-3 sm:p-5">
             <div className="flex items-center justify-between gap-2 mb-3">
               <h2 className="font-display text-base sm:text-lg truncate">{format(date, "EEE, MMM d")}</h2>
-              <span className="text-[11px] sm:text-xs text-muted-foreground shrink-0">{dayAppts.length} appt{dayAppts.length === 1 ? "" : "s"}</span>
+              <span className="text-[11px] sm:text-xs text-muted-foreground shrink-0">{filteredAppts.length} appt{filteredAppts.length === 1 ? "" : "s"}</span>
             </div>
 
             <div className="flex gap-1.5 mb-4 overflow-x-auto pb-1 -mx-1 px-1">
@@ -235,12 +235,12 @@ function AppointmentsPage() {
 
             <div className="space-y-2">
               {apptsQ.isLoading && <div className="text-sm text-muted-foreground p-6 text-center">Loading…</div>}
-              {!apptsQ.isLoading && dayAppts.length === 0 && (
+              {!apptsQ.isLoading && filteredAppts.length === 0 && (
                 <div className="text-sm text-muted-foreground p-6 text-center border border-dashed border-border rounded-2xl">
-                  No appointments on this day.
+                  {search.q || search.status ? "No appointments match your filters." : "No appointments on this day."}
                 </div>
               )}
-              {dayAppts.map((a) => (
+              {filteredAppts.map((a) => (
                 <ApptCard
                   key={a.id}
                   appt={a}
