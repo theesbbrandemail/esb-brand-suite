@@ -308,6 +308,17 @@ function AppointmentsPage() {
           </div>
         </div>
       </div>
+
+      <AppointmentDetailsDrawer
+        appt={selectedAppt}
+        open={drawerOpen}
+        onOpenChange={setDrawerOpen}
+        onStatus={(status) => {
+          if (selectedAppt) {
+            setStatus.mutate({ id: selectedAppt.id, status });
+          }
+        }}
+      />
     </Shell>
   );
 }
