@@ -52,6 +52,8 @@ function AppointmentsPage() {
   const [date, setDate] = useState<Date>(new Date());
   const [showForm, setShowForm] = useState(false);
   const [pulse, setPulse] = useState(false);
+  const [selectedAppt, setSelectedAppt] = useState<Appointment | null>(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const branchesQ = useQuery({ queryKey: ["branches"], queryFn: () => branchesFn() });
   const apptsQ = useQuery({
