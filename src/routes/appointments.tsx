@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { z } from "zod";
 import { Shell } from "@/components/esb/Shell";
+import { AppointmentDetailsDrawer } from "@/components/esb/AppointmentDetailsDrawer";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import {
@@ -12,7 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useMemo, useState } from "react";
 import {
   CalendarDays, Plus, Phone, MessageCircle, CheckCircle2, XCircle, Clock, Radio, MapPin, Sparkles,
-  Search, X,
+  Search, X, ChevronRight,
 } from "lucide-react";
 import { format, isSameDay } from "date-fns";
 
@@ -51,6 +52,8 @@ function AppointmentsPage() {
   const [date, setDate] = useState<Date>(new Date());
   const [showForm, setShowForm] = useState(false);
   const [pulse, setPulse] = useState(false);
+  const [selectedAppt, setSelectedAppt] = useState<Appointment | null>(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const branchesQ = useQuery({ queryKey: ["branches"], queryFn: () => branchesFn() });
   const apptsQ = useQuery({
@@ -244,6 +247,10 @@ function AppointmentsPage() {
                 <ApptCard
                   key={a.id}
                   appt={a}
+                  onSelect={(appt) => {
+                    setSelectedAppt(appt);
+                    setDrawerOpen(true);
+                  }}
                   onStatus={(status) => setStatus.mutate({ id: a.id, status })}
                 />
               ))}
@@ -301,12 +308,24 @@ function AppointmentsPage() {
           </div>
         </div>
       </div>
+
+      <AppointmentDetailsDrawer
+        appt={selectedAppt}
+        open={drawerOpen}
+        onOpenChange={setDrawerOpen}
+        onStatus={(status) => {
+          if (selectedAppt) {
+            setStatus.mutate({ id: selectedAppt.id, status });
+          }
+        }}
+      />
     </Shell>
   );
 }
 
-function ApptCard({ appt, onStatus }: {
+function ApptCard({ appt, onSelect, onStatus }: {
   appt: Appointment;
+  onSelect: (appt: Appointment) => void;
   onStatus: (s: "confirmed" | "completed" | "cancelled") => void;
 }) {
   const time = format(new Date(appt.scheduled_at), "p");
@@ -317,10 +336,16 @@ function ApptCard({ appt, onStatus }: {
       : "text-muted-foreground border-border bg-secondary";
 
   return (
-    <div className="p-3 sm:p-4 rounded-2xl border border-border bg-secondary/30 hover:bg-secondary/50 transition">
+    <button
+      onClick={() => onSelect(appt)}
+      className="w-full text-left p-3 sm:p-4 rounded-2xl border border-border bg-secondary/30 hover:bg-secondary/50 transition group"
+    >
       <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2 sm:gap-3 mb-2">
         <div className="min-w-0">
-          <div className="text-sm font-medium truncate">{appt.patient_name}</div>
+          <div className="text-sm font-medium truncate flex items-center gap-1">
+            {appt.patient_name}
+            <ChevronRight className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition shrink-0" />
+          </div>
           <div className="text-[11px] text-muted-foreground truncate">{appt.service}</div>
           <div className="text-[10px] text-muted-foreground flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-1">
             <span className="inline-flex items-center gap-1"><Clock className="h-3 w-3 shrink-0" />{time}</span>
@@ -336,34 +361,30 @@ function ApptCard({ appt, onStatus }: {
 
       <div className="flex items-center gap-1.5 flex-wrap">
         {appt.patient_phone && (
-          <a href={`tel:${appt.patient_phone}`} className="text-[11px] inline-flex items-center gap-1 px-2 py-1 rounded-lg border border-border hover:bg-card">
+          <span className="text-[11px] inline-flex items-center gap-1 px-2 py-1 rounded-lg border border-border">
             <Phone className="h-3 w-3" /> Call
-          </a>
+          </span>
         )}
         {appt.patient_phone && (
-          <a
-            href={WA(appt.patient_phone, `Hi ${appt.patient_name}, this is ESB Brand confirming your ${appt.service} appointment at ${time}.`)}
-            target="_blank" rel="noreferrer"
-            className="text-[11px] inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-[oklch(0.65_0.18_145)]/15 border border-[oklch(0.65_0.18_145)]/40 text-[oklch(0.75_0.18_145)]"
-          >
+          <span className="text-[11px] inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-[oklch(0.65_0.18_145)]/15 border border-[oklch(0.65_0.18_145)]/40 text-[oklch(0.75_0.18_145)]">
             <MessageCircle className="h-3 w-3" /> WhatsApp
-          </a>
+          </span>
         )}
         {appt.status !== "confirmed" && appt.status !== "completed" && (
-          <button onClick={() => onStatus("confirmed")} className="text-[11px] chip-gold px-2 py-1">Confirm</button>
+          <span className="text-[11px] chip-gold px-2 py-1">Confirm</span>
         )}
         {appt.status !== "completed" && (
-          <button onClick={() => onStatus("completed")} className="text-[11px] inline-flex items-center gap-1 px-2 py-1 rounded-lg border border-success/40 text-success">
+          <span className="text-[11px] inline-flex items-center gap-1 px-2 py-1 rounded-lg border border-success/40 text-success">
             <CheckCircle2 className="h-3 w-3" /> Complete
-          </button>
+          </span>
         )}
         {appt.status !== "cancelled" && (
-          <button onClick={() => onStatus("cancelled")} className="text-[11px] inline-flex items-center gap-1 px-2 py-1 rounded-lg border border-danger/40 text-danger">
+          <span className="text-[11px] inline-flex items-center gap-1 px-2 py-1 rounded-lg border border-danger/40 text-danger">
             <XCircle className="h-3 w-3" /> Cancel
-          </button>
+          </span>
         )}
       </div>
-    </div>
+    </button>
   );
 }
 
