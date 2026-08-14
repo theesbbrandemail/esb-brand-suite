@@ -247,6 +247,10 @@ function AppointmentsPage() {
                 <ApptCard
                   key={a.id}
                   appt={a}
+                  onSelect={(appt) => {
+                    setSelectedAppt(appt);
+                    setDrawerOpen(true);
+                  }}
                   onStatus={(status) => setStatus.mutate({ id: a.id, status })}
                 />
               ))}
