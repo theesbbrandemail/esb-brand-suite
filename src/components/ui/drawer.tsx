@@ -5,9 +5,16 @@ import { cn } from "@/lib/utils";
 
 const Drawer = ({
   shouldScaleBackground = true,
+  closeThreshold = 0.35,
+  scrollLockTimeout = 250,
   ...props
 }: React.ComponentProps<typeof DrawerPrimitive.Root>) => (
-  <DrawerPrimitive.Root shouldScaleBackground={shouldScaleBackground} {...props} />
+  <DrawerPrimitive.Root
+    shouldScaleBackground={shouldScaleBackground}
+    closeThreshold={closeThreshold}
+    scrollLockTimeout={scrollLockTimeout}
+    {...props}
+  />
 );
 Drawer.displayName = "Drawer";
 
