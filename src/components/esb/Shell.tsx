@@ -228,27 +228,16 @@ export function Shell({ children, requireStaff = false }: { children: ReactNode;
             )}
           </div>
         </div>
-        {/* compact tabs (mobile + tablet) */}
-        <nav className="2xl:hidden flex items-center gap-1 px-3 sm:px-4 pb-3 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {visibleTabs.map((t) => {
-            const active = pathname === t.to;
-            return (
-              <Link
-                key={t.to}
-                to={t.to}
-                className={`px-3 py-1.5 rounded-full text-xs whitespace-nowrap border ${
-                  active
-                    ? "bg-gold text-gold-foreground border-transparent font-medium"
-                    : "border-border text-muted-foreground"
-                }`}
-              >
-                {t.label}
-              </Link>
-            );
-          })}
-          <MobileGroup label="Brands" items={visibleBrands} pathname={pathname} />
-          <MobileGroup label="AI" items={visibleAi} pathname={pathname} />
-        </nav>
+        {/* compact nav (mobile + tablet): single animated dropdown */}
+        <div className="2xl:hidden px-3 sm:px-4 pb-3">
+          <PagesDropdown
+            tabs={visibleTabs}
+            brands={visibleBrands}
+            ai={visibleAi}
+            pathname={pathname}
+          />
+        </div>
+
       </header>
       <main className="w-full max-w-[1400px] mx-auto px-3 sm:px-6 py-6 sm:py-8 overflow-x-hidden">{children}</main>
       <DemoTour />
