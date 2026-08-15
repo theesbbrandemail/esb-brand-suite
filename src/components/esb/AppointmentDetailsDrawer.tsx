@@ -67,7 +67,7 @@ export function AppointmentDetailsDrawer({
           </DrawerClose>
         </DrawerHeader>
 
-        <div className="px-4 pb-2 overflow-y-auto">
+        <div className="px-4 pb-2 overflow-y-auto overscroll-contain">
           <div className="flex items-center gap-2 mb-4">
             <span
               className={`text-[10px] uppercase tracking-wider px-2.5 py-1 rounded-full border ${statusColor}`}
