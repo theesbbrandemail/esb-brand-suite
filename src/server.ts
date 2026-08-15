@@ -51,7 +51,22 @@ async function readResponsePrefix(response: Response, maxBytes = 4096): Promise<
   }
 }
 
-async function normalizeCatastrophicSsrResponse(response: Response): Promise<Response> {
+// A client that navigates away / closes the tab mid-render aborts the socket.
+// That surfaces as ECONNRESET / "aborted" and is NOT an application error.
+function isClientAbort(value: unknown): boolean {
+  if (!value) return false;
+  const err = value as { code?: string; name?: string; message?: string; cause?: unknown };
+  if (err.code === "ECONNRESET" || err.code === "ABORT_ERR") return true;
+  if (err.name === "AbortError") return true;
+  if (typeof err.message === "string" && /aborted|ECONNRESET|socket hang up/i.test(err.message))
+    return true;
+  return err.cause ? isClientAbort(err.cause) : false;
+}
+
+async function normalizeCatastrophicSsrResponse(
+  response: Response,
+  request?: Request,
+): Promise<Response> {
   if (response.status < 500) return response;
   const contentType = response.headers.get("content-type") ?? "";
   if (!contentType.includes("application/json")) return response;
@@ -75,25 +90,36 @@ async function normalizeCatastrophicSsrResponse(response: Response): Promise<Res
     return response;
   }
 
-  console.error(consumeLastCapturedError() ?? new Error(`h3 swallowed SSR error: ${body}`));
+  const captured = consumeLastCapturedError();
+  if (isClientAbort(captured) || request?.signal?.aborted) {
+    // Client went away — swallow quietly, nothing to render for.
+    return new Response(null, { status: 499 });
+  }
+
+  console.error(captured ?? new Error(`h3 swallowed SSR error: ${body}`));
   return new Response(renderErrorPage(), {
     status: 500,
     headers: { "content-type": "text/html; charset=utf-8" },
   });
 }
 
+
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
-      return await normalizeCatastrophicSsrResponse(response);
+      return await normalizeCatastrophicSsrResponse(response, request);
     } catch (error) {
+      if (isClientAbort(error) || request.signal?.aborted) {
+        return new Response(null, { status: 499 });
+      }
       console.error(error);
       return new Response(renderErrorPage(), {
         status: 500,
         headers: { "content-type": "text/html; charset=utf-8" },
       });
+
     }
   },
 };
