@@ -3,6 +3,8 @@ import { LayoutGrid, Sparkles, Smartphone, Bell, Package, Calendar, Image as Ima
 import { EsbLogo } from "./Logo";
 import { DemoTour } from "./DemoTour";
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+
 import { useAuth } from "@/lib/auth";
 import { useDemoMode } from "@/lib/demo";
 
