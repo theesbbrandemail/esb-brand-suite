@@ -3,6 +3,8 @@ import { LayoutGrid, Sparkles, Smartphone, Bell, Package, Calendar, Image as Ima
 import { EsbLogo } from "./Logo";
 import { DemoTour } from "./DemoTour";
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+
 import { useAuth } from "@/lib/auth";
 import { useDemoMode } from "@/lib/demo";
 
@@ -228,27 +230,16 @@ export function Shell({ children, requireStaff = false }: { children: ReactNode;
             )}
           </div>
         </div>
-        {/* compact tabs (mobile + tablet) */}
-        <nav className="2xl:hidden flex items-center gap-1 px-3 sm:px-4 pb-3 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {visibleTabs.map((t) => {
-            const active = pathname === t.to;
-            return (
-              <Link
-                key={t.to}
-                to={t.to}
-                className={`px-3 py-1.5 rounded-full text-xs whitespace-nowrap border ${
-                  active
-                    ? "bg-gold text-gold-foreground border-transparent font-medium"
-                    : "border-border text-muted-foreground"
-                }`}
-              >
-                {t.label}
-              </Link>
-            );
-          })}
-          <MobileGroup label="Brands" items={visibleBrands} pathname={pathname} />
-          <MobileGroup label="AI" items={visibleAi} pathname={pathname} />
-        </nav>
+        {/* compact nav (mobile + tablet): single animated dropdown */}
+        <div className="2xl:hidden px-3 sm:px-4 pb-3">
+          <PagesDropdown
+            tabs={visibleTabs}
+            brands={visibleBrands}
+            ai={visibleAi}
+            pathname={pathname}
+          />
+        </div>
+
       </header>
       <main className="w-full max-w-[1400px] mx-auto px-3 sm:px-6 py-6 sm:py-8 overflow-x-hidden">{children}</main>
       <DemoTour />
@@ -286,40 +277,125 @@ function DropdownTrigger({
   );
 }
 
-function MobileGroup({ label, items, pathname }: { label: string; items: readonly MenuItem[]; pathname: string }) {
+function PagesDropdown({
+  tabs,
+  brands,
+  ai,
+  pathname,
+}: {
+  tabs: readonly Tab[];
+  brands: readonly MenuItem[];
+  ai: readonly MenuItem[];
+  pathname: string;
+}) {
   const [open, setOpen] = useState(false);
-  const groupActive = items.some((i) => pathname === i.to);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function onClick(e: MouseEvent) {
+      if (!ref.current?.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, []);
+
+  useEffect(() => setOpen(false), [pathname]);
+
+  const all: MenuItem[] = [...tabs, ...brands, ...ai];
+  const current = all.find((i) => i.to === pathname);
+  const CurrentIcon = current?.icon ?? LayoutGrid;
+
+  const sections: { title: string; items: readonly MenuItem[] }[] = [
+    { title: "Pages", items: tabs },
+    { title: "Brands", items: brands },
+    { title: "AI Roles", items: ai },
+  ].filter((s) => s.items.length > 0);
+
+  let index = 0;
+
   return (
-    <div className="relative">
+    <div className="relative" ref={ref}>
       <button
+        type="button"
         onClick={() => setOpen((v) => !v)}
-        className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs whitespace-nowrap border ${
-          groupActive || open ? "bg-gold text-gold-foreground border-transparent font-medium" : "border-border text-muted-foreground"
+        aria-expanded={open}
+        className={`w-full flex items-center gap-2 px-3.5 py-2.5 rounded-2xl border transition-all active:scale-[0.98] ${
+          open
+            ? "border-gold/50 bg-gold/10 shadow-[0_8px_30px_-12px_oklch(0.82_0.13_82/0.5)]"
+            : "border-border bg-card/60 hover:bg-card"
         }`}
       >
-        {label} <ChevronDown className={`h-3 w-3 transition-transform ${open ? "rotate-180" : ""}`} />
+        <span className="h-7 w-7 rounded-xl bg-secondary/60 border border-border flex items-center justify-center shrink-0">
+          <CurrentIcon className="h-3.5 w-3.5 text-gold" />
+        </span>
+        <span className="min-w-0 flex-1 text-left">
+          <span className="block text-[9px] uppercase tracking-[0.15em] text-muted-foreground">
+            Browse pages
+          </span>
+          <span className="block text-sm font-medium truncate">{current?.label ?? "Overview"}</span>
+        </span>
+        <ChevronDown
+          className={`h-4 w-4 text-muted-foreground transition-transform duration-300 ${open ? "rotate-180 text-gold" : ""}`}
+        />
       </button>
-      {open && (
-        <div className="absolute left-0 top-10 w-64 rounded-xl border border-border bg-card/95 backdrop-blur-xl shadow-xl p-1.5 z-50">
-          {items.map((m) => {
-            const Icon = m.icon;
-            const active = pathname === m.to;
-            return (
-              <Link
-                key={m.to}
-                to={m.to}
-                onClick={() => setOpen(false)}
-                className={`flex items-center gap-2 px-2.5 py-2 rounded-lg text-xs ${
-                  active ? "bg-gold/10 text-foreground" : "text-muted-foreground hover:bg-secondary/60"
-                }`}
-              >
-                <Icon className="h-3.5 w-3.5 text-gold" />
-                {m.label}
-              </Link>
-            );
-          })}
-        </div>
-      )}
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: -8, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -8, scale: 0.98 }}
+            transition={{ type: "spring", stiffness: 380, damping: 30 }}
+            className="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-50 max-h-[70vh] overflow-y-auto rounded-2xl border border-border bg-card/95 backdrop-blur-xl shadow-2xl p-2"
+          >
+            {sections.map((section) => (
+              <div key={section.title} className="mb-1.5 last:mb-0">
+                <div className="px-2 py-1 text-[9px] uppercase tracking-[0.18em] text-muted-foreground">
+                  {section.title}
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
+                  {section.items.map((m) => {
+                    const Icon = m.icon;
+                    const active = pathname === m.to;
+                    const delay = 0.02 * index++;
+                    return (
+                      <motion.div
+                        key={m.to}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay, type: "spring", stiffness: 420, damping: 32 }}
+                      >
+                        <Link
+                          to={m.to}
+                          onClick={() => setOpen(false)}
+                          className={`group flex items-center gap-2.5 px-2.5 py-2.5 rounded-xl border transition-all active:scale-[0.97] ${
+                            active
+                              ? "bg-gold/10 border-gold/30"
+                              : "border-transparent hover:bg-secondary/60 hover:border-border"
+                          }`}
+                        >
+                          <span className="h-8 w-8 shrink-0 rounded-lg bg-secondary/60 border border-border flex items-center justify-center transition-transform duration-200 group-hover:scale-110">
+                            <Icon className="h-4 w-4 text-gold" />
+                          </span>
+                          <span className="min-w-0">
+                            <span className="block text-sm font-medium truncate">{m.label}</span>
+                            {m.sub && (
+                              <span className="block text-[10px] text-muted-foreground truncate">
+                                {m.sub}
+                              </span>
+                            )}
+                          </span>
+                        </Link>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
+
