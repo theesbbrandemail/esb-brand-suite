@@ -8,6 +8,7 @@ import {
 import { CeoGate } from "@/components/esb/CeoGate";
 import { CeoAssistant } from "@/components/esb/CeoAssistant";
 import { AutomationApprovalQueue } from "@/components/esb/AutomationApprovalQueue";
+import { BranchCards } from "@/components/esb/BranchCards";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import {
@@ -118,6 +119,10 @@ export default function SuitePage() {
               reminders={remindersQ.data ?? []}
               loading={remindersQ.isLoading}
             />
+          </div>
+
+          <div className="mt-5">
+            <BranchCards title="Branch Network" />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mt-5">
