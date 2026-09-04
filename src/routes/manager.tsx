@@ -125,6 +125,8 @@ function ManagerPage() {
           </div>
         </header>
 
+        <BranchCards title="Branches" />
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
           {/* Today's schedule */}
           <Panel title="Today's Schedule" icon={Calendar} className="lg:col-span-2">
