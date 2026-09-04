@@ -80,7 +80,7 @@ function ManagerPage() {
   });
 
   const reminderM = useMutation({
-    mutationFn: (v: { id: string; done: boolean }) => reminderFn({ data: v as never }),
+    mutationFn: (v: { id: string; status: "pending" | "done" }) => reminderFn({ data: v }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["ceo-reminders"] });
       toast.success("Task updated");
@@ -181,12 +181,12 @@ function ManagerPage() {
                 {(remindersQ.data ?? []).slice(0, 8).map((r) => (
                   <li key={r.id} className="flex items-start gap-2">
                     <button
-                      onClick={() => reminderM.mutate({ id: r.id, done: !r.done })}
-                      className={`mt-0.5 h-4 w-4 shrink-0 rounded border ${r.done ? "bg-gold border-gold" : "border-white/25"}`}
+                      onClick={() => reminderM.mutate({ id: r.id, status: r.status === "done" ? "pending" : "done" })}
+                      className={`mt-0.5 h-4 w-4 shrink-0 rounded border ${r.status === "done" ? "bg-gold border-gold" : "border-white/25"}`}
                       aria-label="Toggle task"
                     />
                     <div className="min-w-0">
-                      <div className={`text-xs ${r.done ? "line-through text-muted-foreground" : ""}`}>{r.title}</div>
+                      <div className={`text-xs ${r.status === "done" ? "line-through text-muted-foreground" : ""}`}>{r.title}</div>
                       {r.due_at && (
                         <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
                           <Clock className="h-2.5 w-2.5" />

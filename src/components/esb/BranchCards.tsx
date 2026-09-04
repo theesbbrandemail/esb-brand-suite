@@ -25,7 +25,7 @@ export function BranchCards({ title = "Branches" }: { title?: string }) {
 
   const branches = (branchesQ.data ?? []) as Branch[];
   const appts = (apptsQ.data ?? []) as Appointment[];
-  const countFor = (id: string) => appts.filter((a) => a.branch?.id === id || (a as any).branch_id === id).length;
+  const countFor = (id: string) => appts.filter((a) => a.branch_id === id).length;
 
   return (
     <section className="rounded-2xl border border-white/10 bg-white/[0.04] p-4 sm:p-5">
