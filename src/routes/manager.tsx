@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Shell } from "@/components/esb/Shell";
+import { BranchCards } from "@/components/esb/BranchCards";
 import { LineSpark } from "@/components/esb/charts";
 import {
   getCeoKpis, listAppointments, listInventory, listReminders,
