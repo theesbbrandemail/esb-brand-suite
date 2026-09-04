@@ -1,155 +1,316 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { toast } from "sonner";
+import { useMemo } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { Shell } from "@/components/esb/Shell";
+import { BranchCards } from "@/components/esb/BranchCards";
 import { LineSpark } from "@/components/esb/charts";
-import { Bell, Sparkles, ChevronRight, Home, Calendar, Settings, User } from "lucide-react";
-
+import {
+  getCeoKpis, listAppointments, listInventory, listReminders,
+  updateAppointmentStatus, adjustStock, updateReminder,
+  type Appointment, type InventoryRow,
+} from "@/lib/ops.functions";
+import {
+  Bell, Sparkles, ArrowRight, Calendar, Package, TrendingUp, AlertTriangle,
+  CheckSquare, CheckCircle2, Clock, Loader2, Minus, Plus,
+} from "lucide-react";
 
 export const Route = createFileRoute("/mobile")({
   head: () => ({
     meta: [
       { title: "Mobile CEO Suite — ESB Brand" },
-      { name: "description", content: "Beauty business CEO dashboard on the go — revenue, reminders, AI suggestions." },
+      { name: "description", content: "Live mobile CEO suite: real revenue KPIs, today's schedule, low-stock alerts and reminders across ESB branches." },
       { property: "og:title", content: "Mobile CEO Suite — ESB Brand" },
-      { property: "og:description", content: "Beauty business CEO dashboard on the go." },
+      { property: "og:description", content: "Live mobile CEO suite: KPIs, today's schedule and low-stock alerts." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: MobilePage,
 });
 
+function todayRange() {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  return { from: start.toISOString(), to: end.toISOString() };
+}
+
 function MobilePage() {
+  const qc = useQueryClient();
+  const kpisFn = useServerFn(getCeoKpis);
+  const apptsFn = useServerFn(listAppointments);
+  const invFn = useServerFn(listInventory);
+  const remindersFn = useServerFn(listReminders);
+  const statusFn = useServerFn(updateAppointmentStatus);
+  const stockFn = useServerFn(adjustStock);
+  const reminderFn = useServerFn(updateReminder);
+
+  const range = useMemo(todayRange, []);
+  const kpisQ = useQuery({ queryKey: ["ceo-kpis"], queryFn: () => kpisFn(), refetchInterval: 60_000 });
+  const apptsQ = useQuery({ queryKey: ["appointments", "today"], queryFn: () => apptsFn({ data: range }), refetchInterval: 60_000 });
+  const invQ = useQuery({ queryKey: ["inventory", "all"], queryFn: () => invFn({ data: {} }) });
+  const remindersQ = useQuery({ queryKey: ["ceo-reminders"], queryFn: () => remindersFn(), refetchInterval: 60_000 });
+
+  const k = kpisQ.data;
+  const appts = (apptsQ.data ?? []) as Appointment[];
+  const reminders = remindersQ.data ?? [];
+  const lowStock = ((invQ.data ?? []) as InventoryRow[])
+    .filter((r) => r.qty <= (r.low_stock_threshold ?? 0))
+    .slice(0, 6);
+
+  const statusM = useMutation({
+    mutationFn: (v: { id: string; status: string }) => statusFn({ data: v as never }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["appointments"] });
+      qc.invalidateQueries({ queryKey: ["ceo-kpis"] });
+      toast.success("Appointment updated");
+    },
+    onError: (e: Error) => toast.error("Update failed", { description: e.message }),
+  });
+
+  const stockM = useMutation({
+    mutationFn: (v: { id: string; delta: number }) => stockFn({ data: v }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["inventory"] });
+      toast.success("Stock updated");
+    },
+    onError: (e: Error) => toast.error("Stock update failed", { description: e.message }),
+  });
+
+  const reminderM = useMutation({
+    mutationFn: (v: { id: string; status: "pending" | "done" }) => reminderFn({ data: v }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["ceo-reminders"] });
+      toast.success("Reminder updated");
+    },
+    onError: (e: Error) => toast.error("Reminder update failed", { description: e.message }),
+  });
+
+  const pendingReminders = reminders.filter((r) => r.status !== "done").length;
+
   return (
-    <Shell>
-      <div className="flex justify-center">
-        <Phone />
+    <Shell requireStaff>
+      <div className="space-y-5">
+        {/* Header */}
+        <header className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04] p-5 sm:p-7">
+          <div className="absolute -top-16 -right-10 h-48 w-48 rounded-full bg-gold/15 blur-3xl" />
+          <div className="absolute -bottom-16 -left-10 h-48 w-48 rounded-full bg-violet/20 blur-3xl" />
+          <div className="relative grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4">
+            <div className="min-w-0">
+              <div className="text-[10px] uppercase tracking-[0.3em] text-gold/90 mb-1">
+                {new Date().toLocaleDateString([], { weekday: "long", month: "short", day: "numeric" })}
+              </div>
+              <h1 className="truncate font-display text-2xl sm:text-4xl font-semibold">
+                CEO <span className="gold-text">AI Suite</span>
+              </h1>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+                Live group performance across every ESB brand — on any screen.
+              </p>
+            </div>
+            <button
+              onClick={() =>
+                toast(`${pendingReminders} open reminder${pendingReminders === 1 ? "" : "s"}`, {
+                  description: `${k?.lowStockItems ?? 0} low-stock items · ${k?.followUpsPending ?? 0} follow-ups pending`,
+                })
+              }
+              className="relative shrink-0 h-10 w-10 rounded-full border border-white/10 bg-white/5 flex items-center justify-center hover:bg-white/10"
+              aria-label="Alerts"
+            >
+              <Bell className="h-4 w-4" />
+              {pendingReminders > 0 && (
+                <span className="absolute -top-1 -right-1 h-4 min-w-4 rounded-full bg-gold px-1 text-[9px] font-semibold leading-4 text-black">
+                  {pendingReminders}
+                </span>
+              )}
+            </button>
+          </div>
+
+          <div className="relative mt-5 grid grid-cols-2 lg:grid-cols-4 gap-3">
+            <Stat icon={TrendingUp} label="Revenue / 30d" value={k ? `$${(k.revenue30d / 1000).toFixed(1)}K` : undefined} loading={kpisQ.isLoading} />
+            <Stat icon={Calendar} label="Today's appts" value={k?.appointmentsToday} loading={kpisQ.isLoading} />
+            <Stat icon={Package} label="Low stock" value={k?.lowStockItems} loading={kpisQ.isLoading} danger={(k?.lowStockItems ?? 0) > 0} />
+            <Stat icon={CheckSquare} label="Follow-ups" value={k?.followUpsPending} loading={kpisQ.isLoading} />
+          </div>
+        </header>
+
+        {/* Trend */}
+        <section className="rounded-2xl border border-white/10 bg-white/[0.04] p-4 sm:p-5">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Group appointments trend</div>
+              <div className="flex items-baseline gap-2 mt-1">
+                <span className="font-display text-2xl font-semibold">{k?.appointments30d ?? "—"}</span>
+                <span className="text-[11px] text-muted-foreground">last 30 days</span>
+              </div>
+            </div>
+            <span className="chip-violet text-[10px]">Live</span>
+          </div>
+          <LineSpark points={(k?.brandSeries ?? []).map((b) => b.gold)} height={90} />
+        </section>
+
+        <BranchCards title="Branch Network" />
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+          <Panel title="Today's Schedule" icon={Calendar} className="lg:col-span-2">
+            {apptsQ.isLoading ? (
+              <Loading />
+            ) : appts.length === 0 ? (
+              <Empty text="No appointments scheduled for today." />
+            ) : (
+              <ul className="divide-y divide-white/5">
+                {appts.slice(0, 8).map((a) => (
+                  <li key={a.id} className="flex items-center gap-3 py-2.5">
+                    <div className="min-w-0 flex-1">
+                      <div className="truncate text-sm font-medium">{a.patient_name}</div>
+                      <div className="truncate text-[11px] text-muted-foreground">
+                        {a.service} · {a.branch?.name ?? "—"}
+                      </div>
+                    </div>
+                    <div className="shrink-0 text-right">
+                      <div className="text-[11px] gold-text font-semibold">
+                        {new Date(a.scheduled_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                      </div>
+                      <div className="text-[9px] uppercase tracking-wider text-muted-foreground">{a.status}</div>
+                    </div>
+                    {a.status !== "completed" && (
+                      <button
+                        onClick={() => statusM.mutate({ id: a.id, status: "completed" })}
+                        disabled={statusM.isPending}
+                        className="shrink-0 rounded-lg border border-white/10 bg-white/5 p-1.5 hover:bg-white/10 disabled:opacity-50"
+                        aria-label="Mark completed"
+                      >
+                        <CheckCircle2 className="h-3.5 w-3.5 text-success" />
+                      </button>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+            <Link to="/appointments" className="mt-3 inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground">
+              Open appointments <ArrowRight className="h-3 w-3" />
+            </Link>
+          </Panel>
+
+          <Panel title="Reminders" icon={CheckSquare}>
+            {remindersQ.isLoading ? (
+              <Loading />
+            ) : reminders.length === 0 ? (
+              <Empty text="No reminders. You're all caught up." />
+            ) : (
+              <ul className="space-y-2">
+                {reminders.slice(0, 8).map((r) => (
+                  <li key={r.id} className="flex items-start gap-2">
+                    <button
+                      onClick={() => reminderM.mutate({ id: r.id, status: r.status === "done" ? "pending" : "done" })}
+                      className={`mt-0.5 h-4 w-4 shrink-0 rounded border ${r.status === "done" ? "bg-gold border-gold" : "border-white/25"}`}
+                      aria-label="Toggle reminder"
+                    />
+                    <div className="min-w-0">
+                      <div className={`text-xs ${r.status === "done" ? "line-through text-muted-foreground" : ""}`}>{r.title}</div>
+                      {r.due_at && (
+                        <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                          <Clock className="h-2.5 w-2.5" />
+                          {new Date(r.due_at).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
+                        </div>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Panel>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+          <Panel title="Low Stock Alerts" icon={AlertTriangle} className="lg:col-span-2">
+            {invQ.isLoading ? (
+              <Loading />
+            ) : lowStock.length === 0 ? (
+              <Empty text="All branches are well stocked." />
+            ) : (
+              <ul className="divide-y divide-white/5">
+                {lowStock.map((r) => (
+                  <li key={r.id} className="flex items-center gap-3 py-2.5">
+                    <div className="min-w-0 flex-1">
+                      <div className="truncate text-sm font-medium">{r.product?.name ?? "Item"}</div>
+                      <div className="truncate text-[11px] text-muted-foreground">{r.branch?.name ?? "—"} · SKU {r.product?.sku ?? "—"}</div>
+                    </div>
+                    <span className="shrink-0 rounded-full bg-destructive/15 px-2 py-0.5 text-[10px] text-destructive">{r.qty} left</span>
+                    <div className="flex shrink-0 items-center gap-1">
+                      <button onClick={() => stockM.mutate({ id: r.id, delta: -1 })} className="rounded-lg border border-white/10 bg-white/5 p-1.5 hover:bg-white/10" aria-label="Decrease">
+                        <Minus className="h-3 w-3" />
+                      </button>
+                      <button onClick={() => stockM.mutate({ id: r.id, delta: 10 })} className="rounded-lg border border-white/10 bg-white/5 p-1.5 hover:bg-white/10" aria-label="Restock 10">
+                        <Plus className="h-3 w-3" />
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+            <Link to="/inventory" className="mt-3 inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground">
+              Open inventory <ArrowRight className="h-3 w-3" />
+            </Link>
+          </Panel>
+
+          <div className="relative overflow-hidden rounded-2xl border border-violet/30 bg-gradient-to-br from-violet/25 to-violet/5 p-4">
+            <div className="absolute -bottom-8 -right-8 h-28 w-28 rounded-full bg-violet/40 blur-2xl" />
+            <div className="relative flex items-center gap-2 text-xs font-display">
+              <Sparkles className="h-3.5 w-3.5 gold-text" /> AI Suggestion
+            </div>
+            <p className="relative mt-2 text-[11px] text-muted-foreground">
+              {k && k.lowStockItems > 0
+                ? `Restock ${k.lowStockItems} low item${k.lowStockItems > 1 ? "s" : ""} now — stockouts are the fastest way to lose today's ${k.appointmentsToday} bookings.`
+                : k && k.followUpsPending > 0
+                ? `${k.followUpsPending} follow-ups pending — send WhatsApp reminders to lift rebooking rate.`
+                : "Operations are stable. Push retention upsells across branches today."}
+            </p>
+            <Link to="/suite" className="relative mt-3 inline-flex items-center gap-1 chip-gold px-3 py-1.5 text-[10px]">
+              Open full CEO Suite <ArrowRight className="h-3 w-3" />
+            </Link>
+          </div>
+        </div>
       </div>
     </Shell>
   );
 }
 
-function Phone() {
+function Panel({ title, icon: Icon, children, className = "" }: { title: string; icon: React.ComponentType<{ className?: string }>; children: React.ReactNode; className?: string }) {
   return (
-    <div className="relative w-[min(360px,100%)] h-[760px] max-w-full rounded-[44px] p-[10px] bg-gradient-to-b from-[oklch(0.28_0.03_280)] to-[oklch(0.12_0.02_280)] shadow-[0_60px_120px_-30px_oklch(0_0_0/0.7)] border border-white/10">
-      <div className="absolute top-3 left-1/2 -translate-x-1/2 h-6 w-32 rounded-full bg-black z-10" />
-      <div className="relative h-full w-full rounded-[36px] overflow-hidden bg-gradient-to-b from-[oklch(0.18_0.025_280)] to-[oklch(0.14_0.02_280)]">
-        <div className="absolute -top-20 -right-10 h-56 w-56 rounded-full bg-gold/15 blur-3xl" />
-        <div className="absolute -bottom-20 -left-10 h-56 w-56 rounded-full bg-violet/20 blur-3xl" />
+    <section className={`rounded-2xl border border-white/10 bg-white/[0.04] p-4 sm:p-5 ${className}`}>
+      <div className="mb-3 flex items-center gap-2">
+        <Icon className="h-3.5 w-3.5 gold-text" />
+        <h2 className="font-display text-sm sm:text-base">{title}</h2>
+      </div>
+      {children}
+    </section>
+  );
+}
 
-        <div className="relative h-full overflow-y-auto px-4 pt-10 pb-20 space-y-4">
-          {/* Status / brand */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="h-6 w-6 rounded-md bg-gradient-to-br from-gold to-violet" />
-              <span className="text-sm font-display gold-text">ESB Brand</span>
-            </div>
-            <button onClick={() => toast("3 alerts", { description: "Payroll, restock, marketing sync" })} className="h-8 w-8 rounded-full bg-white/5 flex items-center justify-center">
-              <Bell className="h-4 w-4" />
-            </button>
-
-          </div>
-
-          <div>
-            <div className="text-xs text-muted-foreground">Tuesday · Jun 15</div>
-            <h2 className="text-2xl font-display font-semibold mt-1">CEO <span className="gold-text">AI Suite</span></h2>
-          </div>
-
-          {/* Revenue card */}
-          <div className="rounded-2xl p-4 bg-white/[0.04] border border-white/10">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-xs text-muted-foreground">Skincare Kitchen</span>
-              <span className="chip-violet text-[10px]">Live</span>
-            </div>
-            <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-display font-semibold">$245.8K</span>
-              <span className="text-xs text-success font-semibold">+18.4%</span>
-            </div>
-            <LineSpark points={[12, 18, 15, 22, 30, 26, 40, 55, 48, 62]} height={80} />
-          </div>
-
-          {/* Two columns */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-2xl p-4 bg-white/[0.04] border border-white/10">
-              <div className="text-[10px] uppercase text-muted-foreground tracking-wider">Derma Aesthetics</div>
-              <div className="text-lg font-display font-semibold mt-1">+12.5%</div>
-              <div className="flex items-end gap-1 h-10 mt-2">
-                {[5, 8, 6, 10, 9, 12, 14].map((h, i) => (
-                  <div key={i} className="flex-1 rounded-sm bg-gradient-to-t from-violet-soft to-violet" style={{ height: `${(h / 14) * 100}%` }} />
-                ))}
-              </div>
-            </div>
-            <div className="rounded-2xl p-4 bg-white/[0.04] border border-white/10">
-              <div className="text-[10px] uppercase text-muted-foreground tracking-wider">Reminders</div>
-              <div className="text-lg font-display font-semibold mt-1">3</div>
-              <div className="text-[11px] text-muted-foreground mt-2 leading-snug">
-                Client meeting · 10:00 AM<br />Review report · 1:30 PM
-              </div>
-            </div>
-          </div>
-
-          {/* AI suggestion */}
-          <div className="rounded-2xl p-4 bg-gradient-to-br from-violet/20 to-gold/10 border border-violet/30 relative overflow-hidden">
-            <div className="absolute top-2 right-2 h-8 w-8 rounded-full bg-gradient-to-br from-gold to-violet flex items-center justify-center">
-              <Sparkles className="h-4 w-4 text-white" />
-            </div>
-            <div className="text-[10px] uppercase tracking-wider text-violet font-semibold mb-1">AI Suggestion</div>
-            <div className="font-display text-sm leading-snug pr-10">
-              Optimize Marketing Spend — shift <span className="gold-text font-semibold">$2.4K</span> from display to retention.
-            </div>
-            <div className="flex items-center justify-between mt-3">
-              <button onClick={() => toast("Dismissed")} className="text-[11px] text-muted-foreground">Dismiss</button>
-              <button onClick={() => toast.success("AI details", { description: "Shift $2.4K to retention. Est. +6% LTV." })} className="chip-gold text-[11px] flex items-center gap-1">Details <ChevronRight className="h-3 w-3" /></button>
-            </div>
-
-          </div>
-
-          {/* Reminders list */}
-          <div className="rounded-2xl p-4 bg-white/[0.04] border border-white/10">
-            <div className="flex items-center justify-between mb-3">
-              <span className="font-display">Today</span>
-              <button onClick={() => toast("Today's agenda", { description: "3 items due" })} className="text-[11px] text-muted-foreground">View all</button>
-
-            </div>
-            {[
-              { t: "Team Meeting", s: "Quarterly review", time: "10:00", tag: "Auto" },
-              { t: "Payroll Approval", s: "Skincare Kitchen", time: "12:30", tag: "Pending" },
-              { t: "Marketing Sync", s: "Derma Aesthetics", time: "15:00", tag: "Auto" },
-            ].map((r, i) => (
-              <div key={i} className="flex items-center justify-between py-2 border-t border-white/5 first:border-0">
-                <div>
-                  <div className="text-xs font-medium">{r.t}</div>
-                  <div className="text-[10px] text-muted-foreground">{r.s}</div>
-                </div>
-                <div className="text-right">
-                  <div className="text-[11px] gold-text font-semibold">{r.time}</div>
-                  <div className="text-[9px] text-muted-foreground">{r.tag}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Bottom nav */}
-        <div className="absolute bottom-0 inset-x-0 px-4 pb-4">
-          <div className="rounded-2xl bg-black/60 backdrop-blur-xl border border-white/10 flex items-center justify-around py-3">
-            {[
-              { Icon: Home, l: "Home" },
-              { Icon: Calendar, l: "Agenda" },
-              { Icon: Sparkles, l: "AI Suite" },
-              { Icon: Settings, l: "Settings" },
-              { Icon: User, l: "Profile" },
-            ].map(({ Icon, l }, i) => (
-              <button
-                key={l}
-                onClick={() => toast(l, { description: `Opened ${l}` })}
-                className={`h-9 w-9 rounded-xl flex items-center justify-center ${i === 2 ? "bg-gradient-to-br from-gold to-violet text-white" : "text-muted-foreground"}`}
-              >
-                <Icon className="h-4 w-4" />
-              </button>
-            ))}
-
-          </div>
-        </div>
+function Stat({ icon: Icon, label, value, loading, danger }: { icon: React.ComponentType<{ className?: string }>; label: string; value?: number | string; loading?: boolean; danger?: boolean }) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-white/[0.05] p-3">
+      <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-foreground">
+        <Icon className={`h-3 w-3 ${danger ? "text-destructive" : "gold-text"}`} />
+        <span className="truncate">{label}</span>
+      </div>
+      <div className="mt-1 font-display text-xl font-semibold">
+        {loading ? <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" /> : (value ?? "—")}
       </div>
     </div>
   );
+}
+
+function Loading() {
+  return (
+    <div className="flex items-center gap-2 py-6 text-xs text-muted-foreground">
+      <Loader2 className="h-4 w-4 animate-spin" /> Loading live data…
+    </div>
+  );
+}
+
+function Empty({ text }: { text: string }) {
+  return <p className="py-6 text-xs text-muted-foreground">{text}</p>;
 }
