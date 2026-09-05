@@ -256,8 +256,21 @@ function RemindersPanel({ reminders, loading }: { reminders: Reminder[]; loading
     },
   });
   const doneM = useMutation({
-    mutationFn: (id: string) => update({ data: { id, status: "done" } }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["ceo-reminders"] }),
+    mutationFn: (v: { id: string; status: "pending" | "done" }) => update({ data: v }),
+    onMutate: async (v) => {
+      await qc.cancelQueries({ queryKey: ["ceo-reminders"] });
+      const prev = qc.getQueryData<Reminder[]>(["ceo-reminders"]);
+      qc.setQueryData<Reminder[]>(["ceo-reminders"], (old) =>
+        (old ?? []).map((r) => (r.id === v.id ? { ...r, status: v.status } : r)),
+      );
+      return { prev };
+    },
+    onError: (e: Error, _v, ctx) => {
+      if (ctx?.prev) qc.setQueryData(["ceo-reminders"], ctx.prev);
+      toast.error("Could not update reminder", { description: e.message });
+    },
+    onSuccess: (_d, v) => toast.success(v.status === "done" ? "Reminder completed" : "Reminder reopened"),
+    onSettled: () => qc.invalidateQueries({ queryKey: ["ceo-reminders"] }),
   });
 
   return (
