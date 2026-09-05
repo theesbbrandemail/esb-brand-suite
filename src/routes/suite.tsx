@@ -17,6 +17,7 @@ import {
 } from "@/lib/ops.functions";
 import { useState } from "react";
 import { formatDistanceToNow } from "date-fns";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/suite")({
   head: () => ({
@@ -256,8 +257,21 @@ function RemindersPanel({ reminders, loading }: { reminders: Reminder[]; loading
     },
   });
   const doneM = useMutation({
-    mutationFn: (id: string) => update({ data: { id, status: "done" } }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["ceo-reminders"] }),
+    mutationFn: (v: { id: string; status: "pending" | "done" }) => update({ data: v }),
+    onMutate: async (v) => {
+      await qc.cancelQueries({ queryKey: ["ceo-reminders"] });
+      const prev = qc.getQueryData<Reminder[]>(["ceo-reminders"]);
+      qc.setQueryData<Reminder[]>(["ceo-reminders"], (old) =>
+        (old ?? []).map((r) => (r.id === v.id ? { ...r, status: v.status } : r)),
+      );
+      return { prev };
+    },
+    onError: (e: Error, _v, ctx) => {
+      if (ctx?.prev) qc.setQueryData(["ceo-reminders"], ctx.prev);
+      toast.error("Could not update reminder", { description: e.message });
+    },
+    onSuccess: (_d, v) => toast.success(v.status === "done" ? "Reminder completed" : "Reminder reopened"),
+    onSettled: () => qc.invalidateQueries({ queryKey: ["ceo-reminders"] }),
   });
 
   return (
@@ -324,14 +338,14 @@ function RemindersPanel({ reminders, loading }: { reminders: Reminder[]; loading
               <div className="text-[10px] text-muted-foreground">
                 {r.due_at ? `Due ${formatDistanceToNow(new Date(r.due_at), { addSuffix: true })}` : "No due date"}
               </div>
-              {r.status !== "done" && (
-                <button
-                  onClick={() => doneM.mutate(r.id)}
-                  className="text-[11px] gold-text inline-flex items-center gap-1 hover:underline"
-                >
-                  <CheckCircle2 className="h-3 w-3" /> Done
-                </button>
-              )}
+              <button
+                onClick={() => doneM.mutate({ id: r.id, status: r.status === "done" ? "pending" : "done" })}
+                disabled={doneM.isPending}
+                aria-pressed={r.status === "done"}
+                className="text-[11px] gold-text inline-flex items-center gap-1 hover:underline disabled:opacity-50"
+              >
+                <CheckCircle2 className="h-3 w-3" /> {r.status === "done" ? "Reopen" : "Done"}
+              </button>
             </div>
           </div>
         ))}
