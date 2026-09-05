@@ -81,6 +81,14 @@ function ManagerPage() {
 
   const reminderM = useMutation({
     mutationFn: (v: { id: string; status: "pending" | "done" }) => reminderFn({ data: v }),
+    onMutate: async (v) => {
+      await qc.cancelQueries({ queryKey: ["ceo-reminders"] });
+      const prev = qc.getQueryData<Reminder[]>(["ceo-reminders"]);
+      qc.setQueryData<Reminder[]>(["ceo-reminders"], (old) =>
+        (old ?? []).map((r) => (r.id === v.id ? { ...r, status: v.status } : r)),
+      );
+      return { prev };
+    },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["ceo-reminders"] });
       toast.success("Task updated");
@@ -182,7 +190,9 @@ function ManagerPage() {
                   <li key={r.id} className="flex items-start gap-2">
                     <button
                       onClick={() => reminderM.mutate({ id: r.id, status: r.status === "done" ? "pending" : "done" })}
-                      className={`mt-0.5 h-4 w-4 shrink-0 rounded border ${r.status === "done" ? "bg-gold border-gold" : "border-white/25"}`}
+                      disabled={reminderM.isPending}
+                      aria-pressed={r.status === "done"}
+                      className={`mt-0.5 h-4 w-4 shrink-0 rounded border disabled:opacity-50 ${r.status === "done" ? "bg-gold border-gold" : "border-white/25"}`}
                       aria-label="Toggle task"
                     />
                     <div className="min-w-0">
