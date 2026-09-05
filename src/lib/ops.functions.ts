@@ -195,13 +195,19 @@ export const updateReminder = createServerFn({ method: "POST" })
       status: z.enum(["pending", "done"]).optional(),
     }).parse(d),
   )
-  .handler(async ({ data, context }) => {
+  .handler(async ({ data, context }): Promise<Reminder> => {
     const sb = context.supabase as any;
-    const patch: Record<string, unknown> = {};
-    if (data.status) patch.status = data.status;
-    const { error } = await sb.from("ceo_reminders").update(patch).eq("id", data.id).eq("user_id", context.userId);
+    if (!data.status) throw new Error("Nothing to update");
+    const { data: row, error } = await sb
+      .from("ceo_reminders")
+      .update({ status: data.status, updated_at: new Date().toISOString() })
+      .eq("id", data.id)
+      .eq("user_id", context.userId)
+      .select("id,title,body,category,priority,due_at,status")
+      .maybeSingle();
     if (error) throw new Error(error.message);
-    return { ok: true };
+    if (!row) throw new Error("Reminder not found");
+    return row as Reminder;
   });
 
 /* ----------------------------- Inventory ----------------------------- */
