@@ -97,7 +97,7 @@ export default function SuitePage() {
             </div>
 
             <div className="relative mt-7 grid grid-cols-2 md:grid-cols-4 gap-3">
-              <HeroStat label="Revenue / 30d" value={k ? `$${(k.revenue30d / 1000).toFixed(1)}K` : "—"} delta={k ? `${k.appointments30d} bookings` : "loading"} icon={TrendingUp} loading={kpisQ.isLoading} />
+              <HeroStat label="Revenue / 30d" value={k ? money(k.revenue30d) : "—"} delta={k ? `${k.revenueGrowth >= 0 ? "+" : ""}${k.revenueGrowth}% vs prev 30d` : "loading"} icon={TrendingUp} loading={kpisQ.isLoading} />
               <HeroStat label="AI Autonomy" value={k ? `${Math.round(k.aiAutonomy)}%` : "—"} delta={k ? `${k.tasksAutoRun} auto-run` : "loading"} icon={Brain} loading={kpisQ.isLoading} />
               <HeroStat label="Active Branches" value={k ? String(k.activeBranches) : "—"} delta={k ? `${k.staff} staff` : "loading"} icon={Crown} muted loading={kpisQ.isLoading} />
               <HeroStat label="Health Score" value={k ? scoreGrade(k) : "—"} delta={k ? `${k.followUpsPending} pending follow-ups` : "loading"} icon={Activity} loading={kpisQ.isLoading} />
