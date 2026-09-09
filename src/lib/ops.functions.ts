@@ -383,8 +383,19 @@ export const createAppointment = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     const sb = context.supabase as any;
-    const { data: row, error } = await sb.from("appointments").insert(data).select().single();
+    // Price the booking from the service catalogue so revenue KPIs are real.
+    const { data: svc } = await sb
+      .from("service_catalog")
+      .select("price, cost")
+      .ilike("name", data.service.trim())
+      .maybeSingle();
+    const { data: row, error } = await sb
+      .from("appointments")
+      .insert({ ...data, price: svc?.price ?? null, cost: svc?.cost ?? null })
+      .select()
+      .single();
     if (error) throw new Error(error.message);
+
     // Auto-schedule a follow-up 24h after appointment if phone is provided.
     if (row?.patient_phone) {
       const followAt = new Date(new Date(data.scheduled_at).getTime() + 24 * 3600000).toISOString();
