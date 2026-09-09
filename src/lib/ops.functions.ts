@@ -41,8 +41,34 @@ export type Reminder = {
   status: string;
 };
 
+export type BranchProfit = {
+  branchId: string;
+  name: string;
+  city: string | null;
+  bookings: number;
+  revenue: number;
+  cost: number;
+  profit: number;
+  margin: number;
+  avgTicket: number;
+};
+
 export type CeoKpis = {
   revenue30d: number;
+  cost30d: number;
+  profit30d: number;
+  margin30d: number;
+  avgBookingValue: number;
+  revenuePrev30d: number;
+  revenueGrowth: number;
+  billableBookings30d: number;
+  csatScore: number;
+  csatPercent: number;
+  csatResponses: number;
+  csatPromoters: number;
+  csatDetractors: number;
+  nps: number;
+  branchProfit: BranchProfit[];
   appointments30d: number;
   appointmentsToday: number;
   upcomingAppointments: number;
@@ -59,6 +85,9 @@ export type CeoKpis = {
   brandSeries: { label: string; gold: number; violet: number }[];
 };
 
+/** Statuses that count as realised revenue. */
+const BILLABLE = new Set(["scheduled", "confirmed", "completed"]);
+
 /* ----------------------------- KPIs ----------------------------- */
 
 export const getCeoKpis = createServerFn({ method: "GET" })
@@ -67,12 +96,14 @@ export const getCeoKpis = createServerFn({ method: "GET" })
     const sb = context.supabase as any;
     const now = new Date();
     const thirtyAgo = new Date(now.getTime() - 30 * 86400000).toISOString();
+    const sixtyAgo = new Date(now.getTime() - 60 * 86400000).toISOString();
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
     const todayEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).toISOString();
 
     const [
       branches,
       apptsAll,
+      apptsPrev,
       apptsToday,
       apptsUpcoming,
       followUps,
@@ -82,9 +113,11 @@ export const getCeoKpis = createServerFn({ method: "GET" })
       staff,
       tasksAll,
       tasksApproved,
+      feedback,
     ] = await Promise.all([
-      sb.from("branches").select("id", { count: "exact", head: true }),
-      sb.from("appointments").select("id, scheduled_at, status", { count: "exact" }).gte("scheduled_at", thirtyAgo),
+      sb.from("branches").select("id, name, city"),
+      sb.from("appointments").select("id, branch_id, scheduled_at, status, price, cost", { count: "exact" }).gte("scheduled_at", thirtyAgo),
+      sb.from("appointments").select("status, price").gte("scheduled_at", sixtyAgo).lt("scheduled_at", thirtyAgo),
       sb.from("appointments").select("id", { count: "exact", head: true }).gte("scheduled_at", todayStart).lt("scheduled_at", todayEnd),
       sb.from("appointments").select("id", { count: "exact", head: true }).gte("scheduled_at", now.toISOString()).eq("status", "scheduled"),
       sb.from("follow_ups").select("id", { count: "exact", head: true }).eq("status", "pending"),
@@ -94,6 +127,7 @@ export const getCeoKpis = createServerFn({ method: "GET" })
       sb.from("user_roles").select("user_id", { count: "exact", head: true }).in("role", ["staff", "admin"]),
       sb.from("ai_automation_tasks").select("id, status", { count: "exact" }),
       sb.from("ai_automation_tasks").select("id", { count: "exact", head: true }).in("status", ["approved", "completed"]),
+      sb.from("appointment_feedback").select("rating").gte("created_at", thirtyAgo),
     ]);
 
     const lowStock = (inventory.data ?? []).filter((r: any) => r.qty <= r.low_stock_threshold).length;
@@ -102,34 +136,100 @@ export const getCeoKpis = createServerFn({ method: "GET" })
     const pendingApprovals = (tasksAll.data ?? []).filter((t: any) => t.status === "pending").length;
     const approvalRate = totalTasks > 0 ? Math.round((approvedTasks / totalTasks) * 100) : 0;
     const apptCount = apptsAll.count ?? 0;
-    // Revenue model: avg ticket ~$184 per completed/scheduled appointment in last 30d.
-    const revenue30d = apptCount * 184;
 
-    // Brand series — last 9 months, bucketed by appointment count
+    type ApptRow = { branch_id: string; scheduled_at: string; status: string; price: number | null; cost: number | null };
+    const rows = (apptsAll.data ?? []) as ApptRow[];
+    const billable = rows.filter((r) => BILLABLE.has(r.status));
+
+    // Real revenue: sum of the price actually attached to each billable booking.
+    const revenue30d = billable.reduce((s, r) => s + Number(r.price ?? 0), 0);
+    const cost30d = billable.reduce((s, r) => s + Number(r.cost ?? 0), 0);
+    const profit30d = revenue30d - cost30d;
+    const margin30d = revenue30d > 0 ? Math.round((profit30d / revenue30d) * 100) : 0;
+    const avgBookingValue = billable.length > 0 ? revenue30d / billable.length : 0;
+
+    const prevRows = (apptsPrev.data ?? []) as { status: string; price: number | null }[];
+    const revenuePrev30d = prevRows
+      .filter((r) => BILLABLE.has(r.status))
+      .reduce((s, r) => s + Number(r.price ?? 0), 0);
+    const revenueGrowth = revenuePrev30d > 0
+      ? Math.round(((revenue30d - revenuePrev30d) / revenuePrev30d) * 100)
+      : revenue30d > 0 ? 100 : 0;
+
+    // Branch profitability from real bookings.
+    const branchList = (branches.data ?? []) as { id: string; name: string; city: string | null }[];
+    const branchProfit: BranchProfit[] = branchList
+      .map((b) => {
+        const mine = billable.filter((r) => r.branch_id === b.id);
+        const rev = mine.reduce((s, r) => s + Number(r.price ?? 0), 0);
+        const cst = mine.reduce((s, r) => s + Number(r.cost ?? 0), 0);
+        return {
+          branchId: b.id,
+          name: b.name,
+          city: b.city,
+          bookings: mine.length,
+          revenue: rev,
+          cost: cst,
+          profit: rev - cst,
+          margin: rev > 0 ? Math.round(((rev - cst) / rev) * 100) : 0,
+          avgTicket: mine.length > 0 ? rev / mine.length : 0,
+        };
+      })
+      .sort((a, b) => b.profit - a.profit);
+
+    // Customer satisfaction from real feedback ratings.
+    const ratings = ((feedback.data ?? []) as { rating: number }[]).map((f) => Number(f.rating));
+    const csatResponses = ratings.length;
+    const csatScore = csatResponses > 0 ? ratings.reduce((s, r) => s + r, 0) / csatResponses : 0;
+    const csatPromoters = ratings.filter((r) => r >= 4).length;
+    const csatDetractors = ratings.filter((r) => r <= 2).length;
+    const csatPercent = csatResponses > 0 ? Math.round((csatPromoters / csatResponses) * 100) : 0;
+    const nps = csatResponses > 0
+      ? Math.round(((csatPromoters - csatDetractors) / csatResponses) * 100)
+      : 0;
+
+    // Brand series — last 9 months: gold = bookings, violet = revenue in hundreds.
     const months: { label: string; gold: number; violet: number }[] = [];
     for (let i = 8; i >= 0; i--) {
       const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
       months.push({ label: d.toLocaleString("en", { month: "short" }), gold: 0, violet: 0 });
     }
-    for (const a of (apptsAll.data ?? []) as { scheduled_at: string }[]) {
+    for (const a of rows) {
       const d = new Date(a.scheduled_at);
-      const idx = months.findIndex((m, i) => {
+      const idx = months.findIndex((_m, i) => {
         const md = new Date(now.getFullYear(), now.getMonth() - (8 - i), 1);
         return d.getFullYear() === md.getFullYear() && d.getMonth() === md.getMonth();
       });
-      if (idx >= 0) months[idx].gold += 1;
+      if (idx >= 0) {
+        months[idx].gold += 1;
+        if (BILLABLE.has(a.status)) months[idx].violet += Number(a.price ?? 0) / 100;
+      }
     }
-    for (let i = 0; i < months.length; i++) months[i].violet = Math.round(months[i].gold * 0.7 + 4);
+    for (const m of months) m.violet = Math.round(m.violet);
 
     return {
       revenue30d,
+      cost30d,
+      profit30d,
+      margin30d,
+      avgBookingValue,
+      revenuePrev30d,
+      revenueGrowth,
+      billableBookings30d: billable.length,
+      csatScore,
+      csatPercent,
+      csatResponses,
+      csatPromoters,
+      csatDetractors,
+      nps,
+      branchProfit,
       appointments30d: apptCount,
       appointmentsToday: apptsToday.count ?? 0,
       upcomingAppointments: apptsUpcoming.count ?? 0,
       followUpsPending: followUps.count ?? 0,
       lowStockItems: lowStock,
       totalSkus: products.count ?? 0,
-      activeBranches: branches.count ?? 0,
+      activeBranches: branchList.length,
       customers: customers.count ?? 0,
       staff: staff.count ?? 0,
       pendingApprovals,
@@ -139,6 +239,7 @@ export const getCeoKpis = createServerFn({ method: "GET" })
       brandSeries: months,
     };
   });
+
 
 /* ----------------------------- Branches ----------------------------- */
 
