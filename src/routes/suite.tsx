@@ -106,6 +106,14 @@ export default function SuitePage() {
             </div>
           </div>
 
+          {/* Financial KPI tiles — real bookings & feedback */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
+            <MoneyTile icon={DollarSign} label="Revenue (30d)" value={k ? money(k.revenue30d) : undefined} sub={k ? `${k.billableBookings30d} paid bookings` : ""} loading={kpisQ.isLoading} />
+            <MoneyTile icon={Receipt} label="Avg. booking value" value={k ? money(k.avgBookingValue) : undefined} sub={k ? `cost ${money(k.cost30d)}` : ""} loading={kpisQ.isLoading} />
+            <MoneyTile icon={PieChart} label="Gross margin" value={k ? `${k.margin30d}%` : undefined} sub={k ? `${money(k.profit30d)} profit` : ""} loading={kpisQ.isLoading} />
+            <MoneyTile icon={Star} label="Satisfaction" value={k ? (k.csatResponses ? `${k.csatScore.toFixed(1)}/5` : "—") : undefined} sub={k ? `${k.csatResponses} reviews · NPS ${k.nps}` : ""} loading={kpisQ.isLoading} />
+          </div>
+
           {/* Real KPI tiles */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
             <KpiTile icon={Calendar} label="Today's appts" value={k?.appointmentsToday} accent="gold" loading={kpisQ.isLoading} />
@@ -116,7 +124,7 @@ export default function SuitePage() {
 
           {/* Main grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-            <BrandPanel title="ESB Operations" tag="Live" data={k?.brandSeries ?? []} growth={k ? `${k.appointments30d} appts/30d` : "—"} revenue={k ? `$${(k.revenue30d / 1000).toFixed(1)}K` : "$—"} />
+            <BrandPanel title="ESB Operations" tag="Live" data={k?.brandSeries ?? []} growth={k ? `${k.appointments30d} appts/30d` : "—"} revenue={k ? money(k.revenue30d) : "$—"} />
             <KPIPanel k={k} />
             <RemindersPanel
               reminders={remindersQ.data ?? []}
@@ -124,9 +132,17 @@ export default function SuitePage() {
             />
           </div>
 
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mt-5">
+            <div className="lg:col-span-2">
+              <BranchProfitPanel k={k} loading={kpisQ.isLoading} />
+            </div>
+            <SatisfactionPanel k={k} />
+          </div>
+
           <div className="mt-5">
             <BranchCards title="Branch Network" />
           </div>
+
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mt-5">
             <div className="lg:col-span-2">
