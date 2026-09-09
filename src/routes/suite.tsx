@@ -495,3 +495,113 @@ function Stat({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
+
+function MoneyTile({
+  icon: Icon, label, value, sub, loading,
+}: { icon: typeof DollarSign; label: string; value: string | undefined; sub: string; loading?: boolean }) {
+  return (
+    <div className="card-elevated p-4">
+      <div className="flex items-center justify-between">
+        <span className="text-[10px] uppercase tracking-widest text-muted-foreground">{label}</span>
+        <Icon className="h-3.5 w-3.5 text-gold/70" />
+      </div>
+      <div className="mt-1.5 text-xl font-display font-semibold gold-text">
+        {loading ? <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" /> : value ?? "—"}
+      </div>
+      <div className="text-[10px] text-muted-foreground mt-0.5">{sub}</div>
+    </div>
+  );
+}
+
+function BranchProfitPanel({ k, loading }: { k: CeoKpis | undefined; loading: boolean }) {
+  const rows = k?.branchProfit ?? [];
+  const top = rows[0]?.profit ?? 0;
+  return (
+    <div className="card-elevated p-5">
+      <div className="flex items-center justify-between mb-1">
+        <h3 className="font-display text-lg">Branch Profitability</h3>
+        <span className="chip-gold">Last 30 days</span>
+      </div>
+      <p className="text-xs text-muted-foreground mb-4">Revenue, cost and margin from real bookings</p>
+      {loading && <div className="text-xs text-muted-foreground">Loading…</div>}
+      {!loading && rows.length === 0 && <div className="text-xs text-muted-foreground">No bookings in the last 30 days.</div>}
+      <div className="space-y-3">
+        {rows.map((b) => (
+          <Link
+            key={b.branchId}
+            to="/appointments"
+            search={{ q: "", status: "", branchId: b.branchId }}
+            className="block p-3 rounded-xl bg-secondary/40 hover:bg-secondary/70 transition-colors"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-sm font-semibold">{b.name}</div>
+                <div className="text-[11px] text-muted-foreground">
+                  {b.bookings} bookings · avg {money(b.avgTicket)}
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-sm font-semibold gold-text">{money(b.revenue)}</div>
+                <div className="text-[11px] text-success">{money(b.profit)} profit · {b.margin}%</div>
+              </div>
+            </div>
+            <div className="mt-2 h-1.5 rounded-full bg-secondary overflow-hidden">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-[oklch(0.55_0.13_70)] to-[oklch(0.86_0.14_88)]"
+                style={{ width: `${top > 0 ? Math.max(4, (b.profit / top) * 100) : 4}%` }}
+              />
+            </div>
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function SatisfactionPanel({ k }: { k: CeoKpis | undefined }) {
+  const feedbackFn = useServerFn(listFeedback);
+  const q = useQuery({
+    queryKey: ["ceo-feedback"],
+    queryFn: () => feedbackFn({ data: { limit: 6 } }),
+    refetchInterval: 60_000,
+  });
+  const entries = q.data ?? [];
+  return (
+    <div className="card-elevated p-5">
+      <div className="flex items-center justify-between mb-1">
+        <h3 className="font-display text-lg">Customer Satisfaction</h3>
+        <span className="chip-violet">Live</span>
+      </div>
+      <div className="flex items-baseline gap-2 mb-1">
+        <span className="text-2xl font-display font-semibold gold-text">
+          {k && k.csatResponses ? k.csatScore.toFixed(1) : "—"}
+        </span>
+        <span className="text-xs text-muted-foreground">/ 5 · {k?.csatResponses ?? 0} reviews (30d)</span>
+      </div>
+      <div className="flex items-center gap-0.5 mb-4">
+        {[1, 2, 3, 4, 5].map((i) => (
+          <Star key={i} className={`h-3.5 w-3.5 ${k && k.csatScore >= i - 0.25 ? "text-gold fill-gold" : "text-muted-foreground/40"}`} />
+        ))}
+        <span className="ml-2 text-[11px] text-success">{k ? `${k.csatPercent}% happy · NPS ${k.nps}` : ""}</span>
+      </div>
+      {q.isLoading && <div className="text-xs text-muted-foreground">Loading feedback…</div>}
+      {!q.isLoading && entries.length === 0 && (
+        <div className="text-xs text-muted-foreground">No feedback submitted yet. Ratings appear here as patients respond.</div>
+      )}
+      <div className="space-y-2 max-h-64 overflow-y-auto">
+        {entries.map((f) => (
+          <div key={f.id} className="p-3 rounded-xl bg-secondary/40">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold">{f.appointment?.patient_name ?? "Patient"}</span>
+              <span className="text-[11px] gold-text">{"★".repeat(f.rating)}<span className="text-muted-foreground">{"★".repeat(5 - f.rating)}</span></span>
+            </div>
+            <div className="text-[11px] text-muted-foreground">
+              {f.appointment?.service ?? "Service"}{f.appointment?.branch?.name ? ` · ${f.appointment.branch.name}` : ""}
+            </div>
+            {f.comment && <p className="text-[11px] mt-1">{f.comment}</p>}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
