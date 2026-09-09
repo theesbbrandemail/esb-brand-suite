@@ -4,7 +4,9 @@ import { DualBarChart, LineSpark } from "@/components/esb/charts";
 import {
   Search, ChevronRight, Sparkles, Calendar, TrendingUp, Activity, Brain, Crown,
   Plus, CheckCircle2, AlertTriangle, Package, Users, Bell, Loader2,
+  DollarSign, Receipt, PieChart, Star,
 } from "lucide-react";
+
 import { CeoGate } from "@/components/esb/CeoGate";
 import { CeoAssistant } from "@/components/esb/CeoAssistant";
 import { AutomationApprovalQueue } from "@/components/esb/AutomationApprovalQueue";
