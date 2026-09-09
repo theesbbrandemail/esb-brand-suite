@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Shell } from "@/components/esb/Shell";
 import { DualBarChart, LineSpark } from "@/components/esb/charts";
 import {
