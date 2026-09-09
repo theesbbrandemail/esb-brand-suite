@@ -467,3 +467,70 @@ export const markFollowUpSent = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+/* ----------------------------- Service catalogue & feedback ----------------------------- */
+
+export type ServiceItem = { id: string; name: string; price: number; cost: number; active: boolean };
+
+export const listServices = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<ServiceItem[]> => {
+    const sb = context.supabase as any;
+    const { data } = await sb
+      .from("service_catalog")
+      .select("id,name,price,cost,active")
+      .eq("active", true)
+      .order("name");
+    return (data ?? []).map((s: any) => ({ ...s, price: Number(s.price), cost: Number(s.cost) })) as ServiceItem[];
+  });
+
+export type FeedbackEntry = {
+  id: string;
+  rating: number;
+  comment: string | null;
+  created_at: string;
+  appointment: { patient_name: string; service: string; branch: { name: string } | null } | null;
+};
+
+export const listFeedback = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => z.object({ limit: z.number().int().min(1).max(100).default(10) }).optional().parse(d))
+  .handler(async ({ data, context }): Promise<FeedbackEntry[]> => {
+    const sb = context.supabase as any;
+    const { data: rows, error } = await sb
+      .from("appointment_feedback")
+      .select("id, rating, comment, created_at, appointment:appointments(patient_name, service, branch:branches(name))")
+      .order("created_at", { ascending: false })
+      .limit(data?.limit ?? 10);
+    if (error) throw new Error(error.message);
+    return (rows ?? []) as FeedbackEntry[];
+  });
+
+export const submitFeedback = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) =>
+    z.object({
+      appointment_id: z.string().uuid(),
+      rating: z.number().int().min(1).max(5),
+      comment: z.string().max(500).optional(),
+    }).parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const sb = context.supabase as any;
+    const { data: appt } = await sb
+      .from("appointments")
+      .select("patient_user_id")
+      .eq("id", data.appointment_id)
+      .maybeSingle();
+    const { error } = await sb.from("appointment_feedback").upsert(
+      {
+        appointment_id: data.appointment_id,
+        patient_user_id: appt?.patient_user_id ?? context.userId,
+        rating: data.rating,
+        comment: data.comment ?? null,
+      },
+      { onConflict: "appointment_id" },
+    );
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
