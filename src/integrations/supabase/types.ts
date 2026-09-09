@@ -68,10 +68,46 @@ export type Database = {
         }
         Relationships: []
       }
+      appointment_feedback: {
+        Row: {
+          appointment_id: string
+          comment: string | null
+          created_at: string
+          id: string
+          patient_user_id: string | null
+          rating: number
+        }
+        Insert: {
+          appointment_id: string
+          comment?: string | null
+          created_at?: string
+          id?: string
+          patient_user_id?: string | null
+          rating: number
+        }
+        Update: {
+          appointment_id?: string
+          comment?: string | null
+          created_at?: string
+          id?: string
+          patient_user_id?: string | null
+          rating?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointment_feedback_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: true
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       appointments: {
         Row: {
           branch_id: string
           cancel_reason: string | null
+          cost: number | null
           created_at: string
           duration_minutes: number
           id: string
@@ -81,6 +117,7 @@ export type Database = {
           patient_phone: string | null
           patient_user_id: string | null
           previous_scheduled_at: string | null
+          price: number | null
           reschedule_reason: string | null
           scheduled_at: string
           service: string
@@ -91,6 +128,7 @@ export type Database = {
         Insert: {
           branch_id: string
           cancel_reason?: string | null
+          cost?: number | null
           created_at?: string
           duration_minutes?: number
           id?: string
@@ -100,6 +138,7 @@ export type Database = {
           patient_phone?: string | null
           patient_user_id?: string | null
           previous_scheduled_at?: string | null
+          price?: number | null
           reschedule_reason?: string | null
           scheduled_at: string
           service: string
@@ -110,6 +149,7 @@ export type Database = {
         Update: {
           branch_id?: string
           cancel_reason?: string | null
+          cost?: number | null
           created_at?: string
           duration_minutes?: number
           id?: string
@@ -119,6 +159,7 @@ export type Database = {
           patient_phone?: string | null
           patient_user_id?: string | null
           previous_scheduled_at?: string | null
+          price?: number | null
           reschedule_reason?: string | null
           scheduled_at?: string
           service?: string
@@ -437,6 +478,36 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      service_catalog: {
+        Row: {
+          active: boolean
+          cost: number
+          created_at: string
+          id: string
+          name: string
+          price: number
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          cost?: number
+          created_at?: string
+          id?: string
+          name: string
+          price?: number
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          cost?: number
+          created_at?: string
+          id?: string
+          name?: string
+          price?: number
           updated_at?: string
         }
         Relationships: []

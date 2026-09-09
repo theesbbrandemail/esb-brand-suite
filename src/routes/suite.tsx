@@ -1,10 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Shell } from "@/components/esb/Shell";
 import { DualBarChart, LineSpark } from "@/components/esb/charts";
 import {
   Search, ChevronRight, Sparkles, Calendar, TrendingUp, Activity, Brain, Crown,
   Plus, CheckCircle2, AlertTriangle, Package, Users, Bell, Loader2,
+  DollarSign, Receipt, PieChart, Star,
 } from "lucide-react";
+
 import { CeoGate } from "@/components/esb/CeoGate";
 import { CeoAssistant } from "@/components/esb/CeoAssistant";
 import { AutomationApprovalQueue } from "@/components/esb/AutomationApprovalQueue";
@@ -12,9 +14,10 @@ import { BranchCards } from "@/components/esb/BranchCards";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import {
-  getCeoKpis, listReminders, createReminder, updateReminder,
+  getCeoKpis, listReminders, createReminder, updateReminder, listFeedback,
   type Reminder, type CeoKpis,
 } from "@/lib/ops.functions";
+
 import { useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
@@ -97,11 +100,19 @@ export default function SuitePage() {
             </div>
 
             <div className="relative mt-7 grid grid-cols-2 md:grid-cols-4 gap-3">
-              <HeroStat label="Revenue / 30d" value={k ? `$${(k.revenue30d / 1000).toFixed(1)}K` : "—"} delta={k ? `${k.appointments30d} bookings` : "loading"} icon={TrendingUp} loading={kpisQ.isLoading} />
+              <HeroStat label="Revenue / 30d" value={k ? money(k.revenue30d) : "—"} delta={k ? `${k.revenueGrowth >= 0 ? "+" : ""}${k.revenueGrowth}% vs prev 30d` : "loading"} icon={TrendingUp} loading={kpisQ.isLoading} />
               <HeroStat label="AI Autonomy" value={k ? `${Math.round(k.aiAutonomy)}%` : "—"} delta={k ? `${k.tasksAutoRun} auto-run` : "loading"} icon={Brain} loading={kpisQ.isLoading} />
               <HeroStat label="Active Branches" value={k ? String(k.activeBranches) : "—"} delta={k ? `${k.staff} staff` : "loading"} icon={Crown} muted loading={kpisQ.isLoading} />
               <HeroStat label="Health Score" value={k ? scoreGrade(k) : "—"} delta={k ? `${k.followUpsPending} pending follow-ups` : "loading"} icon={Activity} loading={kpisQ.isLoading} />
             </div>
+          </div>
+
+          {/* Financial KPI tiles — real bookings & feedback */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
+            <MoneyTile icon={DollarSign} label="Revenue (30d)" value={k ? money(k.revenue30d) : undefined} sub={k ? `${k.billableBookings30d} paid bookings` : ""} loading={kpisQ.isLoading} />
+            <MoneyTile icon={Receipt} label="Avg. booking value" value={k ? money(k.avgBookingValue) : undefined} sub={k ? `cost ${money(k.cost30d)}` : ""} loading={kpisQ.isLoading} />
+            <MoneyTile icon={PieChart} label="Gross margin" value={k ? `${k.margin30d}%` : undefined} sub={k ? `${money(k.profit30d)} profit` : ""} loading={kpisQ.isLoading} />
+            <MoneyTile icon={Star} label="Satisfaction" value={k ? (k.csatResponses ? `${k.csatScore.toFixed(1)}/5` : "—") : undefined} sub={k ? `${k.csatResponses} reviews · NPS ${k.nps}` : ""} loading={kpisQ.isLoading} />
           </div>
 
           {/* Real KPI tiles */}
@@ -114,7 +125,7 @@ export default function SuitePage() {
 
           {/* Main grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-            <BrandPanel title="ESB Operations" tag="Live" data={k?.brandSeries ?? []} growth={k ? `${k.appointments30d} appts/30d` : "—"} revenue={k ? `$${(k.revenue30d / 1000).toFixed(1)}K` : "$—"} />
+            <BrandPanel title="ESB Operations" tag="Live" data={k?.brandSeries ?? []} growth={k ? `${k.appointments30d} appts/30d` : "—"} revenue={k ? money(k.revenue30d) : "$—"} />
             <KPIPanel k={k} />
             <RemindersPanel
               reminders={remindersQ.data ?? []}
@@ -122,9 +133,17 @@ export default function SuitePage() {
             />
           </div>
 
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mt-5">
+            <div className="lg:col-span-2">
+              <BranchProfitPanel k={k} loading={kpisQ.isLoading} />
+            </div>
+            <SatisfactionPanel k={k} />
+          </div>
+
           <div className="mt-5">
             <BranchCards title="Branch Network" />
           </div>
+
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mt-5">
             <div className="lg:col-span-2">
@@ -354,14 +373,19 @@ function RemindersPanel({ reminders, loading }: { reminders: Reminder[]; loading
   );
 }
 
+const money = (n: number) => (n >= 1000 ? `$${(n / 1000).toFixed(1)}K` : `$${Math.round(n)}`);
+
 function BusinessOverviewPanel({ k }: { k: CeoKpis | undefined }) {
   const items = k
     ? [
-        { l: "Revenue (30d)", v: `$${(k.revenue30d / 1000).toFixed(1)}K`, g: `${k.appointments30d} bookings` },
-        { l: "Avg. ticket", v: `$184`, g: "Operational" },
+        { l: "Revenue (30d)", v: money(k.revenue30d), g: `${k.billableBookings30d} paid bookings` },
+        { l: "Avg. booking value", v: money(k.avgBookingValue), g: `${k.margin30d}% margin` },
+        { l: "Gross profit (30d)", v: money(k.profit30d), g: `${k.revenueGrowth >= 0 ? "+" : ""}${k.revenueGrowth}% vs prev 30d` },
+        { l: "Satisfaction", v: k.csatResponses ? `${k.csatScore.toFixed(1)}/5` : "No ratings", g: `${k.csatResponses} reviews · NPS ${k.nps}` },
         { l: "Customers", v: String(k.customers), g: `${k.staff} staff` },
       ]
     : [];
+
   return (
     <div className="card-elevated p-5">
       <div className="flex items-center justify-between mb-3">
@@ -469,6 +493,116 @@ function Stat({ label, value }: { label: string; value: string }) {
     <div className="rounded-xl bg-secondary/60 p-3">
       <div className="text-xl font-display font-semibold gold-text">{value}</div>
       <div className="text-[10px] uppercase text-muted-foreground tracking-wider">{label}</div>
+    </div>
+  );
+}
+
+function MoneyTile({
+  icon: Icon, label, value, sub, loading,
+}: { icon: typeof DollarSign; label: string; value: string | undefined; sub: string; loading?: boolean }) {
+  return (
+    <div className="card-elevated p-4">
+      <div className="flex items-center justify-between">
+        <span className="text-[10px] uppercase tracking-widest text-muted-foreground">{label}</span>
+        <Icon className="h-3.5 w-3.5 text-gold/70" />
+      </div>
+      <div className="mt-1.5 text-xl font-display font-semibold gold-text">
+        {loading ? <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" /> : value ?? "—"}
+      </div>
+      <div className="text-[10px] text-muted-foreground mt-0.5">{sub}</div>
+    </div>
+  );
+}
+
+function BranchProfitPanel({ k, loading }: { k: CeoKpis | undefined; loading: boolean }) {
+  const rows = k?.branchProfit ?? [];
+  const top = rows[0]?.profit ?? 0;
+  return (
+    <div className="card-elevated p-5">
+      <div className="flex items-center justify-between mb-1">
+        <h3 className="font-display text-lg">Branch Profitability</h3>
+        <span className="chip-gold">Last 30 days</span>
+      </div>
+      <p className="text-xs text-muted-foreground mb-4">Revenue, cost and margin from real bookings</p>
+      {loading && <div className="text-xs text-muted-foreground">Loading…</div>}
+      {!loading && rows.length === 0 && <div className="text-xs text-muted-foreground">No bookings in the last 30 days.</div>}
+      <div className="space-y-3">
+        {rows.map((b) => (
+          <Link
+            key={b.branchId}
+            to="/appointments"
+            search={{ q: "", status: "", branchId: b.branchId }}
+            className="block p-3 rounded-xl bg-secondary/40 hover:bg-secondary/70 transition-colors"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-sm font-semibold">{b.name}</div>
+                <div className="text-[11px] text-muted-foreground">
+                  {b.bookings} bookings · avg {money(b.avgTicket)}
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-sm font-semibold gold-text">{money(b.revenue)}</div>
+                <div className="text-[11px] text-success">{money(b.profit)} profit · {b.margin}%</div>
+              </div>
+            </div>
+            <div className="mt-2 h-1.5 rounded-full bg-secondary overflow-hidden">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-[oklch(0.55_0.13_70)] to-[oklch(0.86_0.14_88)]"
+                style={{ width: `${top > 0 ? Math.max(4, (b.profit / top) * 100) : 4}%` }}
+              />
+            </div>
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function SatisfactionPanel({ k }: { k: CeoKpis | undefined }) {
+  const feedbackFn = useServerFn(listFeedback);
+  const q = useQuery({
+    queryKey: ["ceo-feedback"],
+    queryFn: () => feedbackFn({ data: { limit: 6 } }),
+    refetchInterval: 60_000,
+  });
+  const entries = q.data ?? [];
+  return (
+    <div className="card-elevated p-5">
+      <div className="flex items-center justify-between mb-1">
+        <h3 className="font-display text-lg">Customer Satisfaction</h3>
+        <span className="chip-violet">Live</span>
+      </div>
+      <div className="flex items-baseline gap-2 mb-1">
+        <span className="text-2xl font-display font-semibold gold-text">
+          {k && k.csatResponses ? k.csatScore.toFixed(1) : "—"}
+        </span>
+        <span className="text-xs text-muted-foreground">/ 5 · {k?.csatResponses ?? 0} reviews (30d)</span>
+      </div>
+      <div className="flex items-center gap-0.5 mb-4">
+        {[1, 2, 3, 4, 5].map((i) => (
+          <Star key={i} className={`h-3.5 w-3.5 ${k && k.csatScore >= i - 0.25 ? "text-gold fill-gold" : "text-muted-foreground/40"}`} />
+        ))}
+        <span className="ml-2 text-[11px] text-success">{k ? `${k.csatPercent}% happy · NPS ${k.nps}` : ""}</span>
+      </div>
+      {q.isLoading && <div className="text-xs text-muted-foreground">Loading feedback…</div>}
+      {!q.isLoading && entries.length === 0 && (
+        <div className="text-xs text-muted-foreground">No feedback submitted yet. Ratings appear here as patients respond.</div>
+      )}
+      <div className="space-y-2 max-h-64 overflow-y-auto">
+        {entries.map((f) => (
+          <div key={f.id} className="p-3 rounded-xl bg-secondary/40">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold">{f.appointment?.patient_name ?? "Patient"}</span>
+              <span className="text-[11px] gold-text">{"★".repeat(f.rating)}<span className="text-muted-foreground">{"★".repeat(5 - f.rating)}</span></span>
+            </div>
+            <div className="text-[11px] text-muted-foreground">
+              {f.appointment?.service ?? "Service"}{f.appointment?.branch?.name ? ` · ${f.appointment.branch.name}` : ""}
+            </div>
+            {f.comment && <p className="text-[11px] mt-1">{f.comment}</p>}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
