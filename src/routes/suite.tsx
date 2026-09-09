@@ -354,14 +354,19 @@ function RemindersPanel({ reminders, loading }: { reminders: Reminder[]; loading
   );
 }
 
+const money = (n: number) => (n >= 1000 ? `$${(n / 1000).toFixed(1)}K` : `$${Math.round(n)}`);
+
 function BusinessOverviewPanel({ k }: { k: CeoKpis | undefined }) {
   const items = k
     ? [
-        { l: "Revenue (30d)", v: `$${(k.revenue30d / 1000).toFixed(1)}K`, g: `${k.appointments30d} bookings` },
-        { l: "Avg. ticket", v: `$184`, g: "Operational" },
+        { l: "Revenue (30d)", v: money(k.revenue30d), g: `${k.billableBookings30d} paid bookings` },
+        { l: "Avg. booking value", v: money(k.avgBookingValue), g: `${k.margin30d}% margin` },
+        { l: "Gross profit (30d)", v: money(k.profit30d), g: `${k.revenueGrowth >= 0 ? "+" : ""}${k.revenueGrowth}% vs prev 30d` },
+        { l: "Satisfaction", v: k.csatResponses ? `${k.csatScore.toFixed(1)}/5` : "No ratings", g: `${k.csatResponses} reviews · NPS ${k.nps}` },
         { l: "Customers", v: String(k.customers), g: `${k.staff} staff` },
       ]
     : [];
+
   return (
     <div className="card-elevated p-5">
       <div className="flex items-center justify-between mb-3">
