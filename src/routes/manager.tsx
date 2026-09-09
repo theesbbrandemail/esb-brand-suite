@@ -10,7 +10,7 @@ import { LineSpark } from "@/components/esb/charts";
 import {
   getCeoKpis, listAppointments, listInventory, listReminders,
   updateAppointmentStatus, adjustStock, updateReminder,
-  type Appointment, type InventoryRow,
+  type Appointment, type InventoryRow, type Reminder,
 } from "@/lib/ops.functions";
 import {
   Users, CheckSquare, Package, Calendar, Sparkles, TrendingUp, AlertTriangle,
