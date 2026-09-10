@@ -92,48 +92,35 @@ function MobilePage() {
 
   return (
     <Shell requireStaff>
-      <div className="space-y-5">
-        {/* Header */}
-        <header className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04] p-5 sm:p-7">
-          <div className="absolute -top-16 -right-10 h-48 w-48 rounded-full bg-gold/15 blur-3xl" />
-          <div className="absolute -bottom-16 -left-10 h-48 w-48 rounded-full bg-violet/20 blur-3xl" />
-          <div className="relative grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4">
-            <div className="min-w-0">
-              <div className="text-[10px] uppercase tracking-[0.3em] text-gold/90 mb-1">
-                {new Date().toLocaleDateString([], { weekday: "long", month: "short", day: "numeric" })}
-              </div>
-              <h1 className="truncate font-display text-2xl sm:text-4xl font-semibold">
-                CEO <span className="gold-text">AI Suite</span>
-              </h1>
-              <p className="text-xs sm:text-sm text-muted-foreground mt-1">
-                Live group performance across every ESB brand — on any screen.
-              </p>
-            </div>
-            <button
-              onClick={() =>
-                toast(`${pendingReminders} open reminder${pendingReminders === 1 ? "" : "s"}`, {
-                  description: `${k?.lowStockItems ?? 0} low-stock items · ${k?.followUpsPending ?? 0} follow-ups pending`,
-                })
-              }
-              className="relative shrink-0 h-10 w-10 rounded-full border border-white/10 bg-white/5 flex items-center justify-center hover:bg-white/10"
-              aria-label="Alerts"
-            >
-              <Bell className="h-4 w-4" />
-              {pendingReminders > 0 && (
-                <span className="absolute -top-1 -right-1 h-4 min-w-4 rounded-full bg-gold px-1 text-[9px] font-semibold leading-4 text-black">
-                  {pendingReminders}
-                </span>
-              )}
-            </button>
-          </div>
-
-          <div className="relative mt-5 grid grid-cols-2 lg:grid-cols-4 gap-3">
-            <Stat icon={TrendingUp} label="Revenue / 30d" value={k ? `$${(k.revenue30d / 1000).toFixed(1)}K` : undefined} loading={kpisQ.isLoading} />
-            <Stat icon={Calendar} label="Today's appts" value={k?.appointmentsToday} loading={kpisQ.isLoading} />
-            <Stat icon={Package} label="Low stock" value={k?.lowStockItems} loading={kpisQ.isLoading} danger={(k?.lowStockItems ?? 0) > 0} />
-            <Stat icon={CheckSquare} label="Follow-ups" value={k?.followUpsPending} loading={kpisQ.isLoading} />
-          </div>
-        </header>
+      <SuiteLayout
+        eyebrow={new Date().toLocaleDateString([], { weekday: "long", month: "short", day: "numeric" })}
+        title={<>CEO <span className="gold-text">AI Suite</span></>}
+        subtitle="Live group performance across every ESB brand — on any screen."
+        actions={
+          <button
+            onClick={() =>
+              toast(`${pendingReminders} open reminder${pendingReminders === 1 ? "" : "s"}`, {
+                description: `${k?.lowStockItems ?? 0} low-stock items · ${k?.followUpsPending ?? 0} follow-ups pending`,
+              })
+            }
+            className="relative shrink-0 h-10 w-10 rounded-full border border-white/10 bg-white/5 flex items-center justify-center hover:bg-white/10"
+            aria-label="Alerts"
+          >
+            <Bell className="h-4 w-4" />
+            {pendingReminders > 0 && (
+              <span className="absolute -top-1 -right-1 h-4 min-w-4 rounded-full bg-gold px-1 text-[9px] font-semibold leading-4 text-black">
+                {pendingReminders}
+              </span>
+            )}
+          </button>
+        }
+        stats={[
+          { icon: TrendingUp, label: "Revenue / 30d", value: k ? `$${(k.revenue30d / 1000).toFixed(1)}K` : undefined, loading: kpisQ.isLoading },
+          { icon: Calendar, label: "Today's appts", value: k?.appointmentsToday, loading: kpisQ.isLoading },
+          { icon: Package, label: "Low stock", value: k?.lowStockItems, loading: kpisQ.isLoading, danger: (k?.lowStockItems ?? 0) > 0 },
+          { icon: CheckSquare, label: "Follow-ups", value: k?.followUpsPending, loading: kpisQ.isLoading },
+        ]}
+      >
 
         {/* Trend */}
         <section className="rounded-2xl border border-white/10 bg-white/[0.04] p-4 sm:p-5">
