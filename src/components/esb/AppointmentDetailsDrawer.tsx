@@ -7,7 +7,7 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import { Appointment } from "@/lib/ops.functions";
+import { Appointment, submitFeedback } from "@/lib/ops.functions";
 import {
   CalendarDays,
   CheckCircle2,
@@ -16,10 +16,15 @@ import {
   MessageCircle,
   Phone,
   User,
+  Star,
   X,
   XCircle,
 } from "lucide-react";
 import { format } from "date-fns";
+import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
 
 const WA = (phone: string, msg: string) =>
   `https://wa.me/${phone.replace(/[^\d+]/g, "")}?text=${encodeURIComponent(msg)}`;
@@ -192,4 +197,54 @@ function DetailRow({
     );
   }
   return body;
+}
+
+/** Capture a 1-5 satisfaction rating for this booking; feeds the CEO CSAT KPI. */
+function FeedbackCapture({ appointmentId }: { appointmentId: string }) {
+  const submit = useServerFn(submitFeedback);
+  const qc = useQueryClient();
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState("");
+  const m = useMutation({
+    mutationFn: () => submit({ data: { appointment_id: appointmentId, rating, comment: comment || undefined } }),
+    onSuccess: () => {
+      toast.success("Feedback saved");
+      setComment("");
+      qc.invalidateQueries({ queryKey: ["ceo-feedback"] });
+      qc.invalidateQueries({ queryKey: ["ceo-kpis"] });
+    },
+    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Could not save feedback"),
+  });
+
+  return (
+    <div className="mt-4 p-3 rounded-xl bg-secondary/40 border border-white/5">
+      <div className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2">Patient satisfaction</div>
+      <div className="flex items-center gap-1.5">
+        {[1, 2, 3, 4, 5].map((i) => (
+          <button
+            key={i}
+            type="button"
+            aria-label={`${i} star${i > 1 ? "s" : ""}`}
+            onClick={() => setRating(i)}
+            className="p-0.5"
+          >
+            <Star className={`h-5 w-5 transition ${i <= rating ? "text-gold fill-gold" : "text-muted-foreground/40"}`} />
+          </button>
+        ))}
+      </div>
+      <input
+        value={comment}
+        onChange={(e) => setComment(e.target.value)}
+        placeholder="Optional comment"
+        className="mt-2 w-full text-xs px-3 py-2 rounded-lg bg-card/70 border border-border focus:outline-none focus:ring-2 focus:ring-ring"
+      />
+      <button
+        disabled={rating === 0 || m.isPending}
+        onClick={() => m.mutate()}
+        className="mt-2 w-full text-xs chip-gold px-3 py-2 rounded-lg disabled:opacity-40"
+      >
+        {m.isPending ? "Saving…" : "Save rating"}
+      </button>
+    </div>
+  );
 }
