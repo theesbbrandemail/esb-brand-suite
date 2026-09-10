@@ -280,21 +280,8 @@ function ContentTile({
   );
 }
 
-function Stat({
-  icon: Icon, label, value, loading,
-}: { icon: React.ComponentType<{ className?: string }>; label: string; value?: number | string; loading?: boolean }) {
-  return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.05] p-3">
-      <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-foreground">
-        <Icon className="h-3 w-3 gold-text" />
-        <span className="truncate">{label}</span>
-      </div>
-      <div className="mt-1 font-display text-xl font-semibold">
-        {loading ? <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" /> : (value ?? "—")}
-      </div>
-    </div>
-  );
-}
+
+
 
 function EngagementCard({ kpi }: { kpi?: { brandSeries?: { gold: number }[] } }) {
   const series = kpi?.brandSeries?.map((b) => b.gold) ?? [];
