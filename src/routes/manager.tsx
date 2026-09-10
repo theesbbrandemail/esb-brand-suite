@@ -263,7 +263,7 @@ function ManagerPage() {
             </div>
           </div>
         </div>
-      </div>
+      </SuiteLayout>
     </Shell>
   );
 }
