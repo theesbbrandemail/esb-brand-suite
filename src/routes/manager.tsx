@@ -98,41 +98,30 @@ function ManagerPage() {
 
   return (
     <Shell requireStaff>
-      <div className="space-y-5">
-        {/* Header */}
-        <header className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04] p-5 sm:p-7">
-          <div className="absolute -top-16 -right-10 h-48 w-48 rounded-full bg-gold/15 blur-3xl" />
-          <div className="absolute -bottom-16 -left-10 h-48 w-48 rounded-full bg-violet/20 blur-3xl" />
-          <div className="relative grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 sm:flex sm:flex-wrap sm:justify-between">
-            <div className="min-w-0">
-              <div className="text-[10px] uppercase tracking-[0.3em] text-gold/90 mb-1">Manager Workspace</div>
-              <h1 className="truncate font-display text-2xl sm:text-4xl font-semibold">
-                Branch <span className="gold-text">Operations</span>
-              </h1>
-              <p className="text-xs sm:text-sm text-muted-foreground mt-1">
-                Live schedule, stock health and team tasks across every ESB branch.
-              </p>
-            </div>
-            <button
-              onClick={() => {
-                setShiftOn((s) => !s);
-                toast.success(shiftOn ? "Signed out" : "Signed in", {
-                  description: shiftOn ? "Shift ended" : "Shift started",
-                });
-              }}
-              className="chip-gold shrink-0 px-4 py-2 text-xs hover:scale-105 transition-transform"
-            >
-              {shiftOn ? "Sign Out" : "Sign In"}
-            </button>
-          </div>
-
-          <div className="relative mt-5 grid grid-cols-2 lg:grid-cols-4 gap-3">
-            <Stat icon={Calendar} label="Today's appts" value={k?.appointmentsToday} loading={kpisQ.isLoading} />
-            <Stat icon={Users} label="Staff" value={k?.staff} loading={kpisQ.isLoading} />
-            <Stat icon={Package} label="Low stock" value={k?.lowStockItems} loading={kpisQ.isLoading} danger={(k?.lowStockItems ?? 0) > 0} />
-            <Stat icon={TrendingUp} label="Revenue / 30d" value={k ? `$${(k.revenue30d / 1000).toFixed(1)}K` : undefined} loading={kpisQ.isLoading} />
-          </div>
-        </header>
+      <SuiteLayout
+        eyebrow="Manager Workspace"
+        title={<>Branch <span className="gold-text">Operations</span></>}
+        subtitle="Live schedule, stock health and team tasks across every ESB branch."
+        actions={
+          <button
+            onClick={() => {
+              setShiftOn((s) => !s);
+              toast.success(shiftOn ? "Signed out" : "Signed in", {
+                description: shiftOn ? "Shift ended" : "Shift started",
+              });
+            }}
+            className="chip-gold shrink-0 px-4 py-2 text-xs hover:scale-105 transition-transform"
+          >
+            {shiftOn ? "Sign Out" : "Sign In"}
+          </button>
+        }
+        stats={[
+          { icon: Calendar, label: "Today's appts", value: k?.appointmentsToday, loading: kpisQ.isLoading },
+          { icon: Users, label: "Staff", value: k?.staff, loading: kpisQ.isLoading },
+          { icon: Package, label: "Low stock", value: k?.lowStockItems, loading: kpisQ.isLoading, danger: (k?.lowStockItems ?? 0) > 0 },
+          { icon: TrendingUp, label: "Revenue / 30d", value: k ? `$${(k.revenue30d / 1000).toFixed(1)}K` : undefined, loading: kpisQ.isLoading },
+        ]}
+      >
 
         <BranchCards title="Branches" />
 
