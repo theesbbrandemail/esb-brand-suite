@@ -6,6 +6,12 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Shell } from "@/components/esb/Shell";
 import { BranchCards } from "@/components/esb/BranchCards";
+import {
+  SuiteLayout,
+  SuitePanel as Panel,
+  SuiteLoading as Loading,
+  SuiteEmpty as Empty,
+} from "@/components/esb/SuiteLayout";
 import { LineSpark } from "@/components/esb/charts";
 import {
   getCeoKpis, listAppointments, listInventory, listReminders,
