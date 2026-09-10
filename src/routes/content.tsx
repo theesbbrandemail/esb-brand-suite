@@ -250,7 +250,7 @@ function ContentPage() {
             <ContentAssistant caption={caption} onApplyCaption={setCaption} canPublish={isStaff} />
           </div>
         </div>
-      </div>
+      </SuiteLayout>
     </Shell>
   );
 }
