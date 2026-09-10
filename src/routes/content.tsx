@@ -89,50 +89,41 @@ function ContentPage() {
 
   return (
     <Shell>
-      <div className="space-y-5">
-        {!isStaff && (
-          <div className="rounded-2xl border border-violet/30 bg-violet/10 px-4 py-3 flex items-center gap-3">
-            <Lock className="h-4 w-4 text-violet shrink-0" />
-            <div className="text-xs text-muted-foreground">
-              <span className="text-foreground font-medium">Read-only preview.</span> Scheduling,
-              approving and publishing are limited to Staff accounts.
+      <SuiteLayout
+        accent="pink"
+        eyebrow="Content Studio"
+        title={<>Brand <span className="gold-text">Content</span></>}
+        subtitle="Product-led posts generated from live catalogue and branch performance."
+        banner={
+          !isStaff ? (
+            <div className="rounded-2xl border border-violet/30 bg-violet/10 px-4 py-3 flex items-center gap-3">
+              <Lock className="h-4 w-4 text-violet shrink-0" />
+              <div className="text-xs text-muted-foreground">
+                <span className="text-foreground font-medium">Read-only preview.</span> Scheduling,
+                approving and publishing are limited to Staff accounts.
+              </div>
             </div>
-          </div>
-        )}
-
-        {/* Header */}
-        <header className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04] p-5 sm:p-7">
-          <div className="absolute -top-16 -right-10 h-48 w-48 rounded-full blur-3xl" style={{ background: PINK, opacity: 0.25 }} />
-          <div className="relative grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4">
-            <div className="min-w-0">
-              <div className="text-[10px] uppercase tracking-[0.3em] text-gold/90 mb-1">Content Studio</div>
-              <h1 className="truncate font-display text-2xl sm:text-4xl font-semibold">
-                Brand <span className="gold-text">Content</span>
-              </h1>
-              <p className="text-xs sm:text-sm text-muted-foreground mt-1">
-                Product-led posts generated from live catalogue and branch performance.
-              </p>
-            </div>
-            <div className="flex shrink-0 items-center gap-2">
-              <ScheduledPreviewDrawer />
-              <button
-                onClick={() => toast("3 new alerts", { description: "Approval queue, scheduled post, engagement spike." })}
-                className="h-10 w-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10"
-                aria-label="Alerts"
-              >
-                <Bell className="h-4 w-4" />
-              </button>
-            </div>
-          </div>
-
-          <div className="relative mt-5 grid grid-cols-2 lg:grid-cols-4 gap-3">
-            <Stat icon={ImageIcon} label="Catalogue assets" value={((invQ.data ?? []) as InventoryRow[]).length} loading={invQ.isLoading} />
-            <Stat icon={TrendingUp} label="Appointments / 30d" value={k?.appointments30d} loading={kpisQ.isLoading} />
-            <Stat icon={Heart} label="Today's bookings" value={k?.appointmentsToday} loading={kpisQ.isLoading} />
-            <Stat icon={Share2} label="Follow-ups pending" value={k?.followUpsPending} loading={kpisQ.isLoading} />
-          </div>
-        </header>
-
+          ) : undefined
+        }
+        actions={
+          <>
+            <ScheduledPreviewDrawer />
+            <button
+              onClick={() => toast("3 new alerts", { description: "Approval queue, scheduled post, engagement spike." })}
+              className="h-10 w-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10"
+              aria-label="Alerts"
+            >
+              <Bell className="h-4 w-4" />
+            </button>
+          </>
+        }
+        stats={[
+          { icon: ImageIcon, label: "Catalogue assets", value: ((invQ.data ?? []) as InventoryRow[]).length, loading: invQ.isLoading },
+          { icon: TrendingUp, label: "Appointments / 30d", value: k?.appointments30d, loading: kpisQ.isLoading },
+          { icon: Heart, label: "Today's bookings", value: k?.appointmentsToday, loading: kpisQ.isLoading },
+          { icon: Share2, label: "Follow-ups pending", value: k?.followUpsPending, loading: kpisQ.isLoading },
+        ]}
+      >
         <BranchCards title="Publish by Branch" />
 
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
