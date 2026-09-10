@@ -125,7 +125,10 @@ export function AppointmentDetailsDrawer({
               </a>
             </div>
           )}
+
+          <FeedbackCapture appointmentId={appt.id} />
         </div>
+
 
         <DrawerFooter className="border-t border-white/10 pt-3 gap-2">
           <div className="grid grid-cols-3 gap-2">
