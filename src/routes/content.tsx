@@ -7,6 +7,7 @@ import { Shell } from "@/components/esb/Shell";
 import { ContentAssistant } from "@/components/esb/ContentAssistant";
 import { ScheduledPreviewDrawer } from "@/components/esb/ScheduledPreviewDrawer";
 import { BranchCards } from "@/components/esb/BranchCards";
+import { SuiteLayout } from "@/components/esb/SuiteLayout";
 import { useAuth } from "@/lib/auth";
 import { listInventory, getCeoKpis, type InventoryRow } from "@/lib/ops.functions";
 import {
