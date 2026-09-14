@@ -42,11 +42,58 @@ const GRADIENTS = [
 
 function ContentPage() {
   const [caption, setCaption] = useState("");
+  const [title, setTitle] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
+  const [branchId, setBranchId] = useState("");
+  const [saving, setSaving] = useState(false);
   const [query, setQuery] = useState("");
   const { isStaff, role, session } = useAuth();
+  const queryClient = useQueryClient();
 
   const invFn = useServerFn(listInventory);
   const kpisFn = useServerFn(getCeoKpis);
+  const branchesFn = useServerFn(listBranches);
+  const postsFn = useServerFn(listContentPosts);
+  const createPostFn = useServerFn(createContentPost);
+
+  const branchesQ = useQuery({ queryKey: ["branches"], queryFn: () => branchesFn(), enabled: !!session });
+  const postsQ = useQuery({
+    queryKey: ["content-posts"],
+    queryFn: () => postsFn({ data: {} }),
+    enabled: !!session,
+  });
+
+  const save = async (status: "draft" | "published") => {
+    const heading = title.trim() || caption.trim().slice(0, 60);
+    if (heading.length < 2) {
+      toast.error("Add a title or caption first");
+      return;
+    }
+    setSaving(true);
+    try {
+      await createPostFn({
+        data: {
+          title: heading,
+          body: caption.trim(),
+          image_url: imageUrl.trim() || null,
+          branch_id: branchId || null,
+          status,
+        },
+      });
+      await queryClient.invalidateQueries({ queryKey: ["content-posts"] });
+      toast.success(status === "published" ? "Published" : "Draft saved", {
+        description: `“${heading.slice(0, 40)}” saved${branchId ? " to the selected branch" : ""}.`,
+      });
+      setTitle("");
+      setCaption("");
+      setImageUrl("");
+    } catch (e) {
+      toast.error("Could not save post", { description: e instanceof Error ? e.message : "Please try again." });
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const invQ = useQuery({
     queryKey: ["inventory", "content"],
     queryFn: () => invFn({ data: {} }),
