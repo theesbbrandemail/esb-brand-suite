@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Shell } from "@/components/esb/Shell";
@@ -9,7 +9,10 @@ import { ScheduledPreviewDrawer } from "@/components/esb/ScheduledPreviewDrawer"
 import { BranchCards } from "@/components/esb/BranchCards";
 import { SuiteLayout } from "@/components/esb/SuiteLayout";
 import { useAuth } from "@/lib/auth";
-import { listInventory, getCeoKpis, type InventoryRow } from "@/lib/ops.functions";
+import {
+  listInventory, getCeoKpis, listBranches, listContentPosts, createContentPost,
+  type InventoryRow, type Branch, type ContentPost,
+} from "@/lib/ops.functions";
 import {
   Bell, Search, Wand2, Play, Image as ImageIcon, Sparkles, Lock, Loader2,
   TrendingUp, Heart, Share2, Eye,
@@ -42,11 +45,58 @@ const GRADIENTS = [
 
 function ContentPage() {
   const [caption, setCaption] = useState("");
+  const [title, setTitle] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
+  const [branchId, setBranchId] = useState("");
+  const [saving, setSaving] = useState(false);
   const [query, setQuery] = useState("");
   const { isStaff, role, session } = useAuth();
+  const queryClient = useQueryClient();
 
   const invFn = useServerFn(listInventory);
   const kpisFn = useServerFn(getCeoKpis);
+  const branchesFn = useServerFn(listBranches);
+  const postsFn = useServerFn(listContentPosts);
+  const createPostFn = useServerFn(createContentPost);
+
+  const branchesQ = useQuery({ queryKey: ["branches"], queryFn: () => branchesFn(), enabled: !!session });
+  const postsQ = useQuery({
+    queryKey: ["content-posts"],
+    queryFn: () => postsFn({ data: {} }),
+    enabled: !!session,
+  });
+
+  const save = async (status: "draft" | "published") => {
+    const heading = title.trim() || caption.trim().slice(0, 60);
+    if (heading.length < 2) {
+      toast.error("Add a title or caption first");
+      return;
+    }
+    setSaving(true);
+    try {
+      await createPostFn({
+        data: {
+          title: heading,
+          body: caption.trim(),
+          image_url: imageUrl.trim() || null,
+          branch_id: branchId || null,
+          status,
+        },
+      });
+      await queryClient.invalidateQueries({ queryKey: ["content-posts"] });
+      toast.success(status === "published" ? "Published" : "Draft saved", {
+        description: `“${heading.slice(0, 40)}” saved${branchId ? " to the selected branch" : ""}.`,
+      });
+      setTitle("");
+      setCaption("");
+      setImageUrl("");
+    } catch (e) {
+      toast.error("Could not save post", { description: e instanceof Error ? e.message : "Please try again." });
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const invQ = useQuery({
     queryKey: ["inventory", "content"],
     queryFn: () => invFn({ data: {} }),
@@ -174,11 +224,14 @@ function ContentPage() {
                         sub={r.product?.brand ?? r.branch?.name ?? "ESB"}
                         image={r.product?.image_url ?? null}
                         gradient={GRADIENTS[i % GRADIENTS.length]!}
-                        onPick={() =>
+                        onPick={() => {
+                          setTitle(r.product?.name ?? "New drop");
+                          setImageUrl(r.product?.image_url ?? "");
+                          if (r.branch_id) setBranchId(r.branch_id);
                           setCaption(
                             `✨ ${r.product?.name ?? "New drop"} — now at ${r.branch?.name ?? "ESB"}. Book your slot in-app.`,
-                          )
-                        }
+                          );
+                        }}
                       />
                     ))}
                   </div>
@@ -192,27 +245,55 @@ function ContentPage() {
                 <Sparkles className="h-3.5 w-3.5 gold-text" />
                 <h2 className="font-display text-sm sm:text-base">Composer</h2>
               </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <input
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  className="rounded-xl bg-white/5 border border-white/10 px-3 py-2.5 text-xs placeholder:text-muted-foreground focus:outline-none"
+                  placeholder="Post title"
+                />
+                <select
+                  value={branchId}
+                  onChange={(e) => setBranchId(e.target.value)}
+                  className="rounded-xl bg-white/5 border border-white/10 px-3 py-2.5 text-xs focus:outline-none"
+                >
+                  <option value="">No branch</option>
+                  {((branchesQ.data ?? []) as Branch[]).map((b) => (
+                    <option key={b.id} value={b.id} className="bg-background">{b.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              <input
+                value={imageUrl}
+                onChange={(e) => setImageUrl(e.target.value)}
+                className="mt-2 w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2.5 text-xs placeholder:text-muted-foreground focus:outline-none"
+                placeholder="Image URL (optional) — click a product above to auto-fill"
+              />
+
               <textarea
                 value={caption}
                 onChange={(e) => setCaption(e.target.value)}
                 rows={3}
-                className="w-full resize-none rounded-xl bg-white/5 border border-white/10 px-3 py-2.5 text-xs placeholder:text-muted-foreground focus:outline-none"
+                className="mt-2 w-full resize-none rounded-xl bg-white/5 border border-white/10 px-3 py-2.5 text-xs placeholder:text-muted-foreground focus:outline-none"
                 placeholder="Write a caption..."
               />
+
+              {imageUrl && (
+                <img src={imageUrl} alt={title || "Post preview"} loading="lazy" className="mt-2 h-28 w-full rounded-xl object-cover" />
+              )}
+
               <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
                 <div className="flex gap-2">
                   <button
-                    onClick={() =>
-                      isStaff
-                        ? toast.success("Approved", { description: "Sent to publishing queue." })
-                        : denyPublic("Approving posts")
-                    }
-                    disabled={!isStaff}
+                    onClick={() => (isStaff ? save("draft") : denyPublic("Saving drafts"))}
+                    disabled={!isStaff || saving}
                     className="text-xs font-semibold disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-1"
                     style={{ color: PINK }}
                   >
                     {!isStaff && <Lock className="h-3 w-3" />}
-                    Approve
+                    Save draft
                   </button>
                   <button
                     onClick={() => {
@@ -227,22 +308,18 @@ function ContentPage() {
                   </button>
                 </div>
                 <button
-                  onClick={() =>
-                    isStaff
-                      ? toast.success("Posted", {
-                          description: caption ? `“${caption.slice(0, 40)}…” live on IG + WhatsApp.` : "Draft posted to IG + WhatsApp.",
-                        })
-                      : denyPublic("Publishing")
-                  }
-                  disabled={!isStaff}
+                  onClick={() => (isStaff ? save("published") : denyPublic("Publishing"))}
+                  disabled={!isStaff || saving}
                   className="px-5 py-2 rounded-full text-white font-semibold text-xs inline-flex items-center gap-1.5 disabled:opacity-60 disabled:cursor-not-allowed"
                   style={{ background: `linear-gradient(135deg, ${PINK}, oklch(0.5 0.22 350))`, boxShadow: `0 10px 30px -10px ${PINK}` }}
                 >
-                  {!isStaff && <Lock className="h-3 w-3" />}
-                  {isStaff ? "Post" : "Post (staff)"}
+                  {saving ? <Loader2 className="h-3 w-3 animate-spin" /> : !isStaff && <Lock className="h-3 w-3" />}
+                  {isStaff ? "Publish" : "Publish (staff)"}
                 </button>
               </div>
             </section>
+
+            <RecentPosts posts={(postsQ.data ?? []) as ContentPost[]} loading={postsQ.isLoading} />
 
             <EngagementCard kpi={k} />
           </div>
@@ -305,6 +382,43 @@ function EngagementCard({ kpi }: { kpi?: { brandSeries?: { gold: number }[] } })
       <svg viewBox="0 0 100 50" className="w-full h-28 mt-3" preserveAspectRatio="none">
         <path d={`M${pts}`} fill="none" stroke={PINK} strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
       </svg>
+    </section>
+  );
+}
+
+function RecentPosts({ posts, loading }: { posts: ContentPost[]; loading: boolean }) {
+  return (
+    <section className="rounded-2xl border border-white/10 bg-white/[0.04] p-4 sm:p-5">
+      <div className="mb-3 flex items-center gap-2">
+        <ImageIcon className="h-3.5 w-3.5 gold-text" />
+        <h2 className="font-display text-sm sm:text-base">Recent posts</h2>
+      </div>
+      {loading ? (
+        <div className="flex items-center gap-2 py-6 text-xs text-muted-foreground">
+          <Loader2 className="h-4 w-4 animate-spin" /> Loading posts…
+        </div>
+      ) : posts.length === 0 ? (
+        <p className="py-6 text-xs text-muted-foreground">No posts yet — write one in the composer above.</p>
+      ) : (
+        <ul className="space-y-2">
+          {posts.slice(0, 8).map((p) => (
+            <li key={p.id} className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.04] p-2.5">
+              {p.image_url ? (
+                <img src={p.image_url} alt={p.title} loading="lazy" className="h-10 w-10 shrink-0 rounded-lg object-cover" />
+              ) : (
+                <div className="h-10 w-10 shrink-0 rounded-lg bg-white/10" />
+              )}
+              <div className="min-w-0 flex-1">
+                <div className="truncate text-xs font-semibold">{p.title}</div>
+                <div className="truncate text-[10px] text-muted-foreground">
+                  {p.branch?.name ?? "All branches"} · {new Date(p.created_at).toLocaleString()}
+                </div>
+              </div>
+              <span className="chip-violet shrink-0 text-[10px] capitalize">{p.status}</span>
+            </li>
+          ))}
+        </ul>
+      )}
     </section>
   );
 }

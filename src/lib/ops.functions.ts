@@ -534,3 +534,70 @@ export const submitFeedback = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+/* ----------------------------- Content posts ----------------------------- */
+
+export type ContentPost = {
+  id: string;
+  title: string;
+  body: string;
+  image_url: string | null;
+  branch_id: string | null;
+  status: "draft" | "scheduled" | "published";
+  scheduled_at: string | null;
+  published_at: string | null;
+  created_at: string;
+  branch?: { name: string } | null;
+};
+
+export const listContentPosts = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) =>
+    z.object({ branchId: z.string().uuid().optional(), limit: z.number().int().min(1).max(100).default(50) })
+      .optional()
+      .parse(d),
+  )
+  .handler(async ({ data, context }): Promise<ContentPost[]> => {
+    const sb = context.supabase as any;
+    let q = sb
+      .from("content_posts")
+      .select("id,title,body,image_url,branch_id,status,scheduled_at,published_at,created_at,branch:branches(name)")
+      .order("created_at", { ascending: false })
+      .limit(data?.limit ?? 50);
+    if (data?.branchId) q = q.eq("branch_id", data.branchId);
+    const { data: rows, error } = await q;
+    if (error) throw new Error(error.message);
+    return (rows ?? []) as ContentPost[];
+  });
+
+export const createContentPost = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) =>
+    z.object({
+      title: z.string().min(2).max(160),
+      body: z.string().max(2000).default(""),
+      image_url: z.string().url().nullable().optional(),
+      branch_id: z.string().uuid().nullable().optional(),
+      status: z.enum(["draft", "scheduled", "published"]).default("draft"),
+      scheduled_at: z.string().datetime().nullable().optional(),
+    }).parse(d),
+  )
+  .handler(async ({ data, context }): Promise<ContentPost> => {
+    const sb = context.supabase as any;
+    const { data: row, error } = await sb
+      .from("content_posts")
+      .insert({
+        title: data.title,
+        body: data.body,
+        image_url: data.image_url ?? null,
+        branch_id: data.branch_id ?? null,
+        status: data.status,
+        scheduled_at: data.scheduled_at ?? null,
+        published_at: data.status === "published" ? new Date().toISOString() : null,
+        author_id: context.userId,
+      })
+      .select("id,title,body,image_url,branch_id,status,scheduled_at,published_at,created_at")
+      .single();
+    if (error) throw new Error(error.message);
+    return row as ContentPost;
+  });

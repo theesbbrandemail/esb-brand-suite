@@ -2,8 +2,8 @@ import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { motion } from "framer-motion";
-import { listBranches, listAppointments, type Branch, type Appointment } from "@/lib/ops.functions";
-import { MapPin, ArrowRight, Loader2, Calendar } from "lucide-react";
+import { listBranches, listAppointments, listContentPosts, type Branch, type Appointment, type ContentPost } from "@/lib/ops.functions";
+import { MapPin, ArrowRight, Loader2, Calendar, FileText } from "lucide-react";
 
 function todayRange() {
   const now = new Date();
@@ -23,9 +23,18 @@ export function BranchCards({ title = "Branches" }: { title?: string }) {
     refetchInterval: 60_000,
   });
 
+  const postsFn = useServerFn(listContentPosts);
+  const postsQ = useQuery({
+    queryKey: ["content-posts"],
+    queryFn: () => postsFn({ data: {} }),
+    refetchInterval: 60_000,
+  });
+
   const branches = (branchesQ.data ?? []) as Branch[];
   const appts = (apptsQ.data ?? []) as Appointment[];
+  const posts = (postsQ.data ?? []) as ContentPost[];
   const countFor = (id: string) => appts.filter((a) => a.branch_id === id).length;
+  const postsFor = (id: string) => posts.filter((p) => p.branch_id === id).length;
 
   return (
     <section className="rounded-2xl border border-white/10 bg-white/[0.04] p-4 sm:p-5">
@@ -63,10 +72,17 @@ export function BranchCards({ title = "Branches" }: { title?: string }) {
                   </div>
                   <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-foreground" />
                 </div>
-                <div className="mt-3 flex items-center gap-1.5 text-[11px]">
-                  <Calendar className="h-3 w-3 gold-text" />
-                  <span className="gold-text font-semibold">{apptsQ.isLoading ? "…" : countFor(b.id)}</span>
-                  <span className="text-muted-foreground">appointments today</span>
+                <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px]">
+                  <span className="flex items-center gap-1.5">
+                    <Calendar className="h-3 w-3 gold-text" />
+                    <span className="gold-text font-semibold">{apptsQ.isLoading ? "…" : countFor(b.id)}</span>
+                    <span className="text-muted-foreground">appointments today</span>
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <FileText className="h-3 w-3 gold-text" />
+                    <span className="gold-text font-semibold">{postsQ.isLoading ? "…" : postsFor(b.id)}</span>
+                    <span className="text-muted-foreground">posts</span>
+                  </span>
                 </div>
               </Link>
             </motion.div>
