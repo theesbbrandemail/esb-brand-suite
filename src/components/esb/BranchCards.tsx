@@ -72,10 +72,17 @@ export function BranchCards({ title = "Branches" }: { title?: string }) {
                   </div>
                   <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-foreground" />
                 </div>
-                <div className="mt-3 flex items-center gap-1.5 text-[11px]">
-                  <Calendar className="h-3 w-3 gold-text" />
-                  <span className="gold-text font-semibold">{apptsQ.isLoading ? "…" : countFor(b.id)}</span>
-                  <span className="text-muted-foreground">appointments today</span>
+                <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px]">
+                  <span className="flex items-center gap-1.5">
+                    <Calendar className="h-3 w-3 gold-text" />
+                    <span className="gold-text font-semibold">{apptsQ.isLoading ? "…" : countFor(b.id)}</span>
+                    <span className="text-muted-foreground">appointments today</span>
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <FileText className="h-3 w-3 gold-text" />
+                    <span className="gold-text font-semibold">{postsQ.isLoading ? "…" : postsFor(b.id)}</span>
+                    <span className="text-muted-foreground">posts</span>
+                  </span>
                 </div>
               </Link>
             </motion.div>
