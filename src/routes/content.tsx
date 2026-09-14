@@ -192,27 +192,55 @@ function ContentPage() {
                 <Sparkles className="h-3.5 w-3.5 gold-text" />
                 <h2 className="font-display text-sm sm:text-base">Composer</h2>
               </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <input
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  className="rounded-xl bg-white/5 border border-white/10 px-3 py-2.5 text-xs placeholder:text-muted-foreground focus:outline-none"
+                  placeholder="Post title"
+                />
+                <select
+                  value={branchId}
+                  onChange={(e) => setBranchId(e.target.value)}
+                  className="rounded-xl bg-white/5 border border-white/10 px-3 py-2.5 text-xs focus:outline-none"
+                >
+                  <option value="">No branch</option>
+                  {((branchesQ.data ?? []) as Branch[]).map((b) => (
+                    <option key={b.id} value={b.id} className="bg-background">{b.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              <input
+                value={imageUrl}
+                onChange={(e) => setImageUrl(e.target.value)}
+                className="mt-2 w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2.5 text-xs placeholder:text-muted-foreground focus:outline-none"
+                placeholder="Image URL (optional) — click a product above to auto-fill"
+              />
+
               <textarea
                 value={caption}
                 onChange={(e) => setCaption(e.target.value)}
                 rows={3}
-                className="w-full resize-none rounded-xl bg-white/5 border border-white/10 px-3 py-2.5 text-xs placeholder:text-muted-foreground focus:outline-none"
+                className="mt-2 w-full resize-none rounded-xl bg-white/5 border border-white/10 px-3 py-2.5 text-xs placeholder:text-muted-foreground focus:outline-none"
                 placeholder="Write a caption..."
               />
+
+              {imageUrl && (
+                <img src={imageUrl} alt={title || "Post preview"} loading="lazy" className="mt-2 h-28 w-full rounded-xl object-cover" />
+              )}
+
               <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
                 <div className="flex gap-2">
                   <button
-                    onClick={() =>
-                      isStaff
-                        ? toast.success("Approved", { description: "Sent to publishing queue." })
-                        : denyPublic("Approving posts")
-                    }
-                    disabled={!isStaff}
+                    onClick={() => (isStaff ? save("draft") : denyPublic("Saving drafts"))}
+                    disabled={!isStaff || saving}
                     className="text-xs font-semibold disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-1"
                     style={{ color: PINK }}
                   >
                     {!isStaff && <Lock className="h-3 w-3" />}
-                    Approve
+                    Save draft
                   </button>
                   <button
                     onClick={() => {
@@ -227,22 +255,18 @@ function ContentPage() {
                   </button>
                 </div>
                 <button
-                  onClick={() =>
-                    isStaff
-                      ? toast.success("Posted", {
-                          description: caption ? `“${caption.slice(0, 40)}…” live on IG + WhatsApp.` : "Draft posted to IG + WhatsApp.",
-                        })
-                      : denyPublic("Publishing")
-                  }
-                  disabled={!isStaff}
+                  onClick={() => (isStaff ? save("published") : denyPublic("Publishing"))}
+                  disabled={!isStaff || saving}
                   className="px-5 py-2 rounded-full text-white font-semibold text-xs inline-flex items-center gap-1.5 disabled:opacity-60 disabled:cursor-not-allowed"
                   style={{ background: `linear-gradient(135deg, ${PINK}, oklch(0.5 0.22 350))`, boxShadow: `0 10px 30px -10px ${PINK}` }}
                 >
-                  {!isStaff && <Lock className="h-3 w-3" />}
-                  {isStaff ? "Post" : "Post (staff)"}
+                  {saving ? <Loader2 className="h-3 w-3 animate-spin" /> : !isStaff && <Lock className="h-3 w-3" />}
+                  {isStaff ? "Publish" : "Publish (staff)"}
                 </button>
               </div>
             </section>
+
+            <RecentPosts posts={(postsQ.data ?? []) as ContentPost[]} loading={postsQ.isLoading} />
 
             <EngagementCard kpi={k} />
           </div>
