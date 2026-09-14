@@ -385,3 +385,40 @@ function EngagementCard({ kpi }: { kpi?: { brandSeries?: { gold: number }[] } })
     </section>
   );
 }
+
+function RecentPosts({ posts, loading }: { posts: ContentPost[]; loading: boolean }) {
+  return (
+    <section className="rounded-2xl border border-white/10 bg-white/[0.04] p-4 sm:p-5">
+      <div className="mb-3 flex items-center gap-2">
+        <ImageIcon className="h-3.5 w-3.5 gold-text" />
+        <h2 className="font-display text-sm sm:text-base">Recent posts</h2>
+      </div>
+      {loading ? (
+        <div className="flex items-center gap-2 py-6 text-xs text-muted-foreground">
+          <Loader2 className="h-4 w-4 animate-spin" /> Loading posts…
+        </div>
+      ) : posts.length === 0 ? (
+        <p className="py-6 text-xs text-muted-foreground">No posts yet — write one in the composer above.</p>
+      ) : (
+        <ul className="space-y-2">
+          {posts.slice(0, 8).map((p) => (
+            <li key={p.id} className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.04] p-2.5">
+              {p.image_url ? (
+                <img src={p.image_url} alt={p.title} loading="lazy" className="h-10 w-10 shrink-0 rounded-lg object-cover" />
+              ) : (
+                <div className="h-10 w-10 shrink-0 rounded-lg bg-white/10" />
+              )}
+              <div className="min-w-0 flex-1">
+                <div className="truncate text-xs font-semibold">{p.title}</div>
+                <div className="truncate text-[10px] text-muted-foreground">
+                  {p.branch?.name ?? "All branches"} · {new Date(p.created_at).toLocaleString()}
+                </div>
+              </div>
+              <span className="chip-violet shrink-0 text-[10px] capitalize">{p.status}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}
