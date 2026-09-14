@@ -2,8 +2,8 @@ import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { motion } from "framer-motion";
-import { listBranches, listAppointments, type Branch, type Appointment } from "@/lib/ops.functions";
-import { MapPin, ArrowRight, Loader2, Calendar } from "lucide-react";
+import { listBranches, listAppointments, listContentPosts, type Branch, type Appointment, type ContentPost } from "@/lib/ops.functions";
+import { MapPin, ArrowRight, Loader2, Calendar, FileText } from "lucide-react";
 
 function todayRange() {
   const now = new Date();
