@@ -224,11 +224,14 @@ function ContentPage() {
                         sub={r.product?.brand ?? r.branch?.name ?? "ESB"}
                         image={r.product?.image_url ?? null}
                         gradient={GRADIENTS[i % GRADIENTS.length]!}
-                        onPick={() =>
+                        onPick={() => {
+                          setTitle(r.product?.name ?? "New drop");
+                          setImageUrl(r.product?.image_url ?? "");
+                          if (r.branch_id) setBranchId(r.branch_id);
                           setCaption(
                             `✨ ${r.product?.name ?? "New drop"} — now at ${r.branch?.name ?? "ESB"}. Book your slot in-app.`,
-                          )
-                        }
+                          );
+                        }}
                       />
                     ))}
                   </div>
