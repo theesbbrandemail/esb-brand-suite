@@ -9,7 +9,10 @@ import { ScheduledPreviewDrawer } from "@/components/esb/ScheduledPreviewDrawer"
 import { BranchCards } from "@/components/esb/BranchCards";
 import { SuiteLayout } from "@/components/esb/SuiteLayout";
 import { useAuth } from "@/lib/auth";
-import { listInventory, getCeoKpis, type InventoryRow } from "@/lib/ops.functions";
+import {
+  listInventory, getCeoKpis, listBranches, listContentPosts, createContentPost,
+  type InventoryRow, type Branch, type ContentPost,
+} from "@/lib/ops.functions";
 import {
   Bell, Search, Wand2, Play, Image as ImageIcon, Sparkles, Lock, Loader2,
   TrendingUp, Heart, Share2, Eye,
