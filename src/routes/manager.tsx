@@ -101,8 +101,55 @@ function ManagerPage() {
       qc.invalidateQueries({ queryKey: ["ceo-reminders"] });
       toast.success("Task updated");
     },
-    onError: (e: Error) => toast.error("Task update failed", { description: e.message }),
+    onError: (e: Error, _v, ctx) => {
+      if (ctx?.prev) qc.setQueryData<Reminder[]>(["ceo-reminders"], ctx.prev);
+      toast.error("Task update failed", { description: e.message });
+    },
   });
+
+  const openTasks = (remindersQ.data ?? []).filter((r) => r.status !== "done");
+  const overdueTasks = openTasks.filter((r) => r.due_at && new Date(r.due_at) < new Date());
+  const pendingAppts = appts.filter((a) => a.status !== "completed" && a.status !== "cancelled");
+
+  const suggestions = useMemo(() => {
+    const out: { text: string; to: string; cta: string }[] = [];
+    if (lowStock.length > 0) {
+      out.push({
+        text: `${lowStock.length} item${lowStock.length > 1 ? "s are" : " is"} at or below threshold — lowest: ${lowStock[0].product?.name ?? "item"} (${lowStock[0].qty} left) at ${lowStock[0].branch?.name ?? "branch"}. Restock before the next peak.`,
+        to: "/inventory",
+        cta: "Open inventory",
+      });
+    }
+    if (overdueTasks.length > 0) {
+      out.push({
+        text: `${overdueTasks.length} task${overdueTasks.length > 1 ? "s are" : " is"} past due — starting with "${overdueTasks[0].title}". Clear them to keep the branch on track.`,
+        to: "/manager",
+        cta: "Review tasks",
+      });
+    }
+    if ((k?.followUpsPending ?? 0) > 0) {
+      out.push({
+        text: `${k?.followUpsPending} follow-up${(k?.followUpsPending ?? 0) > 1 ? "s" : ""} pending — send WhatsApp reminders to lift rebooking rate.`,
+        to: "/whatsapp",
+        cta: "Send follow-ups",
+      });
+    }
+    if (pendingAppts.length > 0) {
+      out.push({
+        text: `${pendingAppts.length} appointment${pendingAppts.length > 1 ? "s" : ""} still open today — confirm arrivals and mark completions as they finish.`,
+        to: "/appointments",
+        cta: "Open appointments",
+      });
+    }
+    if (out.length === 0) {
+      out.push({
+        text: `Operations are stable${k ? ` — $${(k.revenue30d / 1000).toFixed(1)}K revenue over 30 days` : ""}. Focus the team on upsell of retention services today.`,
+        to: "/suite",
+        cta: "Open CEO Suite",
+      });
+    }
+    return out.slice(0, 3);
+  }, [lowStock, overdueTasks, pendingAppts, k]);
 
   return (
     <Shell requireStaff>
