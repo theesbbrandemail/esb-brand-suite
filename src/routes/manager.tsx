@@ -35,6 +35,8 @@ export const Route = createFileRoute("/manager")({
   component: ManagerPage,
 });
 
+type AppointmentStatus = "scheduled" | "confirmed" | "completed" | "cancelled" | "no_show";
+
 function todayRange() {
   const now = new Date();
   const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
