@@ -67,7 +67,7 @@ function ManagerPage() {
   const [shiftOn, setShiftOn] = useState(false);
 
   const statusM = useMutation({
-    mutationFn: (v: { id: string; status: string }) => statusFn({ data: v as never }),
+    mutationFn: (v: { id: string; status: AppointmentStatus }) => statusFn({ data: v }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["appointments"] });
       qc.invalidateQueries({ queryKey: ["ceo-kpis"] });
