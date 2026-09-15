@@ -112,7 +112,11 @@ function ManagerPage() {
   const pendingAppts = appts.filter((a) => a.status !== "completed" && a.status !== "cancelled");
 
   const suggestions = useMemo(() => {
-    const out: { text: string; to: string; cta: string }[] = [];
+    const out: {
+      text: string;
+      to: "/inventory" | "/manager" | "/whatsapp" | "/appointments" | "/suite";
+      cta: string;
+    }[] = [];
     if (lowStock.length > 0) {
       out.push({
         text: `${lowStock.length} item${lowStock.length > 1 ? "s are" : " is"} at or below threshold — lowest: ${lowStock[0].product?.name ?? "item"} (${lowStock[0].qty} left) at ${lowStock[0].branch?.name ?? "branch"}. Restock before the next peak.`,
