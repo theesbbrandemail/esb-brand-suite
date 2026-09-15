@@ -309,16 +309,20 @@ function ManagerPage() {
               <div className="relative flex items-center gap-2 text-xs font-display">
                 <Sparkles className="h-3.5 w-3.5 gold-text" /> Suggestions <span className="text-violet">by AI</span>
               </div>
-              <p className="relative mt-2 text-[11px] text-muted-foreground">
-                {k && k.lowStockItems > 0
-                  ? `Restock ${k.lowStockItems} low item${k.lowStockItems > 1 ? "s" : ""} before the weekend peak to protect service uptime.`
-                  : k && k.followUpsPending > 0
-                  ? `${k.followUpsPending} follow-ups pending — send WhatsApp reminders to lift rebooking rate.`
-                  : "Operations are stable. Focus the team on upsell of retention services today."}
-              </p>
-              <Link to="/suite" className="relative mt-3 inline-flex items-center gap-1 chip-gold px-3 py-1.5 text-[10px]">
-                Open CEO Suite <ArrowRight className="h-3 w-3" />
-              </Link>
+              {kpisQ.isLoading || invQ.isLoading || remindersQ.isLoading ? (
+                <p className="relative mt-2 text-[11px] text-muted-foreground">Reading live branch data…</p>
+              ) : (
+                <ul className="relative mt-2 space-y-2.5">
+                  {suggestions.map((s) => (
+                    <li key={s.cta + s.text.slice(0, 12)}>
+                      <p className="text-[11px] text-muted-foreground">{s.text}</p>
+                      <Link to={s.to} className="mt-1.5 inline-flex items-center gap-1 chip-gold px-3 py-1.5 text-[10px]">
+                        {s.cta} <ArrowRight className="h-3 w-3" />
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           </div>
         </div>
