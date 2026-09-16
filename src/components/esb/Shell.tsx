@@ -1,5 +1,6 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { LayoutGrid, Sparkles, Smartphone, Package, Calendar, Image as ImageIcon, ScanFace, ClipboardList, LogOut, Lock, ChevronDown, FlaskConical, ShoppingBag, Stethoscope, Smile, HeartPulse, Cpu, Truck, Crown, Briefcase, Megaphone, Syringe, Calculator, ClipboardCheck, Bot, Clapperboard, MessageCircle } from "lucide-react";
+import { NotificationsBell } from "@/components/esb/NotificationsBell";
 import { EsbLogo } from "./Logo";
 import { DemoTour } from "./DemoTour";
 import { useEffect, useRef, useState, type ReactNode } from "react";
