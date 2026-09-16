@@ -65,15 +65,7 @@ export function StubPage(props: {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        {kpis.map((k) => (
-          <div key={k.label} className="card-elevated p-4">
-            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{k.label}</div>
-            <div className="font-display text-2xl mt-1">{k.value}</div>
-            {k.hint && <div className="text-[11px] text-muted-foreground mt-0.5">{k.hint}</div>}
-          </div>
-        ))}
-      </div>
+      <LiveKpis fallback={kpis} />
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
         {modules.map((m) => {
@@ -96,6 +88,47 @@ export function StubPage(props: {
       </div>
 
       <LivePulse kind={kind} />
+    </div>
+  );
+}
+
+function useStubKpis() {
+  const { session, isStaff } = useAuth();
+  const kpisFn = useServerFn(getCeoKpis);
+  return useQuery({
+    queryKey: ["ceo-kpis", "stub-pulse"],
+    queryFn: () => kpisFn(),
+    enabled: !!session && isStaff,
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
+    retry: false,
+  });
+}
+
+function LiveKpis({ fallback }: { fallback: StubKpi[] }) {
+  const q = useStubKpis();
+  const k = q.data;
+  const money = (n: number) => (n >= 1000 ? `₦${(n / 1000).toFixed(1)}K` : `₦${Math.round(n)}`);
+  const tiles: StubKpi[] = k
+    ? [
+        { label: "Appointments", value: String(k.appointmentsToday), hint: `${k.upcomingAppointments} upcoming` },
+        { label: "Automations", value: String(k.pendingApprovals), hint: "awaiting approval" },
+        { label: "Revenue / 30d", value: money(k.revenue30d), hint: "live revenue" },
+        { label: "Health", value: `${Math.round(k.aiAutonomy)}%`, hint: "AI confidence" },
+      ]
+    : fallback;
+
+  return (
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      {tiles.map((t) => (
+        <div key={t.label} className="card-elevated p-4">
+          <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{t.label}</div>
+          <div className="font-display text-2xl mt-1">
+            {q.isLoading && !k ? <span className="text-muted-foreground">…</span> : t.value}
+          </div>
+          {t.hint && <div className="text-[11px] text-muted-foreground mt-0.5">{t.hint}</div>}
+        </div>
+      ))}
     </div>
   );
 }

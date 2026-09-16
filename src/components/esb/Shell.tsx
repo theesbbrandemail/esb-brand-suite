@@ -1,5 +1,6 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { LayoutGrid, Sparkles, Smartphone, Bell, Package, Calendar, Image as ImageIcon, ScanFace, ClipboardList, LogOut, Lock, ChevronDown, FlaskConical, ShoppingBag, Stethoscope, Smile, HeartPulse, Cpu, Truck, Crown, Briefcase, Megaphone, Syringe, Calculator, ClipboardCheck, Bot, Clapperboard, MessageCircle } from "lucide-react";
+import { LayoutGrid, Sparkles, Smartphone, Package, Calendar, Image as ImageIcon, ScanFace, ClipboardList, LogOut, Lock, ChevronDown, FlaskConical, ShoppingBag, Stethoscope, Smile, HeartPulse, Cpu, Truck, Crown, Briefcase, Megaphone, Syringe, Calculator, ClipboardCheck, Bot, Clapperboard, MessageCircle } from "lucide-react";
+import { NotificationsBell } from "@/components/esb/NotificationsBell";
 import { EsbLogo } from "./Logo";
 import { DemoTour } from "./DemoTour";
 import { useEffect, useRef, useState, type ReactNode } from "react";
@@ -192,10 +193,7 @@ export function Shell({ children, requireStaff = false }: { children: ReactNode;
               {role === "admin" ? "Admin" : realStaff ? "Staff" : demo ? "Demo staff" : "Public"}
             </span>
 
-            <button className="relative h-9 w-9 rounded-full bg-card/60 border border-border flex items-center justify-center hover:bg-card transition">
-              <Bell className="h-4 w-4 text-muted-foreground" />
-              <span className="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-gold" />
-            </button>
+            <NotificationsBell />
             <button
               onClick={() => setMenuOpen((v) => !v)}
               className="h-9 w-9 rounded-full bg-gradient-to-br from-violet to-gold border border-border overflow-hidden flex items-center justify-center text-xs font-semibold text-white"
