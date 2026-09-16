@@ -35,6 +35,8 @@ export const Route = createFileRoute("/manager")({
   component: ManagerPage,
 });
 
+type AppointmentStatus = "scheduled" | "confirmed" | "completed" | "cancelled" | "no_show";
+
 function todayRange() {
   const now = new Date();
   const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -67,7 +69,7 @@ function ManagerPage() {
   const [shiftOn, setShiftOn] = useState(false);
 
   const statusM = useMutation({
-    mutationFn: (v: { id: string; status: string }) => statusFn({ data: v as never }),
+    mutationFn: (v: { id: string; status: AppointmentStatus }) => statusFn({ data: v }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["appointments"] });
       qc.invalidateQueries({ queryKey: ["ceo-kpis"] });
@@ -99,8 +101,59 @@ function ManagerPage() {
       qc.invalidateQueries({ queryKey: ["ceo-reminders"] });
       toast.success("Task updated");
     },
-    onError: (e: Error) => toast.error("Task update failed", { description: e.message }),
+    onError: (e: Error, _v, ctx) => {
+      if (ctx?.prev) qc.setQueryData<Reminder[]>(["ceo-reminders"], ctx.prev);
+      toast.error("Task update failed", { description: e.message });
+    },
   });
+
+  const openTasks = (remindersQ.data ?? []).filter((r) => r.status !== "done");
+  const overdueTasks = openTasks.filter((r) => r.due_at && new Date(r.due_at) < new Date());
+  const pendingAppts = appts.filter((a) => a.status !== "completed" && a.status !== "cancelled");
+
+  const suggestions = useMemo(() => {
+    const out: {
+      text: string;
+      to: "/inventory" | "/manager" | "/whatsapp" | "/appointments" | "/suite";
+      cta: string;
+    }[] = [];
+    if (lowStock.length > 0) {
+      out.push({
+        text: `${lowStock.length} item${lowStock.length > 1 ? "s are" : " is"} at or below threshold — lowest: ${lowStock[0].product?.name ?? "item"} (${lowStock[0].qty} left) at ${lowStock[0].branch?.name ?? "branch"}. Restock before the next peak.`,
+        to: "/inventory",
+        cta: "Open inventory",
+      });
+    }
+    if (overdueTasks.length > 0) {
+      out.push({
+        text: `${overdueTasks.length} task${overdueTasks.length > 1 ? "s are" : " is"} past due — starting with "${overdueTasks[0].title}". Clear them to keep the branch on track.`,
+        to: "/manager",
+        cta: "Review tasks",
+      });
+    }
+    if ((k?.followUpsPending ?? 0) > 0) {
+      out.push({
+        text: `${k?.followUpsPending} follow-up${(k?.followUpsPending ?? 0) > 1 ? "s" : ""} pending — send WhatsApp reminders to lift rebooking rate.`,
+        to: "/whatsapp",
+        cta: "Send follow-ups",
+      });
+    }
+    if (pendingAppts.length > 0) {
+      out.push({
+        text: `${pendingAppts.length} appointment${pendingAppts.length > 1 ? "s" : ""} still open today — confirm arrivals and mark completions as they finish.`,
+        to: "/appointments",
+        cta: "Open appointments",
+      });
+    }
+    if (out.length === 0) {
+      out.push({
+        text: `Operations are stable${k ? ` — $${(k.revenue30d / 1000).toFixed(1)}K revenue over 30 days` : ""}. Focus the team on upsell of retention services today.`,
+        to: "/suite",
+        cta: "Open CEO Suite",
+      });
+    }
+    return out.slice(0, 3);
+  }, [lowStock, overdueTasks, pendingAppts, k]);
 
   return (
     <Shell requireStaff>
@@ -256,16 +309,20 @@ function ManagerPage() {
               <div className="relative flex items-center gap-2 text-xs font-display">
                 <Sparkles className="h-3.5 w-3.5 gold-text" /> Suggestions <span className="text-violet">by AI</span>
               </div>
-              <p className="relative mt-2 text-[11px] text-muted-foreground">
-                {k && k.lowStockItems > 0
-                  ? `Restock ${k.lowStockItems} low item${k.lowStockItems > 1 ? "s" : ""} before the weekend peak to protect service uptime.`
-                  : k && k.followUpsPending > 0
-                  ? `${k.followUpsPending} follow-ups pending — send WhatsApp reminders to lift rebooking rate.`
-                  : "Operations are stable. Focus the team on upsell of retention services today."}
-              </p>
-              <Link to="/suite" className="relative mt-3 inline-flex items-center gap-1 chip-gold px-3 py-1.5 text-[10px]">
-                Open CEO Suite <ArrowRight className="h-3 w-3" />
-              </Link>
+              {kpisQ.isLoading || invQ.isLoading || remindersQ.isLoading ? (
+                <p className="relative mt-2 text-[11px] text-muted-foreground">Reading live branch data…</p>
+              ) : (
+                <ul className="relative mt-2 space-y-2.5">
+                  {suggestions.map((s) => (
+                    <li key={s.cta + s.text.slice(0, 12)}>
+                      <p className="text-[11px] text-muted-foreground">{s.text}</p>
+                      <Link to={s.to} className="mt-1.5 inline-flex items-center gap-1 chip-gold px-3 py-1.5 text-[10px]">
+                        {s.cta} <ArrowRight className="h-3 w-3" />
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           </div>
         </div>
