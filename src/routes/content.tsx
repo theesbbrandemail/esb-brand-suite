@@ -159,13 +159,7 @@ function ContentPage() {
         actions={
           <>
             <ScheduledPreviewDrawer />
-            <button
-              onClick={() => toast("3 new alerts", { description: "Approval queue, scheduled post, engagement spike." })}
-              className="h-10 w-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10"
-              aria-label="Alerts"
-            >
-              <Bell className="h-4 w-4" />
-            </button>
+            <NotificationsBell />
           </>
         }
         stats={[
