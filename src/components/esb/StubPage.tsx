@@ -65,15 +65,7 @@ export function StubPage(props: {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        {kpis.map((k) => (
-          <div key={k.label} className="card-elevated p-4">
-            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{k.label}</div>
-            <div className="font-display text-2xl mt-1">{k.value}</div>
-            {k.hint && <div className="text-[11px] text-muted-foreground mt-0.5">{k.hint}</div>}
-          </div>
-        ))}
-      </div>
+      <LiveKpis fallback={kpis} />
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
         {modules.map((m) => {
