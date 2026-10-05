@@ -90,6 +90,14 @@ function classifyError(raw: string): FriendlyError {
       retry: false,
     };
   }
+  if (msg.includes("redirect_uri") || msg.includes("redirect uri") || msg.includes("404")) {
+    return {
+      title: "Redirect configuration issue",
+      message: "Google returned an invalid redirect after sign-in.",
+      hint: "Ask an admin to set Supabase Site URL to https://esb-brand-suite.vercel.app and add Redirect URLs for this domain (including /auth and /auth/callback).",
+      retry: true,
+    };
+  }
   return {
     title: "Sign-in failed",
     message: raw || "Something went wrong while signing you in.",
@@ -163,7 +171,10 @@ function AuthPage() {
 
     setPhase("starting");
     try {
-      const returnTo = window.location.origin + "/auth" + (next && next !== "/" ? `?next=${encodeURIComponent(next)}` : "");
+      // Use /auth/callback so OAuth providers land on a dedicated route that
+      // forwards query+hash to /auth (avoids 404 if provider appends paths).
+      const nextQs = next && next !== "/" ? `?next=${encodeURIComponent(next)}` : "";
+      const returnTo = `${window.location.origin}/auth/callback${nextQs}`;
       const result = await lovable.auth.signInWithOAuth("google", {
         redirect_uri: returnTo,
       });
