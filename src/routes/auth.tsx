@@ -4,6 +4,11 @@ import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/lib/auth";
 import { EsbLogo } from "@/components/esb/Logo";
 import { Sparkles, Loader2, AlertCircle, CheckCircle2, RefreshCw, WifiOff } from "lucide-react";
+import {
+  isFirebaseConfigured,
+  signInWithGoogleFirebase,
+  completeFirebaseRedirectIfAny,
+} from "@/integrations/firebase/client";
 
 function safeNext(raw: unknown): string {
   if (typeof raw !== "string" || !raw.startsWith("/") || raw.startsWith("//")) return "/";
@@ -90,11 +95,19 @@ function classifyError(raw: string): FriendlyError {
       retry: false,
     };
   }
+  if (msg.includes("firebase is not configured")) {
+    return {
+      title: "Firebase not configured",
+      message: "Firebase Auth env vars are missing on this deployment.",
+      hint: "Add VITE_FIREBASE_API_KEY, AUTH_DOMAIN, PROJECT_ID, and APP_ID on Vercel, then redeploy.",
+      retry: false,
+    };
+  }
   if (msg.includes("redirect_uri") || msg.includes("redirect uri") || msg.includes("404")) {
     return {
       title: "Redirect configuration issue",
       message: "Google returned an invalid redirect after sign-in.",
-      hint: "Ask an admin to set Supabase Site URL to https://esb-brand-suite.vercel.app and add Redirect URLs for this domain (including /auth and /auth/callback).",
+      hint: "Check Firebase authorized domains and Supabase third-party Firebase integration.",
       retry: true,
     };
   }
@@ -117,9 +130,31 @@ function AuthPage() {
     typeof navigator === "undefined" ? true : navigator.onLine,
   );
 
-  // Detect OAuth callback (?code=... or #access_token=...) and show a returning state
+  // Finish Firebase redirect flow if we landed back on /auth
+  useEffect(() => {
+    if (!isFirebaseConfigured) return;
+    let cancelled = false;
+    (async () => {
+      const result = await completeFirebaseRedirectIfAny();
+      if (cancelled || !result) return;
+      if (result.error) {
+        setError(classifyError(result.error.message));
+        setPhase("error");
+        return;
+      }
+      if (result.user) {
+        setPhase("success");
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // Detect legacy OAuth callback (?code=... or #access_token=...)
   useEffect(() => {
     if (typeof window === "undefined") return;
+    if (isFirebaseConfigured) return;
     const search = window.location.search;
     const hash = window.location.hash;
     const hasCallback =
@@ -171,8 +206,25 @@ function AuthPage() {
 
     setPhase("starting");
     try {
-      // Use /auth/callback so OAuth providers land on a dedicated route that
-      // forwards query+hash to /auth (avoids 404 if provider appends paths).
+      // Path B: Firebase Google Auth
+      if (isFirebaseConfigured) {
+        const result = await signInWithGoogleFirebase();
+        if (result.error) {
+          if (result.error.message === "redirecting") {
+            setPhase("redirecting");
+            return;
+          }
+          setError(classifyError(result.error.message));
+          setPhase("error");
+          return;
+        }
+        setPhase("success");
+        if (next && next !== "/") window.location.href = next;
+        else navigate({ to: "/" });
+        return;
+      }
+
+      // Default: Lovable / Supabase OAuth
       const nextQs = next && next !== "/" ? `?next=${encodeURIComponent(next)}` : "";
       const returnTo = `${window.location.origin}/auth/callback${nextQs}`;
       const result = await lovable.auth.signInWithOAuth("google", {
@@ -196,7 +248,6 @@ function AuthPage() {
     }
   }
 
-
   const busy = phase === "starting" || phase === "redirecting" || phase === "returning";
   const buttonLabel =
     phase === "starting" ? "Opening Google…"
@@ -205,7 +256,6 @@ function AuthPage() {
     : phase === "success" ? "Signed in"
     : "Continue with Google";
 
-  // Initial app-level auth check
   if (loading && phase === "idle") {
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
