@@ -31,6 +31,7 @@ import { Route as AiNursesRouteImport } from './routes/ai.nurses'
 import { Route as AiRecordsRouteImport } from './routes/ai.records'
 import { Route as AiSocialRouteImport } from './routes/ai.social'
 import { Route as ApiCeoChatRouteImport } from './routes/api/ceo-chat'
+import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as BrandsDentalRouteImport } from './routes/brands.dental'
 import { Route as BrandsDermaRouteImport } from './routes/brands.derma'
 import { Route as BrandsGlobalTechRouteImport } from './routes/brands.global-tech'
@@ -155,6 +156,11 @@ const ApiCeoChatRoute = ApiCeoChatRouteImport.update({
   path: '/api/ceo-chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthCallbackRoute = AuthCallbackRouteImport.update({
+  id: '/callback',
+  path: '/callback',
+  getParentRoute: () => AuthRoute,
+} as any)
 const BrandsDentalRoute = BrandsDentalRouteImport.update({
   id: '/brands/dental',
   path: '/brands/dental',
@@ -216,7 +222,7 @@ const ApiPublicHooksProcessFollowupsRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/appointments': typeof AppointmentsRoute
-  '/auth': typeof AuthRoute
+  '/auth': typeof AuthRouteWithChildren
   '/content': typeof ContentRoute
   '/inventory': typeof InventoryRoute
   '/manager': typeof ManagerRoute
@@ -236,6 +242,7 @@ export interface FileRoutesByFullPath {
   '/ai/records': typeof AiRecordsRoute
   '/ai/social': typeof AiSocialRoute
   '/api/ceo-chat': typeof ApiCeoChatRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/brands/dental': typeof BrandsDentalRoute
   '/brands/derma': typeof BrandsDermaRoute
   '/brands/global-tech': typeof BrandsGlobalTechRoute
@@ -251,7 +258,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/appointments': typeof AppointmentsRoute
-  '/auth': typeof AuthRoute
+  '/auth': typeof AuthRouteWithChildren
   '/content': typeof ContentRoute
   '/inventory': typeof InventoryRoute
   '/manager': typeof ManagerRoute
@@ -271,6 +278,7 @@ export interface FileRoutesByTo {
   '/ai/records': typeof AiRecordsRoute
   '/ai/social': typeof AiSocialRoute
   '/api/ceo-chat': typeof ApiCeoChatRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/brands/dental': typeof BrandsDentalRoute
   '/brands/derma': typeof BrandsDermaRoute
   '/brands/global-tech': typeof BrandsGlobalTechRoute
@@ -287,7 +295,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/appointments': typeof AppointmentsRoute
-  '/auth': typeof AuthRoute
+  '/auth': typeof AuthRouteWithChildren
   '/content': typeof ContentRoute
   '/inventory': typeof InventoryRoute
   '/manager': typeof ManagerRoute
@@ -307,6 +315,7 @@ export interface FileRoutesById {
   '/ai/records': typeof AiRecordsRoute
   '/ai/social': typeof AiSocialRoute
   '/api/ceo-chat': typeof ApiCeoChatRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/brands/dental': typeof BrandsDentalRoute
   '/brands/derma': typeof BrandsDermaRoute
   '/brands/global-tech': typeof BrandsGlobalTechRoute
@@ -344,6 +353,7 @@ export interface FileRouteTypes {
     | '/ai/records'
     | '/ai/social'
     | '/api/ceo-chat'
+    | '/auth/callback'
     | '/brands/dental'
     | '/brands/derma'
     | '/brands/global-tech'
@@ -379,6 +389,7 @@ export interface FileRouteTypes {
     | '/ai/records'
     | '/ai/social'
     | '/api/ceo-chat'
+    | '/auth/callback'
     | '/brands/dental'
     | '/brands/derma'
     | '/brands/global-tech'
@@ -414,6 +425,7 @@ export interface FileRouteTypes {
     | '/ai/records'
     | '/ai/social'
     | '/api/ceo-chat'
+    | '/auth/callback'
     | '/brands/dental'
     | '/brands/derma'
     | '/brands/global-tech'
@@ -430,7 +442,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppointmentsRoute: typeof AppointmentsRoute
-  AuthRoute: typeof AuthRoute
+  AuthRoute: typeof AuthRouteWithChildren
   ContentRoute: typeof ContentRoute
   InventoryRoute: typeof InventoryRoute
   ManagerRoute: typeof ManagerRoute
@@ -619,6 +631,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiCeoChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth/callback': {
+      id: '/auth/callback'
+      path: '/callback'
+      fullPath: '/auth/callback'
+      preLoaderRoute: typeof AuthCallbackRouteImport
+      parentRoute: typeof AuthRoute
+    }
     '/brands/dental': {
       id: '/brands/dental'
       path: '/brands/dental'
@@ -699,10 +718,20 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthRouteChildren {
+  AuthCallbackRoute: typeof AuthCallbackRoute
+}
+
+const AuthRouteChildren: AuthRouteChildren = {
+  AuthCallbackRoute: AuthCallbackRoute,
+}
+
+const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppointmentsRoute: AppointmentsRoute,
-  AuthRoute: AuthRoute,
+  AuthRoute: AuthRouteWithChildren,
   ContentRoute: ContentRoute,
   InventoryRoute: InventoryRoute,
   ManagerRoute: ManagerRoute,

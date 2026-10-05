@@ -4,7 +4,7 @@ import { z } from "zod";
 
 /* ----------------------------- Types ----------------------------- */
 
-export type Branch = { id: string; name: string; city: string | null; phone: string | null };
+export type Branch = { id: string; name: string; city: string | null; phone: string | null; address?: string | null; email?: string | null; whatsapp?: string | null; opening_hours?: string | null };
 
 export type InventoryRow = {
   id: string;
@@ -247,7 +247,7 @@ export const listBranches = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<Branch[]> => {
     const sb = context.supabase as any;
-    const { data } = await sb.from("branches").select("id,name,city,phone").order("name");
+    const { data } = await sb.from("branches").select("id,name,city,phone,address,email,whatsapp,opening_hours").order("name");
     return (data ?? []) as Branch[];
   });
 

@@ -68,7 +68,9 @@ export function BranchCards({ title = "Branches" }: { title?: string }) {
                 <div className="flex items-start gap-3">
                   <div className="min-w-0 flex-1">
                     <div className="truncate font-display text-sm font-semibold">{b.name}</div>
-                    <div className="truncate text-[11px] text-muted-foreground">{b.city ?? "—"}</div>
+                    <div className="truncate text-[11px] text-muted-foreground">{b.address ?? b.city ?? "—"}</div>
+                    {b.phone && <div className="truncate text-[11px] text-muted-foreground">{b.phone}{b.email ? ` · ${b.email}` : ""}</div>}
+                    {b.opening_hours && <div className="truncate text-[10px] text-muted-foreground">{b.opening_hours}</div>}
                   </div>
                   <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-foreground" />
                 </div>

@@ -1,0 +1,1 @@
+ALTER TABLE public.branches ADD COLUMN IF NOT EXISTS address text, ADD COLUMN IF NOT EXISTS email text, ADD COLUMN IF NOT EXISTS whatsapp text, ADD COLUMN IF NOT EXISTS opening_hours text;
