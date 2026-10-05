@@ -179,31 +179,43 @@ export type Database = {
       }
       branches: {
         Row: {
+          address: string | null
           city: string | null
           country: string | null
           created_at: string
+          email: string | null
           id: string
           name: string
+          opening_hours: string | null
           phone: string | null
           updated_at: string
+          whatsapp: string | null
         }
         Insert: {
+          address?: string | null
           city?: string | null
           country?: string | null
           created_at?: string
+          email?: string | null
           id?: string
           name: string
+          opening_hours?: string | null
           phone?: string | null
           updated_at?: string
+          whatsapp?: string | null
         }
         Update: {
+          address?: string | null
           city?: string | null
           country?: string | null
           created_at?: string
+          email?: string | null
           id?: string
           name?: string
+          opening_hours?: string | null
           phone?: string | null
           updated_at?: string
+          whatsapp?: string | null
         }
         Relationships: []
       }
