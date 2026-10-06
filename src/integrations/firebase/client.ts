@@ -75,7 +75,7 @@ export async function signInWithGoogleFirebase(): Promise<
 
 /** Call on /auth mount to finish redirect-based Google sign-in. */
 export async function completeFirebaseRedirectIfAny(): Promise<
-  | { user: FirebaseUser; idToken: string }
+  | { user: FirebaseUser; idToken: string; error?: undefined }
   | { user?: undefined; idToken?: undefined; error?: Error }
   | null
 > {
