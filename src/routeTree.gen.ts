@@ -12,19 +12,16 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppointmentsRouteImport } from './routes/appointments'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as CeoRouteImport } from './routes/ceo'
 import { Route as ContentRouteImport } from './routes/content'
 import { Route as InventoryRouteImport } from './routes/inventory'
 import { Route as ManagerRouteImport } from './routes/manager'
 import { Route as McpRouteImport } from './routes/mcp'
-import { Route as MobileRouteImport } from './routes/mobile'
-import { Route as SkinAnalysisRouteImport } from './routes/skin-analysis'
 import { Route as SuiteRouteImport } from './routes/suite'
-import { Route as WhatsappRouteImport } from './routes/whatsapp'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as AiAccountantRouteImport } from './routes/ai.accountant'
 import { Route as AiCeoRouteImport } from './routes/ai.ceo'
-import { Route as AiCustomerRouteImport } from './routes/ai.customer'
 import { Route as AiLogisticsRouteImport } from './routes/ai.logistics'
 import { Route as AiManagerRouteImport } from './routes/ai.manager'
 import { Route as AiNursesRouteImport } from './routes/ai.nurses'
@@ -34,7 +31,6 @@ import { Route as ApiCeoChatRouteImport } from './routes/api/ceo-chat'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as BrandsDentalRouteImport } from './routes/brands.dental'
 import { Route as BrandsDermaRouteImport } from './routes/brands.derma'
-import { Route as BrandsGlobalTechRouteImport } from './routes/brands.global-tech'
 import { Route as BrandsLogisticsRouteImport } from './routes/brands.logistics'
 import { Route as BrandsRejuvenatingRouteImport } from './routes/brands.rejuvenating'
 import { Route as BrandsSkincareKitchenRouteImport } from './routes/brands.skincare-kitchen'
@@ -59,6 +55,11 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CeoRoute = CeoRouteImport.update({
+  id: '/ceo',
+  path: '/ceo',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ContentRoute = ContentRouteImport.update({
   id: '/content',
   path: '/content',
@@ -79,24 +80,9 @@ const McpRoute = McpRouteImport.update({
   path: '/mcp',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MobileRoute = MobileRouteImport.update({
-  id: '/mobile',
-  path: '/mobile',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SkinAnalysisRoute = SkinAnalysisRouteImport.update({
-  id: '/skin-analysis',
-  path: '/skin-analysis',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const SuiteRoute = SuiteRouteImport.update({
   id: '/suite',
   path: '/suite',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const WhatsappRoute = WhatsappRouteImport.update({
-  id: '/whatsapp',
-  path: '/whatsapp',
   getParentRoute: () => rootRouteImport,
 } as any)
 const Char91DotmcpChar93ListToolsRoute =
@@ -119,11 +105,6 @@ const AiAccountantRoute = AiAccountantRouteImport.update({
 const AiCeoRoute = AiCeoRouteImport.update({
   id: '/ai/ceo',
   path: '/ai/ceo',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AiCustomerRoute = AiCustomerRouteImport.update({
-  id: '/ai/customer',
-  path: '/ai/customer',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AiLogisticsRoute = AiLogisticsRouteImport.update({
@@ -169,11 +150,6 @@ const BrandsDentalRoute = BrandsDentalRouteImport.update({
 const BrandsDermaRoute = BrandsDermaRouteImport.update({
   id: '/brands/derma',
   path: '/brands/derma',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BrandsGlobalTechRoute = BrandsGlobalTechRouteImport.update({
-  id: '/brands/global-tech',
-  path: '/brands/global-tech',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BrandsLogisticsRoute = BrandsLogisticsRouteImport.update({
@@ -223,19 +199,16 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/appointments': typeof AppointmentsRoute
   '/auth': typeof AuthRouteWithChildren
+  '/ceo': typeof CeoRoute
   '/content': typeof ContentRoute
   '/inventory': typeof InventoryRoute
   '/manager': typeof ManagerRoute
   '/mcp': typeof McpRoute
-  '/mobile': typeof MobileRoute
-  '/skin-analysis': typeof SkinAnalysisRoute
   '/suite': typeof SuiteRoute
-  '/whatsapp': typeof WhatsappRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/ai/accountant': typeof AiAccountantRoute
   '/ai/ceo': typeof AiCeoRoute
-  '/ai/customer': typeof AiCustomerRoute
   '/ai/logistics': typeof AiLogisticsRoute
   '/ai/manager': typeof AiManagerRoute
   '/ai/nurses': typeof AiNursesRoute
@@ -245,7 +218,6 @@ export interface FileRoutesByFullPath {
   '/auth/callback': typeof AuthCallbackRoute
   '/brands/dental': typeof BrandsDentalRoute
   '/brands/derma': typeof BrandsDermaRoute
-  '/brands/global-tech': typeof BrandsGlobalTechRoute
   '/brands/logistics': typeof BrandsLogisticsRoute
   '/brands/rejuvenating': typeof BrandsRejuvenatingRoute
   '/brands/skincare-kitchen': typeof BrandsSkincareKitchenRoute
@@ -259,19 +231,16 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/appointments': typeof AppointmentsRoute
   '/auth': typeof AuthRouteWithChildren
+  '/ceo': typeof CeoRoute
   '/content': typeof ContentRoute
   '/inventory': typeof InventoryRoute
   '/manager': typeof ManagerRoute
   '/mcp': typeof McpRoute
-  '/mobile': typeof MobileRoute
-  '/skin-analysis': typeof SkinAnalysisRoute
   '/suite': typeof SuiteRoute
-  '/whatsapp': typeof WhatsappRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/ai/accountant': typeof AiAccountantRoute
   '/ai/ceo': typeof AiCeoRoute
-  '/ai/customer': typeof AiCustomerRoute
   '/ai/logistics': typeof AiLogisticsRoute
   '/ai/manager': typeof AiManagerRoute
   '/ai/nurses': typeof AiNursesRoute
@@ -281,7 +250,6 @@ export interface FileRoutesByTo {
   '/auth/callback': typeof AuthCallbackRoute
   '/brands/dental': typeof BrandsDentalRoute
   '/brands/derma': typeof BrandsDermaRoute
-  '/brands/global-tech': typeof BrandsGlobalTechRoute
   '/brands/logistics': typeof BrandsLogisticsRoute
   '/brands/rejuvenating': typeof BrandsRejuvenatingRoute
   '/brands/skincare-kitchen': typeof BrandsSkincareKitchenRoute
@@ -296,19 +264,16 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/appointments': typeof AppointmentsRoute
   '/auth': typeof AuthRouteWithChildren
+  '/ceo': typeof CeoRoute
   '/content': typeof ContentRoute
   '/inventory': typeof InventoryRoute
   '/manager': typeof ManagerRoute
   '/mcp': typeof McpRoute
-  '/mobile': typeof MobileRoute
-  '/skin-analysis': typeof SkinAnalysisRoute
   '/suite': typeof SuiteRoute
-  '/whatsapp': typeof WhatsappRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/ai/accountant': typeof AiAccountantRoute
   '/ai/ceo': typeof AiCeoRoute
-  '/ai/customer': typeof AiCustomerRoute
   '/ai/logistics': typeof AiLogisticsRoute
   '/ai/manager': typeof AiManagerRoute
   '/ai/nurses': typeof AiNursesRoute
@@ -318,7 +283,6 @@ export interface FileRoutesById {
   '/auth/callback': typeof AuthCallbackRoute
   '/brands/dental': typeof BrandsDentalRoute
   '/brands/derma': typeof BrandsDermaRoute
-  '/brands/global-tech': typeof BrandsGlobalTechRoute
   '/brands/logistics': typeof BrandsLogisticsRoute
   '/brands/rejuvenating': typeof BrandsRejuvenatingRoute
   '/brands/skincare-kitchen': typeof BrandsSkincareKitchenRoute
@@ -334,19 +298,16 @@ export interface FileRouteTypes {
     | '/'
     | '/appointments'
     | '/auth'
+    | '/ceo'
     | '/content'
     | '/inventory'
     | '/manager'
     | '/mcp'
-    | '/mobile'
-    | '/skin-analysis'
     | '/suite'
-    | '/whatsapp'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/ai/accountant'
     | '/ai/ceo'
-    | '/ai/customer'
     | '/ai/logistics'
     | '/ai/manager'
     | '/ai/nurses'
@@ -356,7 +317,6 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/brands/dental'
     | '/brands/derma'
-    | '/brands/global-tech'
     | '/brands/logistics'
     | '/brands/rejuvenating'
     | '/brands/skincare-kitchen'
@@ -370,19 +330,16 @@ export interface FileRouteTypes {
     | '/'
     | '/appointments'
     | '/auth'
+    | '/ceo'
     | '/content'
     | '/inventory'
     | '/manager'
     | '/mcp'
-    | '/mobile'
-    | '/skin-analysis'
     | '/suite'
-    | '/whatsapp'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/ai/accountant'
     | '/ai/ceo'
-    | '/ai/customer'
     | '/ai/logistics'
     | '/ai/manager'
     | '/ai/nurses'
@@ -392,7 +349,6 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/brands/dental'
     | '/brands/derma'
-    | '/brands/global-tech'
     | '/brands/logistics'
     | '/brands/rejuvenating'
     | '/brands/skincare-kitchen'
@@ -406,19 +362,16 @@ export interface FileRouteTypes {
     | '/'
     | '/appointments'
     | '/auth'
+    | '/ceo'
     | '/content'
     | '/inventory'
     | '/manager'
     | '/mcp'
-    | '/mobile'
-    | '/skin-analysis'
     | '/suite'
-    | '/whatsapp'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/ai/accountant'
     | '/ai/ceo'
-    | '/ai/customer'
     | '/ai/logistics'
     | '/ai/manager'
     | '/ai/nurses'
@@ -428,7 +381,6 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/brands/dental'
     | '/brands/derma'
-    | '/brands/global-tech'
     | '/brands/logistics'
     | '/brands/rejuvenating'
     | '/brands/skincare-kitchen'
@@ -443,19 +395,16 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppointmentsRoute: typeof AppointmentsRoute
   AuthRoute: typeof AuthRouteWithChildren
+  CeoRoute: typeof CeoRoute
   ContentRoute: typeof ContentRoute
   InventoryRoute: typeof InventoryRoute
   ManagerRoute: typeof ManagerRoute
   McpRoute: typeof McpRoute
-  MobileRoute: typeof MobileRoute
-  SkinAnalysisRoute: typeof SkinAnalysisRoute
   SuiteRoute: typeof SuiteRoute
-  WhatsappRoute: typeof WhatsappRoute
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   AiAccountantRoute: typeof AiAccountantRoute
   AiCeoRoute: typeof AiCeoRoute
-  AiCustomerRoute: typeof AiCustomerRoute
   AiLogisticsRoute: typeof AiLogisticsRoute
   AiManagerRoute: typeof AiManagerRoute
   AiNursesRoute: typeof AiNursesRoute
@@ -464,7 +413,6 @@ export interface RootRouteChildren {
   ApiCeoChatRoute: typeof ApiCeoChatRoute
   BrandsDentalRoute: typeof BrandsDentalRoute
   BrandsDermaRoute: typeof BrandsDermaRoute
-  BrandsGlobalTechRoute: typeof BrandsGlobalTechRoute
   BrandsLogisticsRoute: typeof BrandsLogisticsRoute
   BrandsRejuvenatingRoute: typeof BrandsRejuvenatingRoute
   BrandsSkincareKitchenRoute: typeof BrandsSkincareKitchenRoute
@@ -498,6 +446,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ceo': {
+      id: '/ceo'
+      path: '/ceo'
+      fullPath: '/ceo'
+      preLoaderRoute: typeof CeoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/content': {
       id: '/content'
       path: '/content'
@@ -526,32 +481,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof McpRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/mobile': {
-      id: '/mobile'
-      path: '/mobile'
-      fullPath: '/mobile'
-      preLoaderRoute: typeof MobileRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/skin-analysis': {
-      id: '/skin-analysis'
-      path: '/skin-analysis'
-      fullPath: '/skin-analysis'
-      preLoaderRoute: typeof SkinAnalysisRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/suite': {
       id: '/suite'
       path: '/suite'
       fullPath: '/suite'
       preLoaderRoute: typeof SuiteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/whatsapp': {
-      id: '/whatsapp'
-      path: '/whatsapp'
-      fullPath: '/whatsapp'
-      preLoaderRoute: typeof WhatsappRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/.mcp/list-tools': {
@@ -580,13 +514,6 @@ declare module '@tanstack/react-router' {
       path: '/ai/ceo'
       fullPath: '/ai/ceo'
       preLoaderRoute: typeof AiCeoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/ai/customer': {
-      id: '/ai/customer'
-      path: '/ai/customer'
-      fullPath: '/ai/customer'
-      preLoaderRoute: typeof AiCustomerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ai/logistics': {
@@ -650,13 +577,6 @@ declare module '@tanstack/react-router' {
       path: '/brands/derma'
       fullPath: '/brands/derma'
       preLoaderRoute: typeof BrandsDermaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/brands/global-tech': {
-      id: '/brands/global-tech'
-      path: '/brands/global-tech'
-      fullPath: '/brands/global-tech'
-      preLoaderRoute: typeof BrandsGlobalTechRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/brands/logistics': {
@@ -732,20 +652,17 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppointmentsRoute: AppointmentsRoute,
   AuthRoute: AuthRouteWithChildren,
+  CeoRoute: CeoRoute,
   ContentRoute: ContentRoute,
   InventoryRoute: InventoryRoute,
   ManagerRoute: ManagerRoute,
   McpRoute: McpRoute,
-  MobileRoute: MobileRoute,
-  SkinAnalysisRoute: SkinAnalysisRoute,
   SuiteRoute: SuiteRoute,
-  WhatsappRoute: WhatsappRoute,
   Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
   AiAccountantRoute: AiAccountantRoute,
   AiCeoRoute: AiCeoRoute,
-  AiCustomerRoute: AiCustomerRoute,
   AiLogisticsRoute: AiLogisticsRoute,
   AiManagerRoute: AiManagerRoute,
   AiNursesRoute: AiNursesRoute,
@@ -754,7 +671,6 @@ const rootRouteChildren: RootRouteChildren = {
   ApiCeoChatRoute: ApiCeoChatRoute,
   BrandsDentalRoute: BrandsDentalRoute,
   BrandsDermaRoute: BrandsDermaRoute,
-  BrandsGlobalTechRoute: BrandsGlobalTechRoute,
   BrandsLogisticsRoute: BrandsLogisticsRoute,
   BrandsRejuvenatingRoute: BrandsRejuvenatingRoute,
   BrandsSkincareKitchenRoute: BrandsSkincareKitchenRoute,
