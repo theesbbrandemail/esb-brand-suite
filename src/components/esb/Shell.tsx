@@ -1,27 +1,23 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { LayoutGrid, Sparkles, Smartphone, Package, Calendar, Image as ImageIcon, ScanFace, ClipboardList, LogOut, Lock, ChevronDown, FlaskConical, ShoppingBag, Stethoscope, Smile, HeartPulse, Cpu, Truck, Crown, Briefcase, Megaphone, Syringe, Calculator, ClipboardCheck, Bot, Clapperboard, MessageCircle } from "lucide-react";
+import { LayoutGrid, Sparkles, Package, Calendar, Image as ImageIcon, ClipboardList, LogOut, Lock, ChevronDown, FlaskConical, ShoppingBag, Stethoscope, Smile, HeartPulse, Truck, Crown, Briefcase, Megaphone, Syringe, Calculator, ClipboardCheck, Bot, Clapperboard, FileHeart, CalendarClock, Sunrise, PackageSearch } from "lucide-react";
 import { NotificationsBell } from "@/components/esb/NotificationsBell";
 import { EsbLogo } from "./Logo";
-import { DemoTour } from "./DemoTour";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
 import { useAuth } from "@/lib/auth";
-import { useDemoMode } from "@/lib/demo";
 
 
 type Tab = { to: string; label: string; icon: typeof LayoutGrid; staff?: boolean };
 
 const tabs: readonly Tab[] = [
   { to: "/", label: "Overview", icon: LayoutGrid },
-  { to: "/ceo", label: "AI Suite", icon: Sparkles, staff: true },
-  { to: "/mobile", label: "Mobile", icon: Smartphone },
+  { to: "/ceo", label: "CEO Dashboard", icon: Crown, staff: true },
   { to: "/inventory", label: "Inventory", icon: Package, staff: true },
   { to: "/appointments", label: "Appts", icon: Calendar },
   { to: "/content", label: "Content", icon: ImageIcon, staff: true },
-  { to: "/skin-analysis", label: "Skin AI", icon: ScanFace },
   { to: "/manager", label: "Manager", icon: ClipboardList, staff: true },
-  { to: "/whatsapp", label: "WhatsApp", icon: MessageCircle },
+  { to: "/tools/briefing", label: "Briefing", icon: Sunrise, staff: true },
 ];
 
 type MenuItem = { to: string; label: string; icon: typeof LayoutGrid; staff?: boolean; sub?: string };
@@ -33,11 +29,14 @@ const brands: readonly MenuItem[] = [
   { to: "/brands/dental", label: "Dental Clinic", icon: Smile, sub: "Oral & dental care" },
   { to: "/brands/rejuvenating", label: "Rejuvenating Aesthetics", icon: HeartPulse, sub: "Procedures & anti-aging" },
   { to: "/brands/studios", label: "ESB Studios", icon: Clapperboard, sub: "Studio services · photo/video" },
-  { to: "/brands/global-tech", label: "Global Skin Tech", icon: Cpu, sub: "AI platform tier" },
   { to: "/brands/logistics", label: "Logistics", icon: Truck, sub: "Cross-branch sync" },
 ];
 
 const aiRoles: readonly MenuItem[] = [
+  { to: "/tools/treatment", label: "Treatment & Aftercare", icon: FileHeart, sub: "AI tool", staff: true },
+  { to: "/tools/shifts", label: "Shift & Task Planner", icon: CalendarClock, sub: "AI tool", staff: true },
+  { to: "/tools/briefing", label: "Daily Ops Briefing", icon: Sunrise, sub: "AI tool", staff: true },
+  { to: "/tools/restock", label: "Restock Forecaster", icon: PackageSearch, sub: "AI tool", staff: true },
   { to: "/ai/ceo", label: "CEO AI Suite", icon: Crown, sub: "Biometric-gated", staff: true },
   { to: "/ai/manager", label: "Manager AI", icon: Briefcase, staff: true },
   { to: "/ai/social", label: "Social / Content AI", icon: Megaphone, staff: true },
@@ -45,13 +44,11 @@ const aiRoles: readonly MenuItem[] = [
   { to: "/ai/accountant", label: "Accountant AI", icon: Calculator, staff: true },
   { to: "/ai/logistics", label: "Logistics AI", icon: Truck, staff: true },
   { to: "/ai/records", label: "Records AI", icon: ClipboardCheck, sub: "Sign-in & tasks", staff: true },
-  { to: "/ai/customer", label: "Client AI Suite", icon: Smartphone, sub: "WhatsApp ready" },
 ];
 
 export function Shell({ children, requireStaff = false }: { children: ReactNode; requireStaff?: boolean }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { loading, session, role, isStaff, user, signOut } = useAuth();
-  const [demo, setDemo, demoReady] = useDemoMode();
   const realStaff = role === "staff" || role === "admin";
 
   const navigate = useNavigate();
@@ -61,10 +58,10 @@ export function Shell({ children, requireStaff = false }: { children: ReactNode;
 
 
   useEffect(() => {
-    if (!loading && !session && demoReady && !demo) {
+    if (!loading && !session) {
       navigate({ to: "/auth", search: { next: pathname }, replace: true });
     }
-  }, [loading, session, demo, demoReady, pathname, navigate]);
+  }, [loading, session, pathname, navigate]);
 
   useEffect(() => {
     function onClick(e: MouseEvent) {
@@ -78,13 +75,14 @@ export function Shell({ children, requireStaff = false }: { children: ReactNode;
     setOpenDropdown(null);
   }, [pathname]);
 
-  if (loading || !demoReady || (!session && !demo)) {
+  if (loading || !session) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="h-8 w-8 rounded-full border-2 border-gold border-t-transparent animate-spin" />
       </div>
     );
   }
+
 
 
   if (requireStaff && !isStaff) {
@@ -179,18 +177,8 @@ export function Shell({ children, requireStaff = false }: { children: ReactNode;
             )}
           </nav>
           <div className="flex items-center gap-2 sm:gap-3 relative shrink-0">
-            <button
-              type="button"
-              onClick={() => setDemo(!demo)}
-              title={demo ? "Demo mode on — all panels unlocked" : "Demo mode off — real roles apply"}
-              className={`hidden sm:inline-flex items-center gap-1.5 text-[10px] px-2.5 py-1 rounded-full border transition ${
-                demo ? "border-gold/40 text-gold bg-gold/10" : "border-border text-muted-foreground"
-              }`}
-            >
-              <Sparkles className="h-3 w-3" /> {demo ? "Demo unlocked" : "Demo off"}
-            </button>
             <span className={`hidden md:inline-flex text-[10px] px-2 py-0.5 rounded-full border ${isStaff ? "border-gold/40 text-gold bg-gold/10" : "border-violet/40 text-violet bg-violet/10"}`}>
-              {role === "admin" ? "Admin" : realStaff ? "Staff" : demo ? "Demo staff" : "Public"}
+              {role === "admin" ? "Admin" : realStaff ? "Staff" : "Public"}
             </span>
 
             <NotificationsBell />
@@ -211,12 +199,6 @@ export function Shell({ children, requireStaff = false }: { children: ReactNode;
                   <div className="text-sm font-medium truncate">{displayName}</div>
                   <div className="text-[11px] text-muted-foreground truncate">{user?.email}</div>
                 </div>
-                <button
-                  onClick={() => setDemo(!demo)}
-                  className="w-full flex items-center gap-2 px-2 py-2 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition"
-                >
-                  <Sparkles className="h-4 w-4" /> {demo ? "Disable demo mode" : "Enable demo mode"}
-                </button>
                 <button
                   onClick={signOut}
                   className="w-full flex items-center gap-2 px-2 py-2 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition"
@@ -240,7 +222,6 @@ export function Shell({ children, requireStaff = false }: { children: ReactNode;
 
       </header>
       <main className="w-full max-w-[1400px] mx-auto px-3 sm:px-6 py-6 sm:py-8 overflow-x-hidden">{children}</main>
-      <DemoTour />
     </div>
   );
 }
