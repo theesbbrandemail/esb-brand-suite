@@ -1,5 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { firebaseExchange } from "@/lib/firebase-auth.functions";
+import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/lib/auth";
 import { EsbLogo } from "@/components/esb/Logo";
@@ -107,7 +110,7 @@ function classifyError(raw: string): FriendlyError {
     return {
       title: "Redirect configuration issue",
       message: "Google returned an invalid redirect after sign-in.",
-      hint: "Check Firebase authorized domains and Supabase third-party Firebase integration.",
+      hint: "Add this site to Firebase → Authentication → Authorized domains.",
       retry: true,
     };
   }
@@ -123,6 +126,7 @@ function AuthPage() {
   const { session, loading } = useAuth();
   const navigate = useNavigate();
   const { next } = Route.useSearch();
+  const exchange = useServerFn(firebaseExchange);
   const [phase, setPhase] = useState<Phase>("idle");
   const [error, setError] = useState<FriendlyError | null>(null);
   const [audience, setAudience] = useState<"staff" | "public">("public");
@@ -142,9 +146,7 @@ function AuthPage() {
         setPhase("error");
         return;
       }
-      if (result.user) {
-        setPhase("success");
-      }
+      if (result.idToken) await finishFirebase(result.idToken);
     })();
     return () => {
       cancelled = true;
@@ -195,6 +197,23 @@ function AuthPage() {
     }
   }, [loading, session, navigate, next]);
 
+  async function finishFirebase(idToken: string) {
+    setPhase("returning");
+    const res = await exchange({ data: { idToken } });
+    if (res.error || !res.tokenHash) {
+      setError(classifyError(res.error ?? "sign-in failed"));
+      setPhase("error");
+      return;
+    }
+    const { error: otpErr } = await supabase.auth.verifyOtp({ token_hash: res.tokenHash, type: "magiclink" });
+    if (otpErr) {
+      setError(classifyError(otpErr.message));
+      setPhase("error");
+      return;
+    }
+    setPhase("success");
+  }
+
   async function signIn() {
     setError(null);
 
@@ -218,9 +237,7 @@ function AuthPage() {
           setPhase("error");
           return;
         }
-        setPhase("success");
-        if (next && next !== "/") window.location.href = next;
-        else navigate({ to: "/" });
+        await finishFirebase(result.idToken);
         return;
       }
 
