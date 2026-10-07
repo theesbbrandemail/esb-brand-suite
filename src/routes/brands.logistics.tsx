@@ -39,7 +39,7 @@ function Page() {
           { title: "AI Automation", body: "Connected to the ESB orchestrator queue for approve / auto-execute actions.", icon: Bot },
           { title: "Content Pipeline", body: "Daily Social AI assets queued per brand for approval.", icon: Sparkles },
         ]}
-        actions={[{ label: "Open AI Suite", to: "/suite" }, { label: "Inventory", to: "/inventory" }]}
+        actions={[{ label: "Open AI Suite", to: "/ceo" }, { label: "Inventory", to: "/inventory" }]}
       />
     </Shell>
   );

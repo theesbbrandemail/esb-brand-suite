@@ -114,7 +114,7 @@ function ManagerPage() {
   const suggestions = useMemo(() => {
     const out: {
       text: string;
-      to: "/inventory" | "/manager" | "/whatsapp" | "/appointments" | "/suite";
+      to: "/inventory" | "/manager" | "/whatsapp" | "/appointments" | "/ceo";
       cta: string;
     }[] = [];
     if (lowStock.length > 0) {
@@ -148,7 +148,7 @@ function ManagerPage() {
     if (out.length === 0) {
       out.push({
         text: `Operations are stable${k ? ` — $${(k.revenue30d / 1000).toFixed(1)}K revenue over 30 days` : ""}. Focus the team on upsell of retention services today.`,
-        to: "/suite",
+        to: "/ceo",
         cta: "Open CEO Suite",
       });
     }

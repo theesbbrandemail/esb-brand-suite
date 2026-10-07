@@ -3,7 +3,7 @@ import { useRouterState } from "@tanstack/react-router";
 import { useRef, type ReactNode } from "react";
 
 // Mobile-style slide transitions for the phone-mockup routes.
-const ORDER = ["/inventory", "/appointments", "/content", "/skin-analysis", "/manager"];
+const ORDER = ["/inventory", "/appointments", "/content", "/manager"];
 
 export function PageTransition({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });

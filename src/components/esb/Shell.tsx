@@ -14,7 +14,7 @@ type Tab = { to: string; label: string; icon: typeof LayoutGrid; staff?: boolean
 
 const tabs: readonly Tab[] = [
   { to: "/", label: "Overview", icon: LayoutGrid },
-  { to: "/suite", label: "AI Suite", icon: Sparkles, staff: true },
+  { to: "/ceo", label: "AI Suite", icon: Sparkles, staff: true },
   { to: "/mobile", label: "Mobile", icon: Smartphone },
   { to: "/inventory", label: "Inventory", icon: Package, staff: true },
   { to: "/appointments", label: "Appts", icon: Calendar },

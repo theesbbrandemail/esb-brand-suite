@@ -39,7 +39,7 @@ function Page() {
           { title: "Compliance", body: "Audit log of every AI decision with rationale and inputs.", icon: ShieldCheck },
           { title: "Model Routing", body: "Best-fit model per task (fast / balanced / precise) with fallback.", icon: Bot },
         ]}
-        actions={[{ label: "Approval Queue", to: "/suite" }]}
+        actions={[{ label: "Approval Queue", to: "/ceo" }]}
       />
     </Shell>
   );

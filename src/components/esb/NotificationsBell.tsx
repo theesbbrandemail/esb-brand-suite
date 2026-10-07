@@ -9,7 +9,7 @@ import { useAuth } from "@/lib/auth";
 type Alert = {
   id: string;
   text: string;
-  to: "/inventory" | "/appointments" | "/whatsapp" | "/suite" | "/manager";
+  to: "/inventory" | "/appointments" | "/whatsapp" | "/ceo" | "/manager";
   icon: typeof Bell;
   tone: string;
 };
@@ -79,7 +79,7 @@ export function NotificationsBell() {
       out.push({
         id: "approvals",
         text: `${k.pendingApprovals} AI action${k.pendingApprovals > 1 ? "s" : ""} awaiting approval`,
-        to: "/suite",
+        to: "/ceo",
         icon: ShieldCheck,
         tone: "text-violet",
       });
