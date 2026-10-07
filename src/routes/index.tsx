@@ -33,8 +33,6 @@ function HomeRouter() {
 
 function PublicLanding() {
   const tiles = [
-    { to: "/whatsapp" as const, icon: MessageCircle, title: "WhatsApp AI", desc: "Chat with our AI concierge for instant help, product picks and bookings.", color: "gold" as const },
-    { to: "/skin-analysis" as const, icon: Scan, title: "Skin AI Analysis", desc: "Snap a selfie and get a personalised skin report in seconds.", color: "violet" as const },
     { to: "/brands/skincare-kitchen" as const, icon: ShoppingBag, title: "Shop Products", desc: "Order from Skincare Kitchen, Derma Aesthetics and more.", color: "gold" as const },
     { to: "/appointments" as const, icon: CalendarCheck, title: "Book Consultation", desc: "Reserve a slot with a specialist at your nearest branch.", color: "violet" as const },
   ];
