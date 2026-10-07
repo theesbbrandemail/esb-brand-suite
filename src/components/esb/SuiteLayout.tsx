@@ -136,7 +136,7 @@ export function SuiteAiCard({
 }: {
   title?: string;
   children: ReactNode;
-  linkTo?: "/suite" | "/manager" | "/mobile" | "/inventory" | "/appointments" | "/content";
+  linkTo?: "/ceo" | "/manager" | "/inventory" | "/appointments" | "/content";
   linkLabel?: string;
 }) {
   return (

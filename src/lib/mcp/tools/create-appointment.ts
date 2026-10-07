@@ -17,7 +17,7 @@ export default defineTool({
     patient_name: z.string().min(1),
     patient_phone: z.string().min(5),
     service: z.string().min(1).describe("Service name, e.g. 'Skin Consult', 'Facial', 'Dental Cleaning'."),
-    branch: z.string().min(1).describe("Branch name, e.g. Lagos, Abuja, Port Harcourt."),
+    branch: z.string().min(1).describe("Branch name, e.g. Abuja, Port Harcourt."),
     scheduled_at: z.string().datetime().describe("ISO 8601 UTC datetime."),
   },
   annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },

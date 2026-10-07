@@ -33,8 +33,6 @@ function HomeRouter() {
 
 function PublicLanding() {
   const tiles = [
-    { to: "/whatsapp" as const, icon: MessageCircle, title: "WhatsApp AI", desc: "Chat with our AI concierge for instant help, product picks and bookings.", color: "gold" as const },
-    { to: "/skin-analysis" as const, icon: Scan, title: "Skin AI Analysis", desc: "Snap a selfie and get a personalised skin report in seconds.", color: "violet" as const },
     { to: "/brands/skincare-kitchen" as const, icon: ShoppingBag, title: "Shop Products", desc: "Order from Skincare Kitchen, Derma Aesthetics and more.", color: "gold" as const },
     { to: "/appointments" as const, icon: CalendarCheck, title: "Book Consultation", desc: "Reserve a slot with a specialist at your nearest branch.", color: "violet" as const },
   ];
@@ -82,7 +80,7 @@ function PublicLanding() {
   );
 }
 
-const BRANCHES = ["Port Harcourt", "Abuja", "Lagos"] as const;
+const BRANCHES = ["Port Harcourt", "Abuja"] as const;
 type Branch = (typeof BRANCHES)[number];
 
 const GENERIC_LOCAL_PARTS = new Set([
@@ -157,7 +155,7 @@ function OverviewPage() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Link to="/suite" className="chip-violet flex items-center gap-1.5 hover:opacity-90 transition">
+          <Link to="/ceo" className="chip-violet flex items-center gap-1.5 hover:opacity-90 transition">
             <span className="h-1.5 w-1.5 rounded-full bg-violet animate-pulse" /> AI Orchestrator · Live
           </Link>
         </div>
@@ -256,7 +254,7 @@ function AIInsightsCard() {
       <button
         onClick={() => {
           toast.success("Suggestion applied", { description: "Serum Bar slots opened Wed–Fri PM. Review in Suite." });
-          nav({ to: "/suite" });
+          nav({ to: "/ceo" });
         }}
         className="text-xs chip-violet hover:opacity-90 transition"
       >
@@ -268,7 +266,7 @@ function AIInsightsCard() {
 
 function RevenueCard() {
   return (
-    <Link to="/suite" className="card-elevated p-5 block hover:border-gold/30 transition">
+    <Link to="/ceo" className="card-elevated p-5 block hover:border-gold/30 transition">
       <div className="flex items-center justify-between mb-2">
         <div>
           <div className="text-xs text-muted-foreground uppercase tracking-wider">Revenue Overview</div>
@@ -291,14 +289,14 @@ function ActionsCard() {
   const actions = [
     { t: "Reorder Niacinamide 10%", d: "Skincare Kitchen · PH", tag: "Auto", color: "gold", to: "/inventory" as const },
     { t: "Reschedule 3 facials → Thursday", d: "Derma Aesthetics · ABJ", tag: "Pending", color: "violet", to: "/appointments" as const },
-    { t: "Send payroll review", d: "All branches", tag: "Auto", color: "gold", to: "/suite" as const },
-    { t: "Approve marketing spend $4.2K", d: "ESB Brand HQ", tag: "Awaiting", color: "violet", to: "/suite" as const },
+    { t: "Send payroll review", d: "All branches", tag: "Auto", color: "gold", to: "/ceo" as const },
+    { t: "Approve marketing spend $4.2K", d: "ESB Brand HQ", tag: "Awaiting", color: "violet", to: "/ceo" as const },
   ];
   return (
     <div className="card-elevated p-5 lg:col-span-2">
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-display text-lg">Orchestrator Actions</h3>
-        <Link to="/suite" className="text-xs text-muted-foreground hover:text-foreground">
+        <Link to="/ceo" className="text-xs text-muted-foreground hover:text-foreground">
           View all →
         </Link>
       </div>

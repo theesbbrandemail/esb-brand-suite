@@ -114,7 +114,7 @@ function ManagerPage() {
   const suggestions = useMemo(() => {
     const out: {
       text: string;
-      to: "/inventory" | "/manager" | "/whatsapp" | "/appointments" | "/suite";
+      to: "/inventory" | "/manager" | "/appointments" | "/ceo";
       cta: string;
     }[] = [];
     if (lowStock.length > 0) {
@@ -134,8 +134,8 @@ function ManagerPage() {
     if ((k?.followUpsPending ?? 0) > 0) {
       out.push({
         text: `${k?.followUpsPending} follow-up${(k?.followUpsPending ?? 0) > 1 ? "s" : ""} pending — send WhatsApp reminders to lift rebooking rate.`,
-        to: "/whatsapp",
-        cta: "Send follow-ups",
+        to: "/appointments",
+        cta: "Review bookings",
       });
     }
     if (pendingAppts.length > 0) {
@@ -148,8 +148,8 @@ function ManagerPage() {
     if (out.length === 0) {
       out.push({
         text: `Operations are stable${k ? ` — $${(k.revenue30d / 1000).toFixed(1)}K revenue over 30 days` : ""}. Focus the team on upsell of retention services today.`,
-        to: "/suite",
-        cta: "Open CEO Suite",
+        to: "/ceo",
+        cta: "Open CEO Dashboard",
       });
     }
     return out.slice(0, 3);

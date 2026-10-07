@@ -30,7 +30,7 @@
           "properties": {
             "branch": {
               "type": "string",
-              "description": "Optional branch name filter (e.g. Lagos, Abuja, Port Harcourt)."
+              "description": "Optional branch name filter (e.g. Abuja, Port Harcourt)."
             },
             "upcomingDays": {
               "type": "integer",
@@ -79,7 +79,7 @@
             "branch": {
               "type": "string",
               "minLength": 1,
-              "description": "Branch name, e.g. Lagos, Abuja, Port Harcourt."
+              "description": "Branch name, e.g. Abuja, Port Harcourt."
             },
             "scheduled_at": {
               "type": "string",

@@ -15,7 +15,7 @@ export default defineTool({
   description:
     "List ESB appointments visible to the signed-in staff member, optionally filtered by branch or by an upcoming window in days.",
   inputSchema: {
-    branch: z.string().optional().describe("Optional branch name filter (e.g. Lagos, Abuja, Port Harcourt)."),
+    branch: z.string().optional().describe("Optional branch name filter (e.g. Abuja, Port Harcourt)."),
     upcomingDays: z
       .number()
       .int()

@@ -1,13 +1,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
-import { useDemoMode } from "@/lib/demo";
-import {
-  isFirebaseConfigured,
-  subscribeFirebaseAuth,
-  signOutFirebase,
-  getFirebaseIdToken,
-} from "@/integrations/firebase/client";
+import { isFirebaseConfigured, signOutFirebase } from "@/integrations/firebase/client";
 
 export type AppRole = "admin" | "staff" | "public";
 
@@ -21,27 +15,6 @@ type AuthCtx = {
 };
 
 const Ctx = createContext<AuthCtx | undefined>(undefined);
-
-/** Minimal User-shaped object when only Firebase is signed in (Path B). */
-function firebaseUserAsSupabaseUser(fb: {
-  uid: string;
-  email: string | null;
-  displayName: string | null;
-  photoURL: string | null;
-}): User {
-  return {
-    id: fb.uid,
-    email: fb.email ?? undefined,
-    app_metadata: {},
-    user_metadata: {
-      full_name: fb.displayName,
-      avatar_url: fb.photoURL,
-      name: fb.displayName,
-    },
-    aud: "authenticated",
-    created_at: "",
-  } as User;
-}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
@@ -62,36 +35,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const best: AppRole =
         roles.includes("admin") ? "admin" : roles.includes("staff") ? "staff" : "public";
       setRole(best);
-    }
-
-    // Path B: Firebase Auth drives identity; Supabase uses Firebase JWT via accessToken
-    if (isFirebaseConfigured) {
-      const unsub = subscribeFirebaseAuth(async (fbUser) => {
-        if (!mounted) return;
-        if (!fbUser) {
-          setSession(null);
-          setUser(null);
-          setRole(null);
-          setLoading(false);
-          return;
-        }
-        const mapped = firebaseUserAsSupabaseUser(fbUser);
-        setUser(mapped);
-        // Synthetic session so existing UI that checks `session` keeps working
-        setSession({
-          access_token: (await getFirebaseIdToken(false)) ?? "",
-          refresh_token: "",
-          expires_in: 3600,
-          token_type: "bearer",
-          user: mapped,
-        } as Session);
-        await fetchRole(fbUser.uid);
-        if (mounted) setLoading(false);
-      });
-      return () => {
-        mounted = false;
-        unsub();
-      };
     }
 
     // Default: Supabase / Lovable Auth
@@ -123,14 +66,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  const [demo] = useDemoMode();
 
   const value: AuthCtx = {
     loading,
     session,
     user,
     role,
-    isStaff: role === "staff" || role === "admin" || demo,
+    isStaff: role === "staff" || role === "admin",
 
     signOut: async () => {
       if (isFirebaseConfigured) {

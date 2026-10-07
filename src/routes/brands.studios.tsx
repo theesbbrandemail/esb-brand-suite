@@ -39,7 +39,7 @@ function Page() {
           { title: "Content Pipeline", body: "Social AI queues studio outputs into the daily approval pipeline.", icon: Sparkles },
           { title: "AI Automation", body: "Auto-cut reels, subtitle burn-in, aspect-ratio variants for every platform.", icon: Bot },
         ]}
-        actions={[{ label: "Content Pipeline", to: "/content" }, { label: "Open AI Suite", to: "/suite" }]}
+        actions={[{ label: "Content Pipeline", to: "/content" }, { label: "Open AI Suite", to: "/ceo" }]}
       />
     </Shell>
   );
