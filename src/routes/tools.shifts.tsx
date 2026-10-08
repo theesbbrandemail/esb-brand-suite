@@ -44,7 +44,7 @@ function ShiftsTool() {
 
   async function toReminders() {
     const section = result.split(/#+\s*Tasks/i)[1] ?? "";
-    const tasks = section.split("\n").map((l) => l.replace(/^\s*(?:[-*]|\d+\.)\s+/, "").replace(/\*\*/g, "").trim()).filter((l, i, arr) => l.length > 2 && section.split("\n")[arr.indexOf(l)] !== undefined).slice(0, 8);
+    const tasks = section.split("\n").map((l) => l.replace(/^\s*(?:[-*]|\d+\.)\s+/, "").replace(/\*\*/g, "").trim()).filter((l) => l.length > 2).slice(0, 8);
     if (!tasks.length) { toast.error("No task list found in this plan"); return; }
     let ok = 0;
     for (const t of tasks) {

@@ -36,6 +36,10 @@ import { Route as BrandsRejuvenatingRouteImport } from './routes/brands.rejuvena
 import { Route as BrandsSkincareKitchenRouteImport } from './routes/brands.skincare-kitchen'
 import { Route as BrandsSkinclinicRouteImport } from './routes/brands.skinclinic'
 import { Route as BrandsStudiosRouteImport } from './routes/brands.studios'
+import { Route as ToolsBriefingRouteImport } from './routes/tools.briefing'
+import { Route as ToolsRestockRouteImport } from './routes/tools.restock'
+import { Route as ToolsShiftsRouteImport } from './routes/tools.shifts'
+import { Route as ToolsTreatmentRouteImport } from './routes/tools.treatment'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as ApiPublicHooksProcessFollowupsRouteImport } from './routes/api/public/hooks/process-followups'
@@ -177,6 +181,26 @@ const BrandsStudiosRoute = BrandsStudiosRouteImport.update({
   path: '/brands/studios',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ToolsBriefingRoute = ToolsBriefingRouteImport.update({
+  id: '/tools/briefing',
+  path: '/tools/briefing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ToolsRestockRoute = ToolsRestockRouteImport.update({
+  id: '/tools/restock',
+  path: '/tools/restock',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ToolsShiftsRoute = ToolsShiftsRouteImport.update({
+  id: '/tools/shifts',
+  path: '/tools/shifts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ToolsTreatmentRoute = ToolsTreatmentRouteImport.update({
+  id: '/tools/treatment',
+  path: '/tools/treatment',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
   id: '/.lovable/oauth/consent',
   path: '/.lovable/oauth/consent',
@@ -223,6 +247,10 @@ export interface FileRoutesByFullPath {
   '/brands/skincare-kitchen': typeof BrandsSkincareKitchenRoute
   '/brands/skinclinic': typeof BrandsSkinclinicRoute
   '/brands/studios': typeof BrandsStudiosRoute
+  '/tools/briefing': typeof ToolsBriefingRoute
+  '/tools/restock': typeof ToolsRestockRoute
+  '/tools/shifts': typeof ToolsShiftsRoute
+  '/tools/treatment': typeof ToolsTreatmentRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/hooks/process-followups': typeof ApiPublicHooksProcessFollowupsRoute
@@ -255,6 +283,10 @@ export interface FileRoutesByTo {
   '/brands/skincare-kitchen': typeof BrandsSkincareKitchenRoute
   '/brands/skinclinic': typeof BrandsSkinclinicRoute
   '/brands/studios': typeof BrandsStudiosRoute
+  '/tools/briefing': typeof ToolsBriefingRoute
+  '/tools/restock': typeof ToolsRestockRoute
+  '/tools/shifts': typeof ToolsShiftsRoute
+  '/tools/treatment': typeof ToolsTreatmentRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/hooks/process-followups': typeof ApiPublicHooksProcessFollowupsRoute
@@ -288,6 +320,10 @@ export interface FileRoutesById {
   '/brands/skincare-kitchen': typeof BrandsSkincareKitchenRoute
   '/brands/skinclinic': typeof BrandsSkinclinicRoute
   '/brands/studios': typeof BrandsStudiosRoute
+  '/tools/briefing': typeof ToolsBriefingRoute
+  '/tools/restock': typeof ToolsRestockRoute
+  '/tools/shifts': typeof ToolsShiftsRoute
+  '/tools/treatment': typeof ToolsTreatmentRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/hooks/process-followups': typeof ApiPublicHooksProcessFollowupsRoute
@@ -322,6 +358,10 @@ export interface FileRouteTypes {
     | '/brands/skincare-kitchen'
     | '/brands/skinclinic'
     | '/brands/studios'
+    | '/tools/briefing'
+    | '/tools/restock'
+    | '/tools/shifts'
+    | '/tools/treatment'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/api/public/hooks/process-followups'
@@ -354,6 +394,10 @@ export interface FileRouteTypes {
     | '/brands/skincare-kitchen'
     | '/brands/skinclinic'
     | '/brands/studios'
+    | '/tools/briefing'
+    | '/tools/restock'
+    | '/tools/shifts'
+    | '/tools/treatment'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/api/public/hooks/process-followups'
@@ -386,6 +430,10 @@ export interface FileRouteTypes {
     | '/brands/skincare-kitchen'
     | '/brands/skinclinic'
     | '/brands/studios'
+    | '/tools/briefing'
+    | '/tools/restock'
+    | '/tools/shifts'
+    | '/tools/treatment'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/api/public/hooks/process-followups'
@@ -418,6 +466,10 @@ export interface RootRouteChildren {
   BrandsSkincareKitchenRoute: typeof BrandsSkincareKitchenRoute
   BrandsSkinclinicRoute: typeof BrandsSkinclinicRoute
   BrandsStudiosRoute: typeof BrandsStudiosRoute
+  ToolsBriefingRoute: typeof ToolsBriefingRoute
+  ToolsRestockRoute: typeof ToolsRestockRoute
+  ToolsShiftsRoute: typeof ToolsShiftsRoute
+  ToolsTreatmentRoute: typeof ToolsTreatmentRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
   ApiPublicHooksProcessFollowupsRoute: typeof ApiPublicHooksProcessFollowupsRoute
@@ -614,6 +666,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BrandsStudiosRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/tools/briefing': {
+      id: '/tools/briefing'
+      path: '/tools/briefing'
+      fullPath: '/tools/briefing'
+      preLoaderRoute: typeof ToolsBriefingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tools/restock': {
+      id: '/tools/restock'
+      path: '/tools/restock'
+      fullPath: '/tools/restock'
+      preLoaderRoute: typeof ToolsRestockRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tools/shifts': {
+      id: '/tools/shifts'
+      path: '/tools/shifts'
+      fullPath: '/tools/shifts'
+      preLoaderRoute: typeof ToolsShiftsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tools/treatment': {
+      id: '/tools/treatment'
+      path: '/tools/treatment'
+      fullPath: '/tools/treatment'
+      preLoaderRoute: typeof ToolsTreatmentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/.lovable/oauth/consent': {
       id: '/.lovable/oauth/consent'
       path: '/.lovable/oauth/consent'
@@ -676,6 +756,10 @@ const rootRouteChildren: RootRouteChildren = {
   BrandsSkincareKitchenRoute: BrandsSkincareKitchenRoute,
   BrandsSkinclinicRoute: BrandsSkinclinicRoute,
   BrandsStudiosRoute: BrandsStudiosRoute,
+  ToolsBriefingRoute: ToolsBriefingRoute,
+  ToolsRestockRoute: ToolsRestockRoute,
+  ToolsShiftsRoute: ToolsShiftsRoute,
+  ToolsTreatmentRoute: ToolsTreatmentRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
   ApiPublicHooksProcessFollowupsRoute: ApiPublicHooksProcessFollowupsRoute,
