@@ -18,7 +18,8 @@ const FIELDS: Record<CrmModule, string[]> = {
   Meetings: ["Event_Title", "Start_DateTime", "End_DateTime", "Venue", "Owner", "Modified_Time"],
 };
 
-export type CrmRecord = Record<string, unknown> & { id: string };
+type Json = string | number | boolean | null | Json[] | { [k: string]: Json };
+export type CrmRecord = { id: string; [k: string]: Json };
 export type CrmResult<T> = { ok: true; data: T } | { ok: false; error: string; code: "not_connected" | "auth" | "rate_limited" | "forbidden" | "error" };
 
 type Ctx = { supabase: any; userId: string };
