@@ -23,7 +23,7 @@ export function CeoGate({ children }: { children: React.ReactNode }) {
   const mockRef = useRef(false);
 
   // CEO = admin role, or anyone while demo (mock) mode is on
-  const isCeo = role === "admin" || demo;
+  const isCeo = role === "admin" || role === "super_admin" || demo;
 
   useEffect(() => {
     if (!isCeo) return;
