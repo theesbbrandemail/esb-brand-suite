@@ -14,6 +14,7 @@ import { Route as AppointmentsRouteImport } from './routes/appointments'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CeoRouteImport } from './routes/ceo'
 import { Route as ContentRouteImport } from './routes/content'
+import { Route as CrmRouteImport } from './routes/crm'
 import { Route as InventoryRouteImport } from './routes/inventory'
 import { Route as ManagerRouteImport } from './routes/manager'
 import { Route as McpRouteImport } from './routes/mcp'
@@ -67,6 +68,11 @@ const CeoRoute = CeoRouteImport.update({
 const ContentRoute = ContentRouteImport.update({
   id: '/content',
   path: '/content',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CrmRoute = CrmRouteImport.update({
+  id: '/crm',
+  path: '/crm',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InventoryRoute = InventoryRouteImport.update({
@@ -225,6 +231,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRouteWithChildren
   '/ceo': typeof CeoRoute
   '/content': typeof ContentRoute
+  '/crm': typeof CrmRoute
   '/inventory': typeof InventoryRoute
   '/manager': typeof ManagerRoute
   '/mcp': typeof McpRoute
@@ -261,6 +268,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRouteWithChildren
   '/ceo': typeof CeoRoute
   '/content': typeof ContentRoute
+  '/crm': typeof CrmRoute
   '/inventory': typeof InventoryRoute
   '/manager': typeof ManagerRoute
   '/mcp': typeof McpRoute
@@ -298,6 +306,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRouteWithChildren
   '/ceo': typeof CeoRoute
   '/content': typeof ContentRoute
+  '/crm': typeof CrmRoute
   '/inventory': typeof InventoryRoute
   '/manager': typeof ManagerRoute
   '/mcp': typeof McpRoute
@@ -336,6 +345,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/ceo'
     | '/content'
+    | '/crm'
     | '/inventory'
     | '/manager'
     | '/mcp'
@@ -372,6 +382,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/ceo'
     | '/content'
+    | '/crm'
     | '/inventory'
     | '/manager'
     | '/mcp'
@@ -408,6 +419,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/ceo'
     | '/content'
+    | '/crm'
     | '/inventory'
     | '/manager'
     | '/mcp'
@@ -445,6 +457,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRouteWithChildren
   CeoRoute: typeof CeoRoute
   ContentRoute: typeof ContentRoute
+  CrmRoute: typeof CrmRoute
   InventoryRoute: typeof InventoryRoute
   ManagerRoute: typeof ManagerRoute
   McpRoute: typeof McpRoute
@@ -510,6 +523,13 @@ declare module '@tanstack/react-router' {
       path: '/content'
       fullPath: '/content'
       preLoaderRoute: typeof ContentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/crm': {
+      id: '/crm'
+      path: '/crm'
+      fullPath: '/crm'
+      preLoaderRoute: typeof CrmRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/inventory': {
@@ -734,6 +754,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRouteWithChildren,
   CeoRoute: CeoRoute,
   ContentRoute: ContentRoute,
+  CrmRoute: CrmRoute,
   InventoryRoute: InventoryRoute,
   ManagerRoute: ManagerRoute,
   McpRoute: McpRoute,

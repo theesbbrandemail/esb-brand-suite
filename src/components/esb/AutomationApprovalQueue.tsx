@@ -31,7 +31,7 @@ const riskColor: Record<Task["risk"], string> = {
 
 export function AutomationApprovalQueue() {
   const { user, role } = useAuth();
-  const isAdmin = role === "admin";
+  const isAdmin = role === "admin" || role === "super_admin";
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState<string | null>(null);

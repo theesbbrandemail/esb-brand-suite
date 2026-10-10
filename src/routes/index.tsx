@@ -28,10 +28,22 @@ function HomeRouter() {
       </div>
     );
   }
-  return isStaff ? <OverviewPage /> : <PublicLanding />;
+  return isStaff ? <OverviewPage /> : <NotAuthorized />;
 }
 
-function PublicLanding() {
+function NotAuthorized() {
+  return (
+    <div className="min-h-screen flex items-center justify-center px-4">
+      <div className="card-elevated p-8 max-w-md text-center">
+        <h1 className="font-display text-xl mb-2">Staff access only</h1>
+        <p className="text-sm text-muted-foreground mb-5">ESB Brand Suite is an internal tool. Your account isn't on the staff list yet — ask a Super Admin to add your email.</p>
+        <button onClick={() => { void import("@/integrations/supabase/client").then(({ supabase }) => supabase.auth.signOut()).then(() => { window.location.href = "/auth"; }); }} className="px-4 py-2 rounded-full bg-gold text-gold-foreground text-sm font-medium">Sign out</button>
+      </div>
+    </div>
+  );
+}
+
+export function PublicLanding() {
   const tiles = [
     { to: "/brands/skincare-kitchen" as const, icon: ShoppingBag, title: "Shop Products", desc: "Order from Skincare Kitchen, Derma Aesthetics and more.", color: "gold" as const },
     { to: "/appointments" as const, icon: CalendarCheck, title: "Book Consultation", desc: "Reserve a slot with a specialist at your nearest branch.", color: "violet" as const },

@@ -1,5 +1,5 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { LayoutGrid, Sparkles, Package, Calendar, Image as ImageIcon, ClipboardList, LogOut, Lock, ChevronDown, FlaskConical, ShoppingBag, Stethoscope, Smile, HeartPulse, Truck, Crown, Briefcase, Megaphone, Syringe, Calculator, ClipboardCheck, Bot, Clapperboard, FileHeart, CalendarClock, Sunrise, PackageSearch } from "lucide-react";
+import { LayoutGrid, Sparkles, Package, Calendar, Image as ImageIcon, ClipboardList, LogOut, Lock, ChevronDown, FlaskConical, ShoppingBag, Stethoscope, Smile, HeartPulse, Truck, Crown, Briefcase, Megaphone, Syringe, Calculator, ClipboardCheck, Bot, Clapperboard, Users, FileHeart, CalendarClock, Sunrise, PackageSearch } from "lucide-react";
 import { NotificationsBell } from "@/components/esb/NotificationsBell";
 import { EsbLogo } from "./Logo";
 import { useEffect, useRef, useState, type ReactNode } from "react";
@@ -14,9 +14,10 @@ const tabs: readonly Tab[] = [
   { to: "/", label: "Overview", icon: LayoutGrid },
   { to: "/ceo", label: "CEO Dashboard", icon: Crown, staff: true },
   { to: "/inventory", label: "Inventory", icon: Package, staff: true },
-  { to: "/appointments", label: "Appts", icon: Calendar },
+  { to: "/appointments", label: "Appts", icon: Calendar, staff: true },
   { to: "/content", label: "Content", icon: ImageIcon, staff: true },
   { to: "/manager", label: "Manager", icon: ClipboardList, staff: true },
+  { to: "/crm", label: "CRM", icon: Users, staff: true },
   { to: "/tools/briefing", label: "Briefing", icon: Sunrise, staff: true },
 ];
 
@@ -49,7 +50,7 @@ const aiRoles: readonly MenuItem[] = [
 export function Shell({ children, requireStaff = false }: { children: ReactNode; requireStaff?: boolean }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { loading, session, role, isStaff, user, signOut } = useAuth();
-  const realStaff = role === "staff" || role === "admin";
+  const realStaff = !!role && role !== "public";
 
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -85,7 +86,7 @@ export function Shell({ children, requireStaff = false }: { children: ReactNode;
 
 
 
-  if (requireStaff && !isStaff) {
+  if (!isStaff) {
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
         <div className="card-elevated p-8 max-w-md text-center">
@@ -94,7 +95,7 @@ export function Shell({ children, requireStaff = false }: { children: ReactNode;
           </div>
           <h2 className="font-display text-xl mb-1">Staff access only</h2>
           <p className="text-sm text-muted-foreground mb-5">
-            This area is reserved for ESB Brand management and staff. Your account is signed in as <span className="text-foreground">general public</span>.
+            This area is reserved for ESB Brand management and staff. Your account is not on the ESB staff list. Ask a Super Admin to grant access.
           </p>
           <Link to="/" className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-gold text-gold-foreground text-sm font-medium">
             Back to overview
@@ -178,7 +179,7 @@ export function Shell({ children, requireStaff = false }: { children: ReactNode;
           </nav>
           <div className="flex items-center gap-2 sm:gap-3 relative shrink-0">
             <span className={`hidden md:inline-flex text-[10px] px-2 py-0.5 rounded-full border ${isStaff ? "border-gold/40 text-gold bg-gold/10" : "border-violet/40 text-violet bg-violet/10"}`}>
-              {role === "admin" ? "Admin" : realStaff ? "Staff" : "Public"}
+              {role === "super_admin" ? "Super Admin" : role === "admin" ? "Admin" : role === "manager" ? "Manager" : realStaff ? "Staff" : "No access"}
             </span>
 
             <NotificationsBell />
