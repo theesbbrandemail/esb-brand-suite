@@ -129,7 +129,6 @@ function AuthPage() {
   const exchange = useServerFn(firebaseExchange);
   const [phase, setPhase] = useState<Phase>("idle");
   const [error, setError] = useState<FriendlyError | null>(null);
-  const [audience, setAudience] = useState<"staff" | "public">("public");
   const [online, setOnline] = useState(
     typeof navigator === "undefined" ? true : navigator.onLine,
   );
@@ -297,48 +296,15 @@ function AuthPage() {
         <div className="card-elevated p-8">
           <div className="flex items-center gap-2 mb-2">
             <span className="chip-violet flex items-center gap-1.5">
-              <Sparkles className="h-3 w-3" /> AI Suite
+              <Sparkles className="h-3 w-3" /> ESB Brand Suite · Staff
             </span>
           </div>
           <h1 className="text-3xl font-display font-semibold tracking-tight">
             Welcome to <span className="gold-text">ESB Brand</span>
           </h1>
           <p className="text-sm text-muted-foreground mt-2 mb-5">
-            Sign in with Google to access your dashboard. Staff and management get extended tools automatically.
+            Staff sign-in only. Use your ESB Brand Google account — access and role come from the staff list.
           </p>
-
-          <div className="mb-5">
-            <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">Signing in as</div>
-            <div className="grid grid-cols-2 gap-2 p-1 rounded-xl bg-white/5 border border-white/10">
-              <button
-                type="button"
-                onClick={() => setAudience("staff")}
-                className={
-                  audience === "staff"
-                    ? "py-2 rounded-lg bg-gold text-gold-foreground text-xs font-semibold"
-                    : "py-2 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground"
-                }
-              >
-                Staff
-              </button>
-              <button
-                type="button"
-                onClick={() => setAudience("public")}
-                className={
-                  audience === "public"
-                    ? "py-2 rounded-lg bg-white text-neutral-900 text-xs font-semibold"
-                    : "py-2 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground"
-                }
-              >
-                Public / Customer
-              </button>
-            </div>
-            <p className="text-[10px] text-muted-foreground mt-2">
-              {audience === "staff"
-                ? "Use your ESB Brand staff Google account. Role (admin/manager/staff) is applied automatically from the allowlist."
-                : "Continue with any Google account to access customer features: skin AI, appointments, and WhatsApp concierge."}
-            </p>
-          </div>
 
           {!online && (
             <div
@@ -402,7 +368,7 @@ function AuthPage() {
           )}
 
           <p className="text-[11px] text-muted-foreground mt-6 text-center leading-relaxed">
-            By continuing, you agree to ESB Brand's terms. New visitors get a general dashboard; staff emails are upgraded automatically.
+            Internal system for authorised ESB Brand employees. Unauthorised access is not permitted.
           </p>
         </div>
       </div>

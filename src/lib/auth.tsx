@@ -3,7 +3,7 @@ import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { isFirebaseConfigured, signOutFirebase } from "@/integrations/firebase/client";
 
-export type AppRole = "admin" | "staff" | "public";
+export type AppRole = "super_admin" | "admin" | "manager" | "staff" | "public";
 
 type AuthCtx = {
   loading: boolean;
@@ -33,7 +33,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!mounted) return;
       const roles = (data ?? []).map((r) => r.role as AppRole);
       const best: AppRole =
-        roles.includes("admin") ? "admin" : roles.includes("staff") ? "staff" : "public";
+        (["super_admin", "admin", "manager", "staff"] as const).find((r) => roles.includes(r)) ?? "public";
       setRole(best);
     }
 
@@ -72,7 +72,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     session,
     user,
     role,
-    isStaff: role === "staff" || role === "admin",
+    isStaff: !!role && role !== "public",
 
     signOut: async () => {
       if (isFirebaseConfigured) {
