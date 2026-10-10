@@ -388,6 +388,36 @@ export type Database = {
           },
         ]
       }
+      integration_logs: {
+        Row: {
+          action: string
+          created_at: string
+          id: string
+          integration: string
+          message: string | null
+          status: number | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          id?: string
+          integration: string
+          message?: string | null
+          status?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          id?: string
+          integration?: string
+          message?: string | null
+          status?: number | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       inventory: {
         Row: {
           branch_id: string
@@ -745,7 +775,7 @@ export type Database = {
         | "rejected"
         | "executed"
         | "failed"
-      app_role: "admin" | "staff" | "public"
+      app_role: "admin" | "staff" | "public" | "super_admin" | "manager"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -875,7 +905,7 @@ export const Constants = {
     Enums: {
       ai_task_risk: ["low", "medium", "high", "critical"],
       ai_task_status: ["pending", "approved", "rejected", "executed", "failed"],
-      app_role: ["admin", "staff", "public"],
+      app_role: ["admin", "staff", "public", "super_admin", "manager"],
     },
   },
 } as const
