@@ -2,6 +2,7 @@ import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { LayoutGrid, Sparkles, Package, Calendar, Image as ImageIcon, ClipboardList, LogOut, Lock, ChevronDown, FlaskConical, ShoppingBag, Stethoscope, Smile, HeartPulse, Truck, Crown, Briefcase, Megaphone, Syringe, Calculator, ClipboardCheck, Bot, Clapperboard, Users, FileHeart, CalendarClock, Sunrise, PackageSearch } from "lucide-react";
 import { NotificationsBell } from "@/components/esb/NotificationsBell";
 import { CommandMenu } from "@/components/esb/CommandMenu";
+import { CommandAssistant } from "@/components/esb/CommandAssistant";
 import { EsbLogo } from "./Logo";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -190,6 +191,7 @@ export function Shell({ children, requireStaff = false }: { children: ReactNode;
                 ...visibleAi.map((t) => ({ ...t, group: "AI Tools" })),
               ]}
             />
+            <CommandAssistant />
             <NotificationsBell />
             <button
               onClick={() => setMenuOpen((v) => !v)}
