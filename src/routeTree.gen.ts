@@ -10,15 +10,28 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SplatRouteImport } from './routes/$'
 import { Route as AppointmentsRouteImport } from './routes/appointments'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CeoRouteImport } from './routes/ceo'
+import { Route as ClinicalRouteImport } from './routes/clinical'
 import { Route as ContentRouteImport } from './routes/content'
 import { Route as CrmRouteImport } from './routes/crm'
+import { Route as DoctorRouteImport } from './routes/doctor'
+import { Route as FollowupRouteImport } from './routes/followup'
+import { Route as FollowupsRouteImport } from './routes/followups'
+import { Route as GuideRouteImport } from './routes/guide'
 import { Route as InventoryRouteImport } from './routes/inventory'
 import { Route as ManagerRouteImport } from './routes/manager'
 import { Route as McpRouteImport } from './routes/mcp'
+import { Route as NurseRouteImport } from './routes/nurse'
+import { Route as SalesRouteImport } from './routes/sales'
+import { Route as SalesDashboardRouteImport } from './routes/sales-dashboard'
+import { Route as SocialRouteImport } from './routes/social'
+import { Route as StaffRouteImport } from './routes/staff'
+import { Route as StoreRouteImport } from './routes/store'
 import { Route as SuiteRouteImport } from './routes/suite'
+import { Route as WorkspaceRouteImport } from './routes/workspace'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as AiAccountantRouteImport } from './routes/ai.accountant'
@@ -50,6 +63,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SplatRoute = SplatRouteImport.update({
+  id: '/$',
+  path: '/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AppointmentsRoute = AppointmentsRouteImport.update({
   id: '/appointments',
   path: '/appointments',
@@ -65,6 +83,11 @@ const CeoRoute = CeoRouteImport.update({
   path: '/ceo',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ClinicalRoute = ClinicalRouteImport.update({
+  id: '/clinical',
+  path: '/clinical',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ContentRoute = ContentRouteImport.update({
   id: '/content',
   path: '/content',
@@ -73,6 +96,26 @@ const ContentRoute = ContentRouteImport.update({
 const CrmRoute = CrmRouteImport.update({
   id: '/crm',
   path: '/crm',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DoctorRoute = DoctorRouteImport.update({
+  id: '/doctor',
+  path: '/doctor',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FollowupRoute = FollowupRouteImport.update({
+  id: '/followup',
+  path: '/followup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FollowupsRoute = FollowupsRouteImport.update({
+  id: '/followups',
+  path: '/followups',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GuideRoute = GuideRouteImport.update({
+  id: '/guide',
+  path: '/guide',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InventoryRoute = InventoryRouteImport.update({
@@ -90,9 +133,44 @@ const McpRoute = McpRouteImport.update({
   path: '/mcp',
   getParentRoute: () => rootRouteImport,
 } as any)
+const NurseRoute = NurseRouteImport.update({
+  id: '/nurse',
+  path: '/nurse',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SalesRoute = SalesRouteImport.update({
+  id: '/sales',
+  path: '/sales',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SalesDashboardRoute = SalesDashboardRouteImport.update({
+  id: '/sales-dashboard',
+  path: '/sales-dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SocialRoute = SocialRouteImport.update({
+  id: '/social',
+  path: '/social',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StaffRoute = StaffRouteImport.update({
+  id: '/staff',
+  path: '/staff',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StoreRoute = StoreRouteImport.update({
+  id: '/store',
+  path: '/store',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SuiteRoute = SuiteRouteImport.update({
   id: '/suite',
   path: '/suite',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WorkspaceRoute = WorkspaceRouteImport.update({
+  id: '/workspace',
+  path: '/workspace',
   getParentRoute: () => rootRouteImport,
 } as any)
 const Char91DotmcpChar93ListToolsRoute =
@@ -227,15 +305,28 @@ const ApiPublicHooksProcessFollowupsRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/$': typeof SplatRoute
   '/appointments': typeof AppointmentsRoute
   '/auth': typeof AuthRouteWithChildren
   '/ceo': typeof CeoRoute
+  '/clinical': typeof ClinicalRoute
   '/content': typeof ContentRoute
   '/crm': typeof CrmRoute
+  '/doctor': typeof DoctorRoute
+  '/followup': typeof FollowupRoute
+  '/followups': typeof FollowupsRoute
+  '/guide': typeof GuideRoute
   '/inventory': typeof InventoryRoute
   '/manager': typeof ManagerRoute
   '/mcp': typeof McpRoute
+  '/nurse': typeof NurseRoute
+  '/sales': typeof SalesRoute
+  '/sales-dashboard': typeof SalesDashboardRoute
+  '/social': typeof SocialRoute
+  '/staff': typeof StaffRoute
+  '/store': typeof StoreRoute
   '/suite': typeof SuiteRoute
+  '/workspace': typeof WorkspaceRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/ai/accountant': typeof AiAccountantRoute
@@ -264,15 +355,28 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/$': typeof SplatRoute
   '/appointments': typeof AppointmentsRoute
   '/auth': typeof AuthRouteWithChildren
   '/ceo': typeof CeoRoute
+  '/clinical': typeof ClinicalRoute
   '/content': typeof ContentRoute
   '/crm': typeof CrmRoute
+  '/doctor': typeof DoctorRoute
+  '/followup': typeof FollowupRoute
+  '/followups': typeof FollowupsRoute
+  '/guide': typeof GuideRoute
   '/inventory': typeof InventoryRoute
   '/manager': typeof ManagerRoute
   '/mcp': typeof McpRoute
+  '/nurse': typeof NurseRoute
+  '/sales': typeof SalesRoute
+  '/sales-dashboard': typeof SalesDashboardRoute
+  '/social': typeof SocialRoute
+  '/staff': typeof StaffRoute
+  '/store': typeof StoreRoute
   '/suite': typeof SuiteRoute
+  '/workspace': typeof WorkspaceRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/ai/accountant': typeof AiAccountantRoute
@@ -302,15 +406,28 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/$': typeof SplatRoute
   '/appointments': typeof AppointmentsRoute
   '/auth': typeof AuthRouteWithChildren
   '/ceo': typeof CeoRoute
+  '/clinical': typeof ClinicalRoute
   '/content': typeof ContentRoute
   '/crm': typeof CrmRoute
+  '/doctor': typeof DoctorRoute
+  '/followup': typeof FollowupRoute
+  '/followups': typeof FollowupsRoute
+  '/guide': typeof GuideRoute
   '/inventory': typeof InventoryRoute
   '/manager': typeof ManagerRoute
   '/mcp': typeof McpRoute
+  '/nurse': typeof NurseRoute
+  '/sales': typeof SalesRoute
+  '/sales-dashboard': typeof SalesDashboardRoute
+  '/social': typeof SocialRoute
+  '/staff': typeof StaffRoute
+  '/store': typeof StoreRoute
   '/suite': typeof SuiteRoute
+  '/workspace': typeof WorkspaceRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/ai/accountant': typeof AiAccountantRoute
@@ -341,15 +458,28 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/$'
     | '/appointments'
     | '/auth'
     | '/ceo'
+    | '/clinical'
     | '/content'
     | '/crm'
+    | '/doctor'
+    | '/followup'
+    | '/followups'
+    | '/guide'
     | '/inventory'
     | '/manager'
     | '/mcp'
+    | '/nurse'
+    | '/sales'
+    | '/sales-dashboard'
+    | '/social'
+    | '/staff'
+    | '/store'
     | '/suite'
+    | '/workspace'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/ai/accountant'
@@ -378,15 +508,28 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/$'
     | '/appointments'
     | '/auth'
     | '/ceo'
+    | '/clinical'
     | '/content'
     | '/crm'
+    | '/doctor'
+    | '/followup'
+    | '/followups'
+    | '/guide'
     | '/inventory'
     | '/manager'
     | '/mcp'
+    | '/nurse'
+    | '/sales'
+    | '/sales-dashboard'
+    | '/social'
+    | '/staff'
+    | '/store'
     | '/suite'
+    | '/workspace'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/ai/accountant'
@@ -415,15 +558,28 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/$'
     | '/appointments'
     | '/auth'
     | '/ceo'
+    | '/clinical'
     | '/content'
     | '/crm'
+    | '/doctor'
+    | '/followup'
+    | '/followups'
+    | '/guide'
     | '/inventory'
     | '/manager'
     | '/mcp'
+    | '/nurse'
+    | '/sales'
+    | '/sales-dashboard'
+    | '/social'
+    | '/staff'
+    | '/store'
     | '/suite'
+    | '/workspace'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/ai/accountant'
@@ -453,15 +609,28 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  SplatRoute: typeof SplatRoute
   AppointmentsRoute: typeof AppointmentsRoute
   AuthRoute: typeof AuthRouteWithChildren
   CeoRoute: typeof CeoRoute
+  ClinicalRoute: typeof ClinicalRoute
   ContentRoute: typeof ContentRoute
   CrmRoute: typeof CrmRoute
+  DoctorRoute: typeof DoctorRoute
+  FollowupRoute: typeof FollowupRoute
+  FollowupsRoute: typeof FollowupsRoute
+  GuideRoute: typeof GuideRoute
   InventoryRoute: typeof InventoryRoute
   ManagerRoute: typeof ManagerRoute
   McpRoute: typeof McpRoute
+  NurseRoute: typeof NurseRoute
+  SalesRoute: typeof SalesRoute
+  SalesDashboardRoute: typeof SalesDashboardRoute
+  SocialRoute: typeof SocialRoute
+  StaffRoute: typeof StaffRoute
+  StoreRoute: typeof StoreRoute
   SuiteRoute: typeof SuiteRoute
+  WorkspaceRoute: typeof WorkspaceRoute
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   AiAccountantRoute: typeof AiAccountantRoute
@@ -497,6 +666,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$': {
+      id: '/$'
+      path: '/$'
+      fullPath: '/$'
+      preLoaderRoute: typeof SplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/appointments': {
       id: '/appointments'
       path: '/appointments'
@@ -518,6 +694,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CeoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/clinical': {
+      id: '/clinical'
+      path: '/clinical'
+      fullPath: '/clinical'
+      preLoaderRoute: typeof ClinicalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/content': {
       id: '/content'
       path: '/content'
@@ -530,6 +713,34 @@ declare module '@tanstack/react-router' {
       path: '/crm'
       fullPath: '/crm'
       preLoaderRoute: typeof CrmRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/doctor': {
+      id: '/doctor'
+      path: '/doctor'
+      fullPath: '/doctor'
+      preLoaderRoute: typeof DoctorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/followup': {
+      id: '/followup'
+      path: '/followup'
+      fullPath: '/followup'
+      preLoaderRoute: typeof FollowupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/followups': {
+      id: '/followups'
+      path: '/followups'
+      fullPath: '/followups'
+      preLoaderRoute: typeof FollowupsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guide': {
+      id: '/guide'
+      path: '/guide'
+      fullPath: '/guide'
+      preLoaderRoute: typeof GuideRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/inventory': {
@@ -553,11 +764,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof McpRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/nurse': {
+      id: '/nurse'
+      path: '/nurse'
+      fullPath: '/nurse'
+      preLoaderRoute: typeof NurseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sales': {
+      id: '/sales'
+      path: '/sales'
+      fullPath: '/sales'
+      preLoaderRoute: typeof SalesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sales-dashboard': {
+      id: '/sales-dashboard'
+      path: '/sales-dashboard'
+      fullPath: '/sales-dashboard'
+      preLoaderRoute: typeof SalesDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/social': {
+      id: '/social'
+      path: '/social'
+      fullPath: '/social'
+      preLoaderRoute: typeof SocialRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/staff': {
+      id: '/staff'
+      path: '/staff'
+      fullPath: '/staff'
+      preLoaderRoute: typeof StaffRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/store': {
+      id: '/store'
+      path: '/store'
+      fullPath: '/store'
+      preLoaderRoute: typeof StoreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/suite': {
       id: '/suite'
       path: '/suite'
       fullPath: '/suite'
       preLoaderRoute: typeof SuiteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/workspace': {
+      id: '/workspace'
+      path: '/workspace'
+      fullPath: '/workspace'
+      preLoaderRoute: typeof WorkspaceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/.mcp/list-tools': {
@@ -750,15 +1010,28 @@ const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  SplatRoute: SplatRoute,
   AppointmentsRoute: AppointmentsRoute,
   AuthRoute: AuthRouteWithChildren,
   CeoRoute: CeoRoute,
+  ClinicalRoute: ClinicalRoute,
   ContentRoute: ContentRoute,
   CrmRoute: CrmRoute,
+  DoctorRoute: DoctorRoute,
+  FollowupRoute: FollowupRoute,
+  FollowupsRoute: FollowupsRoute,
+  GuideRoute: GuideRoute,
   InventoryRoute: InventoryRoute,
   ManagerRoute: ManagerRoute,
   McpRoute: McpRoute,
+  NurseRoute: NurseRoute,
+  SalesRoute: SalesRoute,
+  SalesDashboardRoute: SalesDashboardRoute,
+  SocialRoute: SocialRoute,
+  StaffRoute: StaffRoute,
+  StoreRoute: StoreRoute,
   SuiteRoute: SuiteRoute,
+  WorkspaceRoute: WorkspaceRoute,
   Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
