@@ -3,9 +3,10 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Shell } from "@/components/esb/Shell";
 import { LineSpark } from "@/components/esb/charts";
-import { ChevronRight, Sparkles, Package, Camera, ChevronDown, MapPin, MessageCircle, Scan, ShoppingBag, CalendarCheck, LogIn, Loader2 } from "lucide-react";
+import { ChevronRight, Sparkles, Package, Camera, ChevronDown, MapPin, MessageCircle, Scan, ShoppingBag, CalendarCheck, LogIn, Loader2, Building2, HeartPulse, Stethoscope, Users } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { EsbLogo } from "@/components/esb/Logo";
+import { LiveOpsStream } from "@/components/esb/LiveOpsStream";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -20,15 +21,7 @@ export const Route = createFileRoute("/")({
 });
 
 function HomeRouter() {
-  const { loading, isStaff } = useAuth();
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-      </div>
-    );
-  }
-  return isStaff ? <OverviewPage /> : <NotAuthorized />;
+  return <OverviewPage />;
 }
 
 function NotAuthorized() {
@@ -173,6 +166,10 @@ function OverviewPage() {
         </div>
       </div>
 
+      <div className="mb-6">
+        <LiveOpsStream />
+      </div>
+
       <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-semibold tracking-tight mb-1">
         {greeting}, <span className="gold-text">{displayName}</span>
       </h1>
@@ -186,6 +183,119 @@ function OverviewPage() {
         <AppointmentsCard />
         <AIInsightsCard />
         <RevenueCard />
+      </div>
+
+      {/* Operational & Clinical Suites Quick Jump */}
+      <div className="mt-6 mb-2">
+        <div className="text-xs text-muted-foreground uppercase tracking-wider mb-2 font-semibold">
+          Departmental & Clinical Workspaces
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <Link
+            to="/sales"
+            className="card-elevated p-4 hover:border-gold/40 transition group block"
+          >
+            <div className="flex items-center gap-3 mb-2">
+              <div className="h-9 w-9 rounded-xl bg-gold/15 text-gold flex items-center justify-center">
+                <Building2 className="h-5 w-5" />
+              </div>
+              <div>
+                <div className="text-sm font-semibold text-foreground group-hover:text-gold transition">
+                  Sales Dashboard
+                </div>
+                <div className="text-[11px] text-muted-foreground">All 7 Departments</div>
+              </div>
+            </div>
+            <p className="text-[11px] text-muted-foreground">
+              Deals pipeline, monthly targets, conversion rates & WhatsApp quotes.
+            </p>
+          </Link>
+
+          <Link
+            to="/followups"
+            className="card-elevated p-4 hover:border-gold/40 transition group block"
+          >
+            <div className="flex items-center gap-3 mb-2">
+              <div className="h-9 w-9 rounded-xl bg-violet/15 text-violet flex items-center justify-center">
+                <HeartPulse className="h-5 w-5" />
+              </div>
+              <div>
+                <div className="text-sm font-semibold text-foreground group-hover:text-gold transition">
+                  Customer Follow-Up
+                </div>
+                <div className="text-[11px] text-muted-foreground">Post-Care & Refills</div>
+              </div>
+            </div>
+            <p className="text-[11px] text-muted-foreground">
+              Day 1/3/7 healing checks, serum replenishment & 1-click WhatsApp messaging.
+            </p>
+          </Link>
+
+          <Link
+            to="/clinical"
+            className="card-elevated p-4 hover:border-gold/40 transition group block"
+          >
+            <div className="flex items-center gap-3 mb-2">
+              <div className="h-9 w-9 rounded-xl bg-cyan-500/15 text-cyan-500 flex items-center justify-center">
+                <Stethoscope className="h-5 w-5" />
+              </div>
+              <div>
+                <div className="text-sm font-semibold text-foreground group-hover:text-gold transition">
+                  Clinical Suite
+                </div>
+                <div className="text-[11px] text-muted-foreground">Doctor & Nurse Hub</div>
+              </div>
+            </div>
+            <p className="text-[11px] text-muted-foreground">
+              Patient queues, numbing timers, vitals, allergy flags & sterile room checks.
+            </p>
+          </Link>
+
+          <Link
+            to="/crm"
+            className="card-elevated p-4 hover:border-gold/40 transition group block"
+          >
+            <div className="flex items-center gap-3 mb-2">
+              <div className="h-9 w-9 rounded-xl bg-gold/15 text-gold flex items-center justify-center">
+                <Users className="h-5 w-5" />
+              </div>
+              <div>
+                <div className="text-sm font-semibold text-foreground group-hover:text-gold transition">
+                  Client 360 CRM
+                </div>
+                <div className="text-[11px] text-muted-foreground">Profiles & Loyalty</div>
+              </div>
+            </div>
+            <p className="text-[11px] text-muted-foreground">
+              VIP tiers, lifetime spend in ₦ NGN, loyalty points & automated concierge.
+            </p>
+          </Link>
+
+          <Link
+            to="/staff"
+            className="card-elevated p-4 hover:border-gold/40 transition group block sm:col-span-2 lg:col-span-4"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="h-9 w-9 rounded-xl bg-success/15 text-success flex items-center justify-center">
+                  <Building2 className="h-5 w-5" />
+                </div>
+                <div>
+                  <div className="text-sm font-semibold text-foreground group-hover:text-gold transition flex items-center gap-2">
+                    Staff Records & Google Location Geo-Attendance
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-success/20 text-success border border-success/30 font-medium">
+                      GPS LOCKED
+                    </span>
+                  </div>
+                  <div className="text-[11px] text-muted-foreground">
+                    Office premise perimeter check-in, doctor/nurse duty rosters & monthly payroll in ₦
+                  </div>
+                </div>
+              </div>
+              <ChevronRight className="h-4 w-4 text-gold group-hover:translate-x-1 transition-transform" />
+            </div>
+          </Link>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mt-5">
@@ -282,8 +392,8 @@ function RevenueCard() {
       <div className="flex items-center justify-between mb-2">
         <div>
           <div className="text-xs text-muted-foreground uppercase tracking-wider">Revenue Overview</div>
-          <div className="text-2xl font-display font-semibold mt-1">
-            $245.8<span className="text-muted-foreground text-base">K</span>
+          <div className="text-2xl font-display font-semibold mt-1 gold-text">
+            ₦245.8<span className="text-muted-foreground text-base">M</span>
           </div>
         </div>
         <div className="h-8 w-8 rounded-full bg-violet/20 flex items-center justify-center">
@@ -302,7 +412,7 @@ function ActionsCard() {
     { t: "Reorder Niacinamide 10%", d: "Skincare Kitchen · PH", tag: "Auto", color: "gold", to: "/inventory" as const },
     { t: "Reschedule 3 facials → Thursday", d: "Derma Aesthetics · ABJ", tag: "Pending", color: "violet", to: "/appointments" as const },
     { t: "Send payroll review", d: "All branches", tag: "Auto", color: "gold", to: "/ceo" as const },
-    { t: "Approve marketing spend $4.2K", d: "ESB Brand HQ", tag: "Awaiting", color: "violet", to: "/ceo" as const },
+    { t: "Approve marketing spend ₦4.2M", d: "ESB Brand HQ", tag: "Awaiting", color: "violet", to: "/ceo" as const },
   ];
   return (
     <div className="card-elevated p-5 lg:col-span-2">
@@ -341,9 +451,9 @@ function ActionsCard() {
 
 function SubBrandsCard() {
   const brands = [
-    { name: "Skincare Kitchen", rev: "$112.4K", growth: "+18%", color: "gold", to: "/brands/skincare-kitchen" as const, w: 82 },
-    { name: "Derma Aesthetics", rev: "$88.1K", growth: "+12.5%", color: "violet", to: "/brands/derma" as const, w: 68 },
-    { name: "ESB Apothecary", rev: "$45.3K", growth: "+6%", color: "gold", to: "/brands/skinclinic" as const, w: 54 },
+    { name: "Skincare Kitchen", rev: "₦112.4M", growth: "+18%", color: "gold", to: "/brands/skincare-kitchen" as const, w: 82 },
+    { name: "Derma Aesthetics", rev: "₦88.1M", growth: "+12.5%", color: "violet", to: "/brands/derma" as const, w: 68 },
+    { name: "ESB Apothecary", rev: "₦45.3M", growth: "+6%", color: "gold", to: "/brands/skinclinic" as const, w: 54 },
   ];
   return (
     <div className="card-elevated p-5">

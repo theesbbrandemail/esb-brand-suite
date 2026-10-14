@@ -1,0 +1,6 @@
+{
+  "name": "ESB Brand Suite",
+  "description": "Executive enterprise suite with connected brand Gmails (Derma, Skincare Kitchen, Skin Clinic, CEO, Accountant), specialized brand AI chatbots, web stores (dermaaesthetics.ng, skincarekitchen.com.ng), Google Maps delivery fleet, and Nigerian Naira (₦).",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

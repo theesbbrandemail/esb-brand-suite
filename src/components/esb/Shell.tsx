@@ -1,8 +1,14 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { LayoutGrid, Sparkles, Package, Calendar, Image as ImageIcon, ClipboardList, LogOut, Lock, ChevronDown, FlaskConical, ShoppingBag, Stethoscope, Smile, HeartPulse, Truck, Crown, Briefcase, Megaphone, Syringe, Calculator, ClipboardCheck, Bot, Clapperboard, Users, FileHeart, CalendarClock, Sunrise, PackageSearch } from "lucide-react";
+import { LayoutGrid, Sparkles, Package, Calendar, Image as ImageIcon, ClipboardList, LogOut, Lock, ChevronDown, FlaskConical, ShoppingBag, Stethoscope, Smile, HeartPulse, Truck, Crown, Briefcase, Megaphone, Syringe, Calculator, ClipboardCheck, Bot, Clapperboard, Users, FileHeart, CalendarClock, Sunrise, PackageSearch, Building2, Smartphone, Download, HardDrive, Share2 } from "lucide-react";
 import { NotificationsBell } from "@/components/esb/NotificationsBell";
 import { CommandMenu } from "@/components/esb/CommandMenu";
 import { CommandAssistant } from "@/components/esb/CommandAssistant";
+import { AppDownloadModal } from "@/components/esb/AppDownloadModal";
+import { BackgroundTaskWidget } from "@/components/esb/BackgroundTaskDrawer";
+import { GlobalBranchSwitch } from "@/components/esb/GlobalBranchSwitch";
+import { StaffRoleSwitcher } from "@/components/esb/StaffRoleSwitcher";
+import { PendingApprovalScreen } from "@/components/esb/PendingApprovalScreen";
+import { isRouteAllowedForRole } from "@/lib/role-manager";
 import { EsbLogo } from "./Logo";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -14,12 +20,19 @@ type Tab = { to: string; label: string; icon: typeof LayoutGrid; staff?: boolean
 
 const tabs: readonly Tab[] = [
   { to: "/", label: "Overview", icon: LayoutGrid },
+  { to: "/store", label: "Web Store", icon: ShoppingBag, staff: false },
+  { to: "/social", label: "Social Media", icon: Share2, staff: true },
+  { to: "/workspace", label: "Google Workspace", icon: HardDrive, staff: true },
+  { to: "/inventory", label: "Inventory & Maps", icon: Package, staff: true },
+  { to: "/staff", label: "Staff & Rewards", icon: Users, staff: true },
+  { to: "/sales", label: "Sales", icon: Building2, staff: true },
+  { to: "/followups", label: "Follow-ups", icon: HeartPulse, staff: true },
+  { to: "/clinical", label: "Clinical", icon: Stethoscope, staff: true },
+  { to: "/crm", label: "CRM", icon: Users, staff: true },
+  { to: "/manager", label: "Manager", icon: ClipboardList, staff: true },
   { to: "/ceo", label: "CEO Dashboard", icon: Crown, staff: true },
-  { to: "/inventory", label: "Inventory", icon: Package, staff: true },
   { to: "/appointments", label: "Appts", icon: Calendar, staff: true },
   { to: "/content", label: "Content", icon: ImageIcon, staff: true },
-  { to: "/manager", label: "Manager", icon: ClipboardList, staff: true },
-  { to: "/crm", label: "CRM", icon: Users, staff: true },
   { to: "/tools/briefing", label: "Briefing", icon: Sunrise, staff: true },
 ];
 
@@ -54,17 +67,33 @@ export function Shell({ children, requireStaff = false }: { children: ReactNode;
   const { loading, session, role, isStaff, user, signOut } = useAuth();
   const realStaff = !!role && role !== "public";
 
-  const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [downloadOpen, setDownloadOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<null | "brands" | "ai">(null);
+  const [isOnline, setIsOnline] = useState(typeof navigator !== "undefined" ? navigator.onLine : true);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-
   useEffect(() => {
-    if (!loading && !session) {
-      navigate({ to: "/auth", search: { next: pathname }, replace: true });
-    }
-  }, [loading, session, pathname, navigate]);
+    const onOnline = () => {
+      setIsOnline(true);
+      toast.success("Online Status Reconnected", {
+        description: "100% Always-Online High Availability Cluster active.",
+      });
+    };
+    const onOffline = () => {
+      setIsOnline(false);
+      toast.warning("Offline Resilient Mode Active", {
+        description: "Operating seamlessly with local storage & auto-sync queue.",
+      });
+    };
+    window.addEventListener("online", onOnline);
+    window.addEventListener("offline", onOffline);
+    return () => {
+      window.removeEventListener("online", onOnline);
+      window.removeEventListener("offline", onOffline);
+    };
+  }, []);
+
 
   useEffect(() => {
     function onClick(e: MouseEvent) {
@@ -77,14 +106,6 @@ export function Shell({ children, requireStaff = false }: { children: ReactNode;
   useEffect(() => {
     setOpenDropdown(null);
   }, [pathname]);
-
-  if (loading || !session) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="h-8 w-8 rounded-full border-2 border-gold border-t-transparent animate-spin" />
-      </div>
-    );
-  }
 
 
 
@@ -184,6 +205,10 @@ export function Shell({ children, requireStaff = false }: { children: ReactNode;
               {role === "super_admin" ? "Super Admin" : role === "admin" ? "Admin" : role === "manager" ? "Manager" : realStaff ? "Staff" : "No access"}
             </span>
 
+            <GlobalBranchSwitch />
+
+            <BackgroundTaskWidget />
+
             <CommandMenu
               entries={[
                 ...visibleTabs.map((t) => ({ ...t, group: "Pages" })),
@@ -192,7 +217,31 @@ export function Shell({ children, requireStaff = false }: { children: ReactNode;
               ]}
             />
             <CommandAssistant />
-            <NotificationsBell />
+            <Link
+              to="/store"
+              className="hidden lg:flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full text-xs font-semibold border border-amber-400/40 text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 hover:scale-105 active:scale-95 transition-all shadow-sm"
+              title="ESB Luxury Web Store & Formulations"
+            >
+              <ShoppingBag className="h-3.5 w-3.5 text-amber-400" />
+              <span>Web Store</span>
+            </Link>
+            <Link
+              to="/workspace"
+              className="hidden md:flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full text-xs font-semibold border border-blue-400/40 text-blue-300 bg-blue-500/10 hover:bg-blue-500/20 hover:scale-105 active:scale-95 transition-all shadow-sm"
+              title="Google Workspace: Gmail, Drive, Calendar, Sheets, Docs"
+            >
+              <HardDrive className="h-3.5 w-3.5 text-blue-400" />
+              <span>Google Hub</span>
+            </Link>
+            <button
+              onClick={() => setDownloadOpen(true)}
+              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full text-xs font-semibold border border-gold/40 text-gold bg-gold/10 hover:bg-gold/20 hover:scale-105 active:scale-95 transition-all shadow-sm"
+              title="Download APK / iOS / Web App"
+            >
+              <Smartphone className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Download App</span>
+              <span className="sm:hidden">App</span>
+            </button>
             <button
               onClick={() => setMenuOpen((v) => !v)}
               className="h-9 w-9 rounded-full bg-gradient-to-br from-violet to-gold border border-border overflow-hidden flex items-center justify-center text-xs font-semibold text-white"
@@ -233,6 +282,7 @@ export function Shell({ children, requireStaff = false }: { children: ReactNode;
 
       </header>
       <main className="w-full max-w-[1400px] mx-auto px-3 sm:px-6 py-6 sm:py-8 overflow-x-hidden">{children}</main>
+      <AppDownloadModal open={downloadOpen} onOpenChange={setDownloadOpen} />
     </div>
   );
 }

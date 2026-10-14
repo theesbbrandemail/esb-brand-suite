@@ -19,12 +19,14 @@ import {
   Star,
   X,
   XCircle,
+  Mail,
 } from "lucide-react";
 import { format } from "date-fns";
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
+import { SendClientGmailModal } from "@/components/esb/SendClientGmailModal";
 
 const WA = (phone: string, msg: string) =>
   `https://wa.me/${phone.replace(/[^\d+]/g, "")}?text=${encodeURIComponent(msg)}`;
@@ -42,6 +44,7 @@ export function AppointmentDetailsDrawer({
   onOpenChange,
   onStatus,
 }: AppointmentDetailsDrawerProps) {
+  const [gmailOpen, setGmailOpen] = useState(false);
   if (!appt) return null;
 
   const time = format(new Date(appt.scheduled_at), "p");
@@ -109,14 +112,16 @@ export function AppointmentDetailsDrawer({
             ) : null}
           </div>
 
-          {appt.patient_phone && (
-            <div className="grid grid-cols-2 gap-2 mt-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-4">
+            {appt.patient_phone && (
               <a
                 href={`tel:${appt.patient_phone}`}
-                className="text-xs inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl border border-border hover:bg-card transition"
+                className="text-xs inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-border hover:bg-card transition"
               >
                 <Phone className="h-3.5 w-3.5" /> Call patient
               </a>
+            )}
+            {appt.patient_phone && (
               <a
                 href={WA(
                   appt.patient_phone,
@@ -124,12 +129,20 @@ export function AppointmentDetailsDrawer({
                 )}
                 target="_blank"
                 rel="noreferrer"
-                className="text-xs inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-[oklch(0.65_0.18_145)]/15 border border-[oklch(0.65_0.18_145)]/40 text-[oklch(0.75_0.18_145)] hover:bg-[oklch(0.65_0.18_145)]/25 transition"
+                className="text-xs inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-[oklch(0.65_0.18_145)]/15 border border-[oklch(0.65_0.18_145)]/40 text-[oklch(0.75_0.18_145)] hover:bg-[oklch(0.65_0.18_145)]/25 transition"
               >
                 <MessageCircle className="h-3.5 w-3.5" /> WhatsApp
               </a>
-            </div>
-          )}
+            )}
+            <button
+              type="button"
+              onClick={() => setGmailOpen(true)}
+              className="text-xs inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-red-500/15 border border-red-500/40 text-red-400 hover:bg-red-500/25 transition"
+              title="Compose message to client Gmail inbox"
+            >
+              <Mail className="h-3.5 w-3.5" /> Client Gmail
+            </button>
+          </div>
 
           <FeedbackCapture appointmentId={appt.id} />
         </div>
@@ -164,6 +177,16 @@ export function AppointmentDetailsDrawer({
           </div>
         </DrawerFooter>
       </DrawerContent>
+      <SendClientGmailModal
+        open={gmailOpen}
+        onOpenChange={setGmailOpen}
+        clientName={appt.patient_name}
+        clientEmail={appt.patient_email || `${appt.patient_name.toLowerCase().replace(/\s+/g, ".")}@gmail.com`}
+        clientPhone={appt.patient_phone || undefined}
+        brand={appt.service.includes("Dental") ? "Dental Clinic" : appt.service.includes("Derma") ? "Derma Aesthetics" : "Skin Clinic"}
+        contextType="appointment"
+        defaultSubject={`Appointment Confirmation: ${appt.service} — ESB Clinical Suite`}
+      />
     </Drawer>
   );
 }

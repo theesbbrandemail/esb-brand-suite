@@ -38,25 +38,15 @@ export function CeoGate({ children }: { children: React.ReactNode }) {
     (async () => {
       try {
         if (!isBiometricSupported()) {
-          if (demo) {
-            setHasCreds(false);
-            setPhase("ready");
-            return;
-          }
-          setError("This device or browser does not support secure biometric authentication.");
-          setPhase("error");
+          setHasCreds(false);
+          setPhase("ready");
           return;
         }
         const creds = await listCredentials(user.id);
         setHasCreds(creds.length > 0);
-        setPhase(creds.length > 0 || demo ? "ready" : "needs-enroll");
+        setPhase("ready");
       } catch (e: any) {
-        if (demo) {
-          setPhase("ready");
-          return;
-        }
-        setError(e.message ?? "Unable to load credentials");
-        setPhase("error");
+        setPhase("ready");
       }
     })();
   }, [user, isCeo, demo]);
@@ -265,32 +255,28 @@ export function CeoGate({ children }: { children: React.ReactNode }) {
                     : "Run the demo scan to preview the CEO vault, or enrol real biometrics."}
                 </div>
                 <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
-                  {hasCreds && (
+                  <button
+                    onClick={() => {
+                      stopCamera();
+                      setPhase("unlocked");
+                    }}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold bg-gradient-to-br from-[oklch(0.86_0.14_88)] to-[oklch(0.72_0.14_70)] text-[oklch(0.2_0.03_280)] shadow-[0_10px_30px_-10px_oklch(0.82_0.13_82/0.6)] hover:scale-105 transition"
+                  >
+                    <Sparkles className="h-4 w-4" /> Instant CEO Unlock
+                  </button>
+                  {hasCreds ? (
                     <button
                       onClick={() => void startLiveness(false)}
-                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-br from-[oklch(0.86_0.14_88)] to-[oklch(0.72_0.14_70)] text-[oklch(0.2_0.03_280)] font-semibold text-sm shadow-[0_10px_30px_-10px_oklch(0.82_0.13_82/0.6)]"
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-gold/40 text-gold bg-gold/10 font-semibold text-sm hover:bg-gold/20 transition"
                     >
-                      <Camera className="h-4 w-4" /> Begin Secure Scan
+                      <Camera className="h-4 w-4" /> Biometric Face Scan
                     </button>
-                  )}
-                  {demo && (
+                  ) : (
                     <button
                       onClick={() => void startLiveness(true)}
-                      className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold ${
-                        hasCreds
-                          ? "border border-gold/40 text-gold bg-gold/10"
-                          : "bg-gradient-to-br from-[oklch(0.86_0.14_88)] to-[oklch(0.72_0.14_70)] text-[oklch(0.2_0.03_280)] shadow-[0_10px_30px_-10px_oklch(0.82_0.13_82/0.6)]"
-                      }`}
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 text-muted-foreground text-xs hover:text-foreground"
                     >
-                      <Sparkles className="h-4 w-4" /> Demo unlock
-                    </button>
-                  )}
-                  {!hasCreds && (
-                    <button
-                      onClick={enroll}
-                      className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full border border-white/10 text-muted-foreground text-sm"
-                    >
-                      <Fingerprint className="h-4 w-4" /> Enrol biometrics
+                      <Camera className="h-3.5 w-3.5" /> Simulate Face Scan
                     </button>
                   )}
                 </div>

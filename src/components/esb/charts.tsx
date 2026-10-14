@@ -55,3 +55,13 @@ export function LineSpark({ points, height = 80 }: { points: number[]; height?: 
     </svg>
   );
 }
+
+// Re-export full Recharts fleet & inventory visualizer with gold and violet theme
+export {
+  WeeklyFleetInventoryChart,
+  CHART_COLORS,
+  type WeeklyFleetInventoryChartProps,
+  type SubBrandFilter,
+  type DayFleetTelemetry,
+  type SubBrandStockItem,
+} from "./WeeklyFleetInventoryChart";

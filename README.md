@@ -1,40 +1,59 @@
-# Deployment (Vercel + Supabase)
+# ESB Brand Suite — Android Application
 
-This repository is configured to run on Vercel (static/Vite build) and uses Supabase for authentication and database.
+A high-performance Android application built with **Kotlin** and **Jetpack Compose (Material 3)**, delivering an executive suite for ESB Brand operations, clinical aesthetics, inventory supply chains, sales management, and AI orchestration.
 
-Important (security)
-- A previous commit contained Supabase keys in `.env`. Those values have been removed from the repository — rotate any keys that were exposed immediately.
-- Do NOT commit `.env` or other secret files. Use Vercel environment variables or your CI secrets store.
+---
 
-Required environment variables (set these in Vercel -> Project -> Settings -> Environment Variables):
+## Ported Features & Dashboards
 
-- VITE_SUPABASE_URL (client) — e.g. https://<project-ref>.supabase.co
-- VITE_SUPABASE_PUBLISHABLE_KEY (client anon key)
-- SUPABASE_URL (server)
-- SUPABASE_SERVICE_ROLE_KEY (server-only, secret)
-- DATABASE_URL (if you run server-side DB operations)
+### 1. Executive Overview & Operations
+- **Multi-Branch Switcher**: Real-time switching between Port Harcourt and Abuja branches.
+- **Executive KPI Cards**: Real-time inventory status, today's appointments volume, automated AI insights, and 30-day revenue with Canvas sparkline visualization.
+- **Orchestrator Actions**: Automated operational queue highlighting auto-executed routines and pending managerial approvals.
+- **Sub-Brands Portfolio**: Skincare Kitchen, Derma Aesthetics, and ESB Apothecary revenue targets and market share.
 
-Local development
-1. Copy .env.example to .env.local and fill in values for local development (do not commit):
+### 2. Departmental Sales Team Dashboard
+- **Department Breakdowns**: Dedicated sales targets, actuals, pipeline deal volumes, and conversion metrics for:
+  - *Skincare Kitchen* (artisanal serums, bespoke Serum Bar blends)
+  - *Derma Aesthetics* (high-ticket clinical packages, laser facials)
+  - *ESB Apothecary* (dermatological prescription skincare, mineral SPF)
+  - *Dental Studio* (porcelain veneers, laser teeth whitening)
+- **High-Value Deal Pipeline**: Interactive stages (*New Lead*, *Consultation Scheduled*, *Proposal Sent*, *Closed Won*) with one-tap stage advancement.
 
-   cp .env.example .env.local
+### 3. Departmental Customer Follow-up Dashboard
+- **Protocol-Driven Scripts**: Custom post-treatment follow-up messages tailored to each department's medical and aesthetic standards.
+- **One-Touch WhatsApp Integration**: Direct WhatsApp launcher prefilled with personalized client name, care guidelines, and clinic contacts.
+- **Status Tracking**: Pending, Sent, and Scheduled status updates with priority flags.
 
-2. Start the dev server:
+### 4. Clinical Suite: Doctor & Nurse Dashboards
+- **Doctor Dashboard**:
+  - Today's diagnostic reviews and patient cases.
+  - Skin AI Health Score integration (0–100 scale).
+  - Contraindications warnings (retinoid timeouts, anticoagulant flags, allergies).
+  - Protocol approval and clinical sign-off workflow.
+- **Nurse Dashboard**:
+  - Live Room Queue (Suite A, VIP Suite, Room 2).
+  - Procedure Prep Checklists (handpiece sterilization, lidocaine application, solution preparation).
+  - Exact dosage specifications (solution percentages, pressure kPa, laser parameters).
+  - Patient vitals tracking (blood pressure, heart rate, temperature).
 
-   npm install
-   npm run dev
+### 5. Enhanced Branch Manager Suite
+- **Shift & Staff Attendance Roster**: Real-time tracking of on-duty doctors, aesthetic nurses, clinical estheticians, and front desk personnel.
+- **Floor Stock Quick-Adjustment**: Instant `+` and `-` quantity adjustment buttons for floor managers.
+- **Daily Operations Checklist**: Compliance audits, autoclave verification, morning register balance, and VIP concierge protocols with interactive task completion.
 
-Vercel build
-- Build command: npm run build
-- Output directory: dist
+### 6. Client & Patient 360 CRM
+- **VIP Diamond & Tier Management**: Tier badges, lifetime value ($LTV), total visits, and loyalty point balances.
+- **Clinical Skin Profiles**: Skin type diagnostics, sensitivity indicators, and contraindications.
+- **One-Click Outreach**: Instant phone dialer, WhatsApp templates modal, and clinical observation note logs.
+- **Intake Form**: Fast intake wizard for new patients and consultations.
 
-Notes & recommendations
-- Keep a single lockfile (package-lock.json or bun.lock). If you intend to use Bun, prefer bun.lock and Bun-based CI. Otherwise use npm (package-lock.json).
-- Use the Supabase service role key only on the server. The client should use the publishable anonymous key.
-- To analyze client bundles: generate a build and run a bundle analyzer (Vite plugin or rollup analyzer). Look for large entries from `routeTree.gen.ts` and heavy UI libraries (recharts, framer-motion, etc.).
+---
 
-Secret rotation (if your keys were exposed)
-1. In the Supabase dashboard, go to Project Settings -> API, rotate the ANON and SERVICE_ROLE keys.
-2. Update Vercel environment variables with the new values.
-3. Redeploy your Vercel project.
+## Architecture & Tech Stack
 
+- **Target Framework**: Kotlin + Jetpack Compose
+- **Design System**: Material Design 3 with custom ESB Luxury Dark Palette (`NavyBackground`, `GoldPrimary`, `VioletAccent`)
+- **State Management**: Reactive `ViewModel` + `StateFlow` / `asStateFlow()`
+- **Build System**: Gradle Kotlin DSL (`build.gradle.kts`, `settings.gradle.kts`, `libs.versions.toml`)
+- **Application ID**: `com.aistudio.esbbrandsuite.wvkqzp`

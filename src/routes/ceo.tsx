@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Shell } from "@/components/esb/Shell";
-import { DualBarChart, LineSpark } from "@/components/esb/charts";
+import { DualBarChart, LineSpark, WeeklyFleetInventoryChart } from "@/components/esb/charts";
 import {
   Search, ChevronRight, Sparkles, Calendar, TrendingUp, Activity, Brain, Crown,
   Plus, CheckCircle2, AlertTriangle, Package, Users, Bell, Loader2,
@@ -21,6 +21,7 @@ import {
 import { useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
+import { formatNaira } from "@/lib/currency";
 
 export const Route = createFileRoute("/ceo")({
   head: () => ({
@@ -125,7 +126,7 @@ export default function SuitePage() {
 
           {/* Main grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-            <BrandPanel title="ESB Operations" tag="Live" data={k?.brandSeries ?? []} growth={k ? `${k.appointments30d} appts/30d` : "—"} revenue={k ? money(k.revenue30d) : "$—"} />
+            <BrandPanel title="ESB Operations" tag="Live" data={k?.brandSeries ?? []} growth={k ? `${k.appointments30d} appts/30d` : "—"} revenue={k ? money(k.revenue30d) : "₦—"} />
             <KPIPanel k={k} />
             <RemindersPanel
               reminders={remindersQ.data ?? []}
@@ -138,6 +139,10 @@ export default function SuitePage() {
               <BranchProfitPanel k={k} loading={kpisQ.isLoading} />
             </div>
             <SatisfactionPanel k={k} />
+          </div>
+
+          <div className="mt-5">
+            <WeeklyFleetInventoryChart />
           </div>
 
           <div className="mt-5">
@@ -373,7 +378,7 @@ function RemindersPanel({ reminders, loading }: { reminders: Reminder[]; loading
   );
 }
 
-const money = (n: number) => (n >= 1000 ? `$${(n / 1000).toFixed(1)}K` : `$${Math.round(n)}`);
+const money = (n: number) => formatNaira(n, { compact: true });
 
 function BusinessOverviewPanel({ k }: { k: CeoKpis | undefined }) {
   const items = k

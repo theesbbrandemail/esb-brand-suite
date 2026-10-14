@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">ESB Brand</string>
+    <string name="title_overview">Overview</string>
+    <string name="title_appointments">Appointments</string>
+    <string name="title_inventory">Inventory</string>
+    <string name="title_ceo">CEO AI</string>
+    <string name="title_brands">Sub-Brands</string>
+    <string name="title_crm">Patients</string>
+</resources>

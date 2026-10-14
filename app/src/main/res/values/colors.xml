@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="gold_primary">#D4AF37</color>
+    <color name="gold_light">#EED882</color>
+    <color name="gold_dark">#9C7C1A</color>
+    <color name="violet_accent">#9333EA</color>
+    <color name="violet_dark">#6B21A8</color>
+    <color name="navy_bg">#131024</color>
+    <color name="navy_surface">#1C1736</color>
+    <color name="navy_surface_variant">#241E45</color>
+    <color name="text_light">#F8FAFC</color>
+    <color name="text_muted">#94A3B8</color>
+</resources>

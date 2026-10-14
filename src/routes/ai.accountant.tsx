@@ -1,45 +1,96 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Shell } from "@/components/esb/Shell";
-import { StubPage } from "@/components/esb/StubPage";
-import { Calculator, Activity, Bot, ShieldCheck, ListChecks, Zap, BellRing } from "lucide-react";
+import { BrandDashboard } from "@/components/esb/BrandDashboard";
+import { Calculator } from "lucide-react";
 
 export const Route = createFileRoute("/ai/accountant")({
   head: () => ({
     meta: [
-      { title: "Accountant AI — ESB Brand" },
-      { name: "description", content: "Automated accounting & financial ops" },
-      { property: "og:title", content: "Accountant AI — ESB Brand" },
-      { property: "og:description", content: "Automated accounting & financial ops" },
+      { title: "Accountant AI Suite — ESB Brand" },
+      {
+        name: "description",
+        content:
+          "Financial Controller & Accountant AI: connected to esbbrandadmin@gmail.com, multi-branch Nigerian Naira (₦) ledger audit, bank reconciliation and payroll.",
+      },
     ],
   }),
-  component: Page,
+  component: AccountantAiPage,
 });
 
-function Page() {
+function AccountantAiPage() {
   return (
     <Shell requireStaff>
-      <StubPage
-        kind="AI Role"
-        name="Accountant AI"
-        tagline="Automated accounting & financial ops"
-        description="Daily reconciliation, expense capture, multi-branch P&L, tax-ready exports and seamless integration with existing financial accounting software."
+      <BrandDashboard
+        brandKey="accountant"
+        name="ESB Financial & Accounting AI"
+        tagline="Multi-Branch P&L Ledger, Bank Reconciliations & Audit in ₦ NGN"
+        description="Autonomous corporate financial controller: monitors real-time revenue inflows, reconciles Zenith Bank and GTBank corporate accounts, audits staff payroll, and maintains Nigerian tax compliance."
         icon={Calculator}
+        gmail="esbbrandadmin@gmail.com"
+        webStoreUrl="esbbrand.com/finance"
         accent="gold"
-        kpis={[
-          { label: "Tasks Today", value: "—", hint: "auto-generated" },
-          { label: "Pending Approval", value: "—" },
-          { label: "Executed", value: "—", hint: "24h" },
-          { label: "Confidence", value: "97%" },
+        aiBotName="Accountant AI Controller"
+        aiBotRole="Chief Financial Officer & Corporate Audit Specialist"
+        aiSystemPrompt="You are the Accountant AI Controller for ESB Brand Nigeria. Expert in corporate finance, Nigerian Naira (₦ NGN) ledger balances, VAT/WHT tax compliance, multi-branch P&L statements (Port Harcourt & Abuja), and banking reconciliation (Zenith Bank, GTBank). Official Mailbox: esbbrandadmin@gmail.com."
+        suggestedAiPrompts={[
+          "Reconcile today's Zenith Bank corporate inflows in Nigerian Naira",
+          "Audit Q4 staff payroll across Port Harcourt & Abuja branches",
+          "Calculate monthly P&L comparison between Skincare Kitchen & Derma",
+          "Check incoming invoice emails in esbbrandadmin@gmail.com",
         ]}
-        modules={[
-          { title: "Auto Task Queue", body: "AI-generated daily tasks routed to the right humans with deadlines and risk scoring.", icon: ListChecks },
-          { title: "Auto Execute", body: "Low-risk actions execute automatically; high-risk items wait in the CEO approval vault.", icon: Zap },
-          { title: "Live Signals", body: "Streaming events from connected brands & branches.", icon: Activity },
-          { title: "Smart Alerts", body: "Proactive reminders, anomaly detection and follow-up nudges.", icon: BellRing },
-          { title: "Compliance", body: "Audit log of every AI decision with rationale and inputs.", icon: ShieldCheck },
-          { title: "Model Routing", body: "Best-fit model per task (fast / balanced / precise) with fallback.", icon: Bot },
+        initialEmails={[
+          {
+            id: "em-acc1",
+            from: "Zenith Bank Corporate Banking <e-statement@zenithbank.com>",
+            subject: "Daily Consolidated Credit Summary: NGN 28,450,000.00",
+            snippet: "Consolidated automated corporate inflow alert for account 1018992451. All point-of-sale and direct client transfers for Port Harcourt & Abuja clinics reconciled.",
+            date: "Today, 07:00 AM",
+            amountNaira: 28450000,
+            unread: true,
+            category: "order",
+          },
+          {
+            id: "em-acc2",
+            from: "Federal Inland Revenue Service (FIRS) <e-tax@firs.gov.ng>",
+            subject: "Corporate Income & VAT Filing Compliance Certificate",
+            snippet: "ESB Brand Aesthetics Nigeria Ltd tax clearance status: Verified in good standing. Monthly returns acknowledged.",
+            date: "Yesterday",
+            unread: false,
+            category: "feedback",
+          },
+          {
+            id: "em-acc3",
+            from: "Dr. Farouk Bello <farouk.bello@esbbrand.com>",
+            subject: "Aesthetic Doctor Monthly Performance Commission Invoice",
+            snippet: "Submitted clinical commission report for 84 VIP procedures handled in October. Commission total: ₦750,000. Please review for payout.",
+            date: "2 days ago",
+            amountNaira: 750000,
+            unread: false,
+            category: "supplier",
+          },
         ]}
-        actions={[{ label: "Approval Queue", to: "/ceo" }]}
+        kpis={{
+          revenueMonthlyNgn: 184500000,
+          targetMonthlyNgn: 200000000,
+          activeClients: 4210,
+          stockUnits: 12400,
+          rating: 4.99,
+          growthPct: 29.4,
+        }}
+        popularProducts={[
+          {
+            name: "Enterprise Clinical Membership Annual Retainer",
+            priceNgn: 15000000,
+            stock: 25,
+            image: "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=400&q=80",
+          },
+          {
+            name: "VIP Bespoke Serum Bar Annual Regimen Retainer",
+            priceNgn: 4800000,
+            stock: 60,
+            image: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=400&q=80",
+          },
+        ]}
       />
     </Shell>
   );

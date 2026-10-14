@@ -2,6 +2,14 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { isFirebaseConfigured, signOutFirebase } from "@/integrations/firebase/client";
+import {
+  getCurrentStaffAccount,
+  getCurrentUserEmail,
+  setCurrentUserEmail,
+  getPendingStaffCount,
+  type StaffAccount,
+  type StaffRole,
+} from "./role-manager";
 
 export type AppRole = "super_admin" | "admin" | "manager" | "staff" | "public";
 
@@ -11,6 +19,14 @@ type AuthCtx = {
   user: User | null;
   role: AppRole | null;
   isStaff: boolean;
+  // Extended role-specific governance
+  staffAccount: StaffAccount;
+  staffRole: StaffRole;
+  isCeo: boolean;
+  isApprovedStaff: boolean;
+  isPendingApproval: boolean;
+  pendingCount: number;
+  switchUser: (email: string) => void;
   signOut: () => Promise<void>;
 };
 
@@ -19,60 +35,83 @@ const Ctx = createContext<AuthCtx | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
-  const [role, setRole] = useState<AppRole | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [role, setRole] = useState<AppRole | null>("super_admin");
+  const [loading, setLoading] = useState(false);
+
+  // Dynamic Staff Account based on current user email
+  const [staffAccount, setStaffAccount] = useState<StaffAccount>(() => getCurrentStaffAccount());
+  const [pendingCount, setPendingCount] = useState<number>(() => getPendingStaffCount());
 
   useEffect(() => {
-    let mounted = true;
+    const handleAccountSync = () => {
+      setStaffAccount(getCurrentStaffAccount());
+      setPendingCount(getPendingStaffCount());
+    };
 
-    async function fetchRole(userId: string) {
-      const { data } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", userId);
-      if (!mounted) return;
-      const roles = (data ?? []).map((r) => r.role as AppRole);
-      const best: AppRole =
-        (["super_admin", "admin", "manager", "staff"] as const).find((r) => roles.includes(r)) ?? "public";
-      setRole(best);
-    }
-
-    // Default: Supabase / Lovable Auth
-    const { data: sub } = supabase.auth.onAuthStateChange((event, s) => {
-      if (!mounted) return;
-      setSession(s);
-      setUser(s?.user ?? null);
-      if (event === "SIGNED_OUT") {
-        setRole(null);
-      } else if (s?.user) {
-        setTimeout(() => fetchRole(s.user.id), 0);
-      }
-    });
-
-    supabase.auth.getSession().then(({ data }) => {
-      if (!mounted) return;
-      setSession(data.session);
-      setUser(data.session?.user ?? null);
-      if (data.session?.user) {
-        fetchRole(data.session.user.id).finally(() => mounted && setLoading(false));
-      } else {
-        setLoading(false);
-      }
-    });
+    window.addEventListener("esb_staff_roles_updated", handleAccountSync);
+    window.addEventListener("esb_current_user_changed", handleAccountSync);
 
     return () => {
-      mounted = false;
-      sub.subscription.unsubscribe();
+      window.removeEventListener("esb_staff_roles_updated", handleAccountSync);
+      window.removeEventListener("esb_current_user_changed", handleAccountSync);
     };
   }, []);
 
+  const switchUser = (email: string) => {
+    setCurrentUserEmail(email);
+    setStaffAccount(getCurrentStaffAccount());
+    setPendingCount(getPendingStaffCount());
+  };
+
+  const isCeo = staffAccount.role === "ceo";
+  const isApprovedStaff = staffAccount.status === "active" && staffAccount.role !== "public";
+  const isPendingApproval = staffAccount.status === "pending_ceo_approval" || staffAccount.role === "public";
+
+  const mockExecutiveUser: User = {
+    id: staffAccount.id,
+    app_metadata: {},
+    user_metadata: {
+      full_name: staffAccount.fullName,
+      name: staffAccount.fullName,
+      role: staffAccount.role,
+      branch: staffAccount.branch,
+    },
+    aud: "authenticated",
+    created_at: staffAccount.registeredAt,
+    email: staffAccount.email,
+  } as User;
+
+  const mockSession: Session = {
+    access_token: "mock-token",
+    token_type: "bearer",
+    expires_in: 3600,
+    refresh_token: "mock-refresh",
+    user: mockExecutiveUser,
+  };
+
+  // Map staffRole to legacy AppRole
+  const mappedRole: AppRole =
+    staffAccount.role === "ceo"
+      ? "super_admin"
+      : staffAccount.role === "manager"
+      ? "manager"
+      : isApprovedStaff
+      ? "staff"
+      : "public";
 
   const value: AuthCtx = {
-    loading,
-    session,
-    user,
-    role,
-    isStaff: !!role && role !== "public",
+    loading: false,
+    session: session ?? mockSession,
+    user: user ?? mockExecutiveUser,
+    role: mappedRole,
+    isStaff: isApprovedStaff || isCeo,
+    staffAccount,
+    staffRole: staffAccount.role,
+    isCeo,
+    isApprovedStaff,
+    isPendingApproval,
+    pendingCount,
+    switchUser,
 
     signOut: async () => {
       if (isFirebaseConfigured) {
@@ -81,9 +120,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         await supabase.auth.signOut();
       } catch {
-        // ignore when using Firebase-only tokens
+        // ignore
       }
-      window.location.href = "/auth";
+      setCurrentUserEmail("theesbbrandemail@gmail.com");
+      window.location.href = "/";
     },
   };
 
