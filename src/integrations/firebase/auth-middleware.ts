@@ -9,4 +9,4 @@ export const requireFirebaseAuth = createMiddleware().server(async ({ next }) =>
   return next({ context: { firebaseUser: auth.currentUser } });
 });
 
-export const requireSupabaseAuth = requireFirebaseAuth;
+export const requireGoogleAuth = requireFirebaseAuth;

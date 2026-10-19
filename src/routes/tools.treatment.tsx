@@ -7,7 +7,7 @@ import { Save } from "lucide-react";
 import { ToolWorkspace } from "@/components/esb/ToolWorkspace";
 import { listAppointments } from "@/lib/ops.functions";
 import { runOpsTool } from "@/lib/tools.functions";
-import { supabase } from "@/integrations/supabase/client";
+import { googleDb } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/tools/treatment")({
   head: () => ({
@@ -48,7 +48,7 @@ function TreatmentTool() {
 
   async function save() {
     const notes = `${selected?.notes ? selected.notes + "\n\n" : ""}--- AI treatment plan (${new Date().toLocaleDateString()}) ---\n${result}`.slice(0, 20000);
-    const { error: e } = await supabase.from("appointments").update({ notes }).eq("id", id);
+    const { error: e } = await googleDb.from("appointments").update({ notes }).eq("id", id);
     if (e) toast.error("Couldn't save to the booking", { description: e.message });
     else { toast.success("Saved to booking notes"); qc.invalidateQueries({ queryKey: ["tools", "appts"] }); }
   }

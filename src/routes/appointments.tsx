@@ -9,7 +9,7 @@ import {
   listAppointments, listBranches, createAppointment, updateAppointmentStatus,
   listFollowUps, markFollowUpSent, type Appointment,
 } from "@/lib/ops.functions";
-import { supabase } from "@/integrations/supabase/client";
+import { googleDb } from "@/integrations/supabase/client";
 import { useEffect, useMemo, useState } from "react";
 import {
   CalendarDays, Plus, Phone, MessageCircle, CheckCircle2, XCircle, Clock, Radio, MapPin, Sparkles,
@@ -63,7 +63,7 @@ function AppointmentsPage() {
   const followQ = useQuery({ queryKey: ["follow-ups"], queryFn: () => followFn() });
 
   useEffect(() => {
-    const ch = supabase
+    const ch = googleDb
       .channel("appts-stream")
       .on("postgres_changes", { event: "*", schema: "public", table: "appointments" }, () => {
         setPulse(true);
@@ -74,7 +74,7 @@ function AppointmentsPage() {
         qc.invalidateQueries({ queryKey: ["follow-ups"] });
       })
       .subscribe();
-    return () => { supabase.removeChannel(ch); };
+    return () => { googleDb.removeChannel(ch); };
   }, [qc]);
 
   const setStatus = useMutation({

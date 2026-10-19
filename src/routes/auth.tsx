@@ -1,7 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/lib/auth";
 import { EsbLogo } from "@/components/esb/Logo";
 import { Sparkles, Loader2, AlertCircle, CheckCircle2, RefreshCw, WifiOff } from "lucide-react";
@@ -149,28 +148,6 @@ function AuthPage() {
     };
   }, []);
 
-  // Detect legacy OAuth callback (?code=... or #access_token=...)
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (isFirebaseConfigured) return;
-    const search = window.location.search;
-    const hash = window.location.hash;
-    const hasCallback =
-      search.includes("code=") ||
-      search.includes("error=") ||
-      hash.includes("access_token=") ||
-      hash.includes("error=");
-    if (hasCallback) {
-      setPhase("returning");
-      const params = new URLSearchParams(search.startsWith("?") ? search.slice(1) : search);
-      const oauthErr = params.get("error_description") || params.get("error");
-      if (oauthErr) {
-        setError(classifyError(decodeURIComponent(oauthErr)));
-        setPhase("error");
-      }
-    }
-  }, []);
-
   useEffect(() => {
     function on() { setOnline(true); }
     function off() { setOnline(false); }
@@ -224,24 +201,8 @@ function AuthPage() {
         return;
       }
 
-      // Default: Lovable / Supabase OAuth
-      const nextQs = next && next !== "/" ? `?next=${encodeURIComponent(next)}` : "";
-      const returnTo = `${window.location.origin}/auth/callback${nextQs}`;
-      const result = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: returnTo,
-      });
-      if (result.error) {
-        setError(classifyError(result.error.message || ""));
-        setPhase("error");
-        return;
-      }
-      if (result.redirected) {
-        setPhase("redirecting");
-        return;
-      }
-      setPhase("success");
-      if (next && next !== "/") window.location.href = next;
-      else navigate({ to: "/" });
+      setError(classifyError("Firebase is not configured"));
+      setPhase("error");
     } catch (e) {
       setError(classifyError(e instanceof Error ? e.message : String(e)));
       setPhase("error");

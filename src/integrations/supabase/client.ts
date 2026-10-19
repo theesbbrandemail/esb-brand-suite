@@ -25,7 +25,7 @@ class FirebaseQuery {
   }
 }
 
-export const supabase = {
+export const googleDb = {
   auth: { signOut: async () => { await signOutFirebase(); return { error: null }; }, verifyOtp: async () => ({ error: new Error("Email OTP is not enabled; use Google sign-in.") }) },
   from: (name: string) => new FirebaseQuery(name),
   channel: (_name: string) => ({ on: () => ({ subscribe: () => ({}) }) }),

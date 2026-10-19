@@ -3,7 +3,7 @@ import { Shell } from "@/components/esb/Shell";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { listBranches, listInventory, adjustStock, type InventoryRow } from "@/lib/ops.functions";
-import { supabase } from "@/integrations/supabase/client";
+import { googleDb } from "@/integrations/supabase/client";
 import { useEffect, useMemo, useState } from "react";
 import {
   AlertTriangle, Minus, Plus, Search, Package, Warehouse,
@@ -115,7 +115,7 @@ function InventoryPage() {
 
   // Realtime Supabase inventory channel
   useEffect(() => {
-    const channel = supabase
+    const channel = googleDb
       .channel("inventory-stream")
       .on("postgres_changes", { event: "*", schema: "public", table: "inventory" }, () => {
         setPulse(true);
@@ -124,7 +124,7 @@ function InventoryPage() {
       })
       .subscribe();
     return () => {
-      supabase.removeChannel(channel);
+      googleDb.removeChannel(channel);
     };
   }, [qc]);
 

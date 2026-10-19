@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { requireFirebaseAuth as requireSupabaseAuth } from "@/integrations/firebase/auth-middleware";
+import { requireGoogleAuth } from "@/integrations/firebase/auth-middleware";
 import { z } from "zod";
 
 /* ----------------------------- Types ----------------------------- */
@@ -360,7 +360,7 @@ const inMemServices: ServiceItem[] = [
 /* ----------------------------- KPIs ----------------------------- */
 
 export const getCeoKpis = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireGoogleAuth])
   .handler(async ({ context }): Promise<CeoKpis> => {
     if (isPlaceholderBackend) {
       return getFallbackKpis();
@@ -562,7 +562,7 @@ function getFallbackKpis(): CeoKpis {
 /* ----------------------------- Branches ----------------------------- */
 
 export const listBranches = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireGoogleAuth])
   .handler(async ({ context }): Promise<Branch[]> => {
     if (isPlaceholderBackend) return inMemBranches;
     try {
@@ -577,7 +577,7 @@ export const listBranches = createServerFn({ method: "GET" })
 /* ----------------------------- Reminders ----------------------------- */
 
 export const listReminders = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireGoogleAuth])
   .handler(async ({ context }): Promise<Reminder[]> => {
     if (isPlaceholderBackend) return inMemReminders;
     try {
@@ -595,7 +595,7 @@ export const listReminders = createServerFn({ method: "GET" })
   });
 
 export const createReminder = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireGoogleAuth])
   .inputValidator((d: unknown) =>
     z.object({
       title: z.string().min(2).max(120),
@@ -631,7 +631,7 @@ export const createReminder = createServerFn({ method: "POST" })
   });
 
 export const updateReminder = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireGoogleAuth])
   .inputValidator((d: unknown) =>
     z.object({
       id: z.string().min(1),
@@ -659,7 +659,7 @@ export const updateReminder = createServerFn({ method: "POST" })
 /* ----------------------------- Inventory ----------------------------- */
 
 export const listInventory = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireGoogleAuth])
   .inputValidator((d: unknown) => z.object({ branchId: z.string().min(1).optional() }).optional().parse(d))
   .handler(async ({ data, context }): Promise<InventoryRow[]> => {
     if (isPlaceholderBackend) {
@@ -681,7 +681,7 @@ export const listInventory = createServerFn({ method: "GET" })
   });
 
 export const adjustStock = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireGoogleAuth])
   .inputValidator((d: unknown) => z.object({ id: z.string().min(1), delta: z.number().int() }).parse(d))
   .handler(async ({ data, context }) => {
     let nextQty = 10;
@@ -707,7 +707,7 @@ export const adjustStock = createServerFn({ method: "POST" })
 /* ----------------------------- Appointments ----------------------------- */
 
 export const listAppointments = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireGoogleAuth])
   .inputValidator((d: unknown) =>
     z.object({
       branchId: z.string().min(1).optional(),
@@ -738,7 +738,7 @@ export const listAppointments = createServerFn({ method: "GET" })
   });
 
 export const createAppointment = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireGoogleAuth])
   .inputValidator((d: unknown) =>
     z.object({
       branch_id: z.string().min(1),
@@ -802,7 +802,7 @@ export const createAppointment = createServerFn({ method: "POST" })
   });
 
 export const updateAppointmentStatus = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireGoogleAuth])
   .inputValidator((d: unknown) =>
     z.object({
       id: z.string().min(1),
@@ -824,7 +824,7 @@ export const updateAppointmentStatus = createServerFn({ method: "POST" })
 /* ----------------------------- Follow-ups ----------------------------- */
 
 export const listFollowUps = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireGoogleAuth])
   .handler(async ({ context }) => {
     if (isPlaceholderBackend) return inMemFollowUps;
     try {
@@ -841,7 +841,7 @@ export const listFollowUps = createServerFn({ method: "GET" })
   });
 
 export const markFollowUpSent = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireGoogleAuth])
   .inputValidator((d: unknown) => z.object({ id: z.string().min(1) }).parse(d))
   .handler(async ({ data, context }) => {
     inMemFollowUps = inMemFollowUps.map((f) =>
@@ -866,7 +866,7 @@ export const markFollowUpSent = createServerFn({ method: "POST" })
 export type ServiceItem = { id: string; name: string; price: number; cost: number; active: boolean };
 
 export const listServices = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireGoogleAuth])
   .handler(async ({ context }): Promise<ServiceItem[]> => {
     if (isPlaceholderBackend) return inMemServices;
     try {
@@ -891,7 +891,7 @@ export type FeedbackEntry = {
 };
 
 export const listFeedback = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireGoogleAuth])
   .inputValidator((d: unknown) => z.object({ limit: z.number().int().min(1).max(100).default(10) }).optional().parse(d))
   .handler(async ({ data, context }): Promise<FeedbackEntry[]> => {
     return [
@@ -913,7 +913,7 @@ export const listFeedback = createServerFn({ method: "GET" })
   });
 
 export const submitFeedback = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireGoogleAuth])
   .inputValidator((d: unknown) =>
     z.object({
       appointment_id: z.string().min(1),
@@ -941,7 +941,7 @@ export type ContentPost = {
 };
 
 export const listContentPosts = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireGoogleAuth])
   .inputValidator((d: unknown) =>
     z.object({ branchId: z.string().min(1).optional(), limit: z.number().int().min(1).max(100).default(50) })
       .optional()
@@ -968,7 +968,7 @@ export const listContentPosts = createServerFn({ method: "GET" })
   });
 
 export const createContentPost = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireGoogleAuth])
   .inputValidator((d: unknown) =>
     z.object({
       title: z.string().min(2).max(160),
