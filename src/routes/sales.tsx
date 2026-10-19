@@ -31,7 +31,8 @@ import {
   type SalesRepScorecard,
   type MonthlySalesKpiReport,
 } from "@/lib/sales-intelligence";
-import { getStoredDeals } from "@/lib/storage";
+import { getStoredDeals, saveStoredDeals } from "@/lib/storage";
+import { getStoredGoogleToken, syncDealsToGoogleSheets } from "@/lib/google-workspace";
 
 export const Route = createFileRoute("/sales")({
   head: () => ({
@@ -299,11 +300,29 @@ function SalesDashboardPage() {
     };
   }, [deals, selectedBranch]);
 
+  const persistSalesData = async (nextDeals: LeadDeal[]) => {
+    saveStoredDeals(nextDeals as Parameters<typeof saveStoredDeals>[0]);
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("esb_crm_synced", { detail: { dealsCount: nextDeals.length } }));
+    }
+    const token = getStoredGoogleToken();
+    if (!token) return;
+    const rows = [
+      ["Deal ID", "Client Name", "Phone", "Brand / Dept", "Package", "Value (NGN)", "Stage", "Updated"],
+      ...nextDeals.map((deal) => [deal.id, deal.clientName, deal.phone, deal.department, deal.packageName, deal.value, deal.stage, deal.updatedAt]),
+    ];
+    try {
+      await syncDealsToGoogleSheets("ESB Brand Sales Pipelines (NGN)", rows, token);
+    } catch (error) {
+      console.warn("[v0] Google Sheets sales sync deferred", error);
+    }
+  };
+
   // Handle stage update
   const handleUpdateDealStage = (id: string, nextStage: LeadDeal["stage"]) => {
-    setDeals(
-      deals.map((d) => (d.id === id ? { ...d, stage: nextStage, updatedAt: "Just now" } : d))
-    );
+    const nextDeals = deals.map((d) => (d.id === id ? { ...d, stage: nextStage, updatedAt: "Just now" } : d));
+    setDeals(nextDeals);
+    void persistSalesData(nextDeals);
     toast.success(`Deal updated to ${nextStage}`, {
       description: "Client workflow stage updated across CRM and Accounting audit trail.",
     });
@@ -330,8 +349,10 @@ function SalesDashboardPage() {
       notes: "Logged directly via Sales Suite.",
     };
 
-    setDeals([created, ...deals]);
-    toast.success(`Lead logged for ${newClient}!`, {
+  const nextDeals = [created, ...deals];
+  setDeals(nextDeals);
+  void persistSalesData(nextDeals);
+  toast.success(`Lead logged for ${newClient}!`, {
       description: `${formatNaira(created.value)} placed in ${newBrand} pipeline.`,
     });
 
