@@ -236,7 +236,7 @@ const SEED_DETAILED_TASKS: DetailedStaffTask[] = [
     branch: "Abuja",
     estimatedMinutes: 40,
     taskTitle: "Reconcile Abuja warehouse dispatch WAY-APX-8812 and inventory levels",
-    taskDetails: "Ensure 50 units Vitamin C and Exosome serums are checked in upon DHL delivery. Scan QR codes into Supabase warehouse database.",
+    taskDetails: "Ensure 50 units Vitamin C and Exosome serums are checked in upon DHL delivery. Scan QR codes into Google Cloud warehouse database.",
     priority: "High",
     status: "pending",
     dueTime: "01:30 PM",

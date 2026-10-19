@@ -112,21 +112,7 @@ function InventoryPage() {
     queryFn: () => inventoryFn({ data: { branchId } }),
   });
 
-  // Realtime Supabase inventory channel
-  useEffect(() => {
-    const channel = googleDb
-      .channel("inventory-stream")
-      .on("postgres_changes", { event: "*", schema: "public", table: "inventory" }, () => {
-        setPulse(true);
-        qc.invalidateQueries({ queryKey: ["inventory"] });
-        setTimeout(() => setPulse(false), 800);
-      })
-      .subscribe();
-    return () => {
-      googleDb.removeChannel(channel);
-    };
-  }, [qc]);
-
+  // Firebase-backed server functions are the source of truth. Refresh after mutations.
   // Sync PO changes
   useEffect(() => {
     const handlePoUpdate = () => {

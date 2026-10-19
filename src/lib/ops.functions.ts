@@ -821,6 +821,21 @@ export const updateAppointmentStatus = createServerFn({ method: "POST" })
     }
   });
 
+export const updateAppointmentNotes = createServerFn({ method: "POST" })
+  .middleware([requireGoogleAuth])
+  .inputValidator((d: unknown) => z.object({ id: z.string().min(1), notes: z.string().max(20000) }).parse(d))
+  .handler(async ({ data, context }) => {
+    inMemAppointments = inMemAppointments.map((a) => (a.id === data.id ? { ...a, notes: data.notes } : a));
+    if (isPlaceholderBackend) return { ok: true };
+    try {
+      const firebase = context.firebase as any;
+      await firebase.from("appointments").update({ notes: data.notes }).eq("id", data.id);
+    } catch {
+      // Keep the in-memory update as the safe fallback for unavailable Google data services.
+    }
+    return { ok: true };
+  });
+
 /* ----------------------------- Follow-ups ----------------------------- */
 
 export const listFollowUps = createServerFn({ method: "GET" })

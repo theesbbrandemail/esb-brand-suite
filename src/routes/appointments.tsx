@@ -9,7 +9,7 @@ import {
   listAppointments, listBranches, createAppointment, updateAppointmentStatus,
   listFollowUps, markFollowUpSent, type Appointment,
 } from "@/lib/ops.functions";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   CalendarDays, Plus, Phone, MessageCircle, CheckCircle2, XCircle, Clock, Radio, MapPin, Sparkles,
   Search, X, ChevronRight,
@@ -50,7 +50,6 @@ function AppointmentsPage() {
   const branchId = search.branchId || undefined;
   const [date, setDate] = useState<Date>(new Date());
   const [showForm, setShowForm] = useState(false);
-  const [pulse, setPulse] = useState(false);
   const [selectedAppt, setSelectedAppt] = useState<Appointment | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -60,21 +59,6 @@ function AppointmentsPage() {
     queryFn: () => apptsFn({ data: { branchId } }),
   });
   const followQ = useQuery({ queryKey: ["follow-ups"], queryFn: () => followFn() });
-
-  useEffect(() => {
-    const ch = googleDb
-      .channel("appts-stream")
-      .on("postgres_changes", { event: "*", schema: "public", table: "appointments" }, () => {
-        setPulse(true);
-        qc.invalidateQueries({ queryKey: ["appointments"] });
-        setTimeout(() => setPulse(false), 800);
-      })
-      .on("postgres_changes", { event: "*", schema: "public", table: "follow_ups" }, () => {
-        qc.invalidateQueries({ queryKey: ["follow-ups"] });
-      })
-      .subscribe();
-    return () => { googleDb.removeChannel(ch); };
-  }, [qc]);
 
   const setStatus = useMutation({
     mutationFn: (v: { id: string; status: "confirmed" | "completed" | "cancelled" }) =>

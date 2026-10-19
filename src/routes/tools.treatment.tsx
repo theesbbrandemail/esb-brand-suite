@@ -5,7 +5,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Save } from "lucide-react";
 import { ToolWorkspace } from "@/components/esb/ToolWorkspace";
-import { listAppointments } from "@/lib/ops.functions";
+import { listAppointments, updateAppointmentNotes } from "@/lib/ops.functions";
 import { runOpsTool } from "@/lib/tools.functions";
 
 export const Route = createFileRoute("/tools/treatment")({
@@ -25,6 +25,7 @@ export const Route = createFileRoute("/tools/treatment")({
 function TreatmentTool() {
   const list = useServerFn(listAppointments);
   const run = useServerFn(runOpsTool);
+  const saveNotes = useServerFn(updateAppointmentNotes);
   const qc = useQueryClient();
   const from = new Date(Date.now() - 14 * 864e5).toISOString();
   const { data: appts = [] } = useQuery({ queryKey: ["tools", "appts", "treatment"], queryFn: () => list({ data: { from } }) });
@@ -47,9 +48,13 @@ function TreatmentTool() {
 
   async function save() {
     const notes = `${selected?.notes ? selected.notes + "\n\n" : ""}--- AI treatment plan (${new Date().toLocaleDateString()}) ---\n${result}`.slice(0, 20000);
-    const { error: e } = await googleDb.from("appointments").update({ notes }).eq("id", id);
-    if (e) toast.error("Couldn't save to the booking", { description: e.message });
-    else { toast.success("Saved to booking notes"); qc.invalidateQueries({ queryKey: ["tools", "appts"] }); }
+    try {
+      await saveNotes({ data: { id, notes } });
+      toast.success("Saved to booking notes");
+      qc.invalidateQueries({ queryKey: ["tools", "appts"] });
+    } catch (e) {
+      toast.error("Couldn't save to the booking", { description: e instanceof Error ? e.message : "Please try again." });
+    }
   }
 
   return (
