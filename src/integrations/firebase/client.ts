@@ -1,6 +1,5 @@
 /**
- * Firebase Auth client — used for Google sign-in (Path B).
- * Supabase remains the database. Enable by setting VITE_FIREBASE_* env vars.
+ * Firebase Auth and Firestore client. Enable by setting VITE_FIREBASE_* env vars.
  */
 import { initializeApp, type FirebaseApp, getApps } from "firebase/app";
 import { getFirestore, type Firestore } from "firebase/firestore";

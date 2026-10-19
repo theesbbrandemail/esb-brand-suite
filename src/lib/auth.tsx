@@ -83,7 +83,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const isPendingApproval = staffAccount.status === "pending_ceo_approval" || staffAccount.role === "public";
 
   const mockExecutiveUser: AppUser = {
+    uid: staffAccount.id,
     id: staffAccount.id,
+    email: staffAccount.email,
+    displayName: staffAccount.fullName,
+    photoURL: null,
     app_metadata: {},
     user_metadata: {
       full_name: staffAccount.fullName,
@@ -94,9 +98,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     aud: "authenticated",
     created_at: staffAccount.registeredAt,
     email: staffAccount.email,
-  } as User;
+  };
 
-  const mockSession: Session = {
+  const mockSession: AppSession = {
     access_token: "mock-token",
     token_type: "bearer",
     expires_in: 3600,
@@ -131,11 +135,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signOut: async () => {
       if (isFirebaseConfigured) {
         await signOutFirebase();
-      }
-      try {
-        await supabase.auth.signOut();
-      } catch {
-        // ignore
       }
       setCurrentUserEmail("theesbbrandemail@gmail.com");
       window.location.href = "/";
