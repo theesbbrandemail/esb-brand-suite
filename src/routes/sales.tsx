@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import {
   TrendingUp, DollarSign, Users, ShoppingBag, Target, ArrowUpRight,
@@ -261,6 +261,7 @@ function SalesDashboardPage() {
         });
       }
     };
+    handleSync();
     window.addEventListener("esb_crm_synced", handleSync);
     window.addEventListener("esb_background_sync_tick", handleSync);
     return () => {
