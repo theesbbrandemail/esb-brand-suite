@@ -25,7 +25,7 @@ export const firebaseConfig = {
 };
 
 export const isFirebaseConfigured = Boolean(
-  config.apiKey && config.authDomain && config.projectId && config.appId,
+  firebaseConfig.apiKey && firebaseConfig.authDomain && firebaseConfig.projectId && firebaseConfig.appId,
 );
 
 export let app: FirebaseApp | null = null;
