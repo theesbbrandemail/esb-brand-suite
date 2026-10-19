@@ -1,6 +1,5 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import type { Session, User } from "@supabase/supabase-js";
-import { supabase } from "@/integrations/supabase/client";
+import type { User as FirebaseUser } from "firebase/auth";
 import { isFirebaseConfigured, signOutFirebase } from "@/integrations/firebase/client";
 import {
   getCurrentStaffAccount,
@@ -13,10 +12,26 @@ import {
 
 export type AppRole = "super_admin" | "admin" | "manager" | "staff" | "public";
 
+type AppUser = Pick<FirebaseUser, "uid" | "email" | "displayName" | "photoURL"> & {
+  id: string;
+  app_metadata: Record<string, unknown>;
+  user_metadata: Record<string, unknown>;
+  aud: string;
+  created_at: string;
+};
+
+type AppSession = {
+  access_token: string;
+  token_type: "bearer";
+  expires_in: number;
+  refresh_token: string;
+  user: AppUser;
+};
+
 type AuthCtx = {
   loading: boolean;
-  session: Session | null;
-  user: User | null;
+  session: AppSession | null;
+  user: AppUser | null;
   role: AppRole | null;
   isStaff: boolean;
   // Extended role-specific governance
@@ -67,7 +82,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const isApprovedStaff = staffAccount.status === "active" && staffAccount.role !== "public";
   const isPendingApproval = staffAccount.status === "pending_ceo_approval" || staffAccount.role === "public";
 
-  const mockExecutiveUser: User = {
+  const mockExecutiveUser: AppUser = {
     id: staffAccount.id,
     app_metadata: {},
     user_metadata: {
