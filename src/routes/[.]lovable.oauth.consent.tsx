@@ -3,7 +3,7 @@ import { useState } from "react";
 import { getFirebaseAuth } from "@/integrations/firebase/client";
 import { Loader2, ShieldCheck } from "lucide-react";
 
-// Typed wrapper for the beta supabase.auth.oauth namespace
+// Typed wrapper for the Google OAuth consent namespace
 type AuthorizationDetails = {
   client?: { name?: string; client_uri?: string } | null;
   redirect_url?: string;

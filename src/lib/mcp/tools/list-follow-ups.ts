@@ -1,9 +1,9 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from "@firebase/firebase-js";
 import { defineTool, type ToolContext } from "@lovable.dev/mcp-js";
 import { z } from "zod";
 
 function db(ctx: ToolContext) {
-  return createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_PUBLISHABLE_KEY!, {
+  return createClient(process.env.FIREBASE_PROJECT_ID!, process.env.FIREBASE_PROJECT_ID!, {
     global: { headers: { Authorization: `Bearer ${ctx.getToken()}` } },
     auth: { persistSession: false, autoRefreshToken: false },
   });

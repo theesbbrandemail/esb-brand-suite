@@ -7,7 +7,6 @@ import { Save } from "lucide-react";
 import { ToolWorkspace } from "@/components/esb/ToolWorkspace";
 import { listAppointments } from "@/lib/ops.functions";
 import { runOpsTool } from "@/lib/tools.functions";
-import { googleDb } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/tools/treatment")({
   head: () => ({

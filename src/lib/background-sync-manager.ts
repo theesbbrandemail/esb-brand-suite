@@ -112,8 +112,8 @@ const DEFAULT_TASKS: SyncTaskMeta[] = [
   },
   {
     id: "inventory_stock",
-    name: "Supabase Inventory & Stock Velocity",
-    endpoint: "https://public.supabase.co/rest/v1/inventory",
+    name: "Firebase Inventory & Stock Velocity",
+    endpoint: "https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT_ID}/databases/(default)/documents/inventory",
     description: "Synchronizes warehouse SKUs, low-stock threshold triggers, and lab formulation barcode ingest.",
     intervalMs: 8000,
     lastSyncedAt: null,

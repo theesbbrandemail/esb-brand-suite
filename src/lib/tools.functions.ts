@@ -29,7 +29,7 @@ export const runOpsTool = createServerFn({ method: "POST" })
   .middleware([requireGoogleAuth])
   .inputValidator((d: unknown) => Input.parse(d))
   .handler(async ({ data, context }): Promise<ToolResult> => {
-    const sb = context.supabase;
+    const sb = context.firebase;
     const [{ data: isAdmin }, { data: isStaff }] = await Promise.all([
       sb.rpc("has_role", { _user_id: context.userId, _role: "admin" }),
       sb.rpc("has_role", { _user_id: context.userId, _role: "staff" }),

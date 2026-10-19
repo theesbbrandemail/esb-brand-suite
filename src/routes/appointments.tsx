@@ -9,7 +9,6 @@ import {
   listAppointments, listBranches, createAppointment, updateAppointmentStatus,
   listFollowUps, markFollowUpSent, type Appointment,
 } from "@/lib/ops.functions";
-import { googleDb } from "@/integrations/supabase/client";
 import { useEffect, useMemo, useState } from "react";
 import {
   CalendarDays, Plus, Phone, MessageCircle, CheckCircle2, XCircle, Clock, Radio, MapPin, Sparkles,

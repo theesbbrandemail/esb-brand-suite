@@ -36,9 +36,9 @@ dist-ssr
 .env.local
 .env.*.local
 
-# Supabase local and CLI files
-.supabase
-supabase/.cache
+  # Firebase local emulator files
+.firebase
+.firebase-debug.log
 
 # Vercel
 .vercel

@@ -99,8 +99,8 @@ const BILLABLE = new Set(["scheduled", "confirmed", "completed"]);
 /* ----------------------------- In-Memory Resilient Store ----------------------------- */
 
 const isPlaceholderBackend =
-  !process.env.SUPABASE_URL ||
-  process.env.SUPABASE_URL.includes("your-project-ref");
+  !process.env.FIREBASE_PROJECT_ID ||
+  process.env.FIREBASE_PROJECT_ID.includes("your-project-ref");
 
 let inMemBranches: Branch[] = [
   {
@@ -366,7 +366,7 @@ export const getCeoKpis = createServerFn({ method: "GET" })
       return getFallbackKpis();
     }
     try {
-      const sb = context.supabase as any;
+      const sb = context.firebase as any;
       const now = new Date();
       const thirtyAgo = new Date(now.getTime() - 30 * 86400000).toISOString();
       const sixtyAgo = new Date(now.getTime() - 60 * 86400000).toISOString();
@@ -566,7 +566,7 @@ export const listBranches = createServerFn({ method: "GET" })
   .handler(async ({ context }): Promise<Branch[]> => {
     if (isPlaceholderBackend) return inMemBranches;
     try {
-      const sb = context.supabase as any;
+      const sb = context.firebase as any;
       const { data } = await sb.from("branches").select("id,name,city,phone,address,email,whatsapp,opening_hours").order("name");
       return (data && data.length > 0) ? (data as Branch[]) : inMemBranches;
     } catch {
@@ -581,7 +581,7 @@ export const listReminders = createServerFn({ method: "GET" })
   .handler(async ({ context }): Promise<Reminder[]> => {
     if (isPlaceholderBackend) return inMemReminders;
     try {
-      const sb = context.supabase as any;
+      const sb = context.firebase as any;
       const { data } = await sb
         .from("ceo_reminders")
         .select("id,title,body,category,priority,due_at,status")
@@ -618,7 +618,7 @@ export const createReminder = createServerFn({ method: "POST" })
     inMemReminders = [newRem, ...inMemReminders];
     if (isPlaceholderBackend) return newRem;
     try {
-      const sb = context.supabase as any;
+      const sb = context.firebase as any;
       const { data: row } = await sb
         .from("ceo_reminders")
         .insert({ ...data, user_id: context.userId })
@@ -643,7 +643,7 @@ export const updateReminder = createServerFn({ method: "POST" })
     const found = inMemReminders.find((r) => r.id === data.id) ?? inMemReminders[0];
     if (isPlaceholderBackend) return found;
     try {
-      const sb = context.supabase as any;
+      const sb = context.firebase as any;
       const { data: row } = await sb
         .from("ceo_reminders")
         .update({ status: data.status, updated_at: new Date().toISOString() })
@@ -667,7 +667,7 @@ export const listInventory = createServerFn({ method: "GET" })
       return inMemInventory;
     }
     try {
-      const sb = context.supabase as any;
+      const sb = context.firebase as any;
       let q = sb
         .from("inventory")
         .select("id, branch_id, product_id, qty, low_stock_threshold, updated_at, branch:branches(name,city), product:products(name,sku,brand,category,image_url)")
@@ -694,7 +694,7 @@ export const adjustStock = createServerFn({ method: "POST" })
     });
     if (isPlaceholderBackend) return { ok: true, qty: nextQty };
     try {
-      const sb = context.supabase as any;
+      const sb = context.firebase as any;
       const { data: cur } = await sb.from("inventory").select("qty").eq("id", data.id).single();
       const next = Math.max(0, (cur?.qty ?? 0) + data.delta);
       await sb.from("inventory").update({ qty: next, updated_at: new Date().toISOString() }).eq("id", data.id);
@@ -721,7 +721,7 @@ export const listAppointments = createServerFn({ method: "GET" })
       return inMemAppointments;
     }
     try {
-      const sb = context.supabase as any;
+      const sb = context.firebase as any;
       let q = sb
         .from("appointments")
         .select("id, branch_id, patient_name, patient_phone, patient_email, service, scheduled_at, duration_minutes, status, notes, branch:branches(name,city)")
@@ -789,7 +789,7 @@ export const createAppointment = createServerFn({ method: "POST" })
 
     if (isPlaceholderBackend) return newAppt;
     try {
-      const sb = context.supabase as any;
+      const sb = context.firebase as any;
       const { data: row } = await sb
         .from("appointments")
         .insert({ ...data, price: 180, cost: 45 })
@@ -813,7 +813,7 @@ export const updateAppointmentStatus = createServerFn({ method: "POST" })
     inMemAppointments = inMemAppointments.map((a) => (a.id === data.id ? { ...a, status: data.status } : a));
     if (isPlaceholderBackend) return { ok: true };
     try {
-      const sb = context.supabase as any;
+      const sb = context.firebase as any;
       await sb.from("appointments").update({ status: data.status }).eq("id", data.id);
       return { ok: true };
     } catch {
@@ -828,7 +828,7 @@ export const listFollowUps = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     if (isPlaceholderBackend) return inMemFollowUps;
     try {
-      const sb = context.supabase as any;
+      const sb = context.firebase as any;
       const { data } = await sb
         .from("follow_ups")
         .select("id, appointment_id, patient_name, patient_phone, channel, message, scheduled_at, sent_at, status, delivery_status, attempts, last_error, last_attempt_at, processed_at")
@@ -849,7 +849,7 @@ export const markFollowUpSent = createServerFn({ method: "POST" })
     );
     if (isPlaceholderBackend) return { ok: true };
     try {
-      const sb = context.supabase as any;
+      const sb = context.firebase as any;
       const now = new Date().toISOString();
       await sb
         .from("follow_ups")
@@ -870,7 +870,7 @@ export const listServices = createServerFn({ method: "GET" })
   .handler(async ({ context }): Promise<ServiceItem[]> => {
     if (isPlaceholderBackend) return inMemServices;
     try {
-      const sb = context.supabase as any;
+      const sb = context.firebase as any;
       const { data } = await sb
         .from("service_catalog")
         .select("id,name,price,cost,active")
@@ -953,7 +953,7 @@ export const listContentPosts = createServerFn({ method: "GET" })
       return inMemPosts;
     }
     try {
-      const sb = context.supabase as any;
+      const sb = context.firebase as any;
       let q = sb
         .from("content_posts")
         .select("id,title,body,image_url,branch_id,status,scheduled_at,published_at,created_at,branch:branches(name)")
@@ -996,7 +996,7 @@ export const createContentPost = createServerFn({ method: "POST" })
     inMemPosts = [newPost, ...inMemPosts];
     if (isPlaceholderBackend) return newPost;
     try {
-      const sb = context.supabase as any;
+      const sb = context.firebase as any;
       const { data: row } = await sb
         .from("content_posts")
         .insert({
