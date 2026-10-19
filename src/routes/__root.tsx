@@ -82,7 +82,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { title: "ESB Brand —AI Suite" },
       { name: "description", content: "ESB Brand: AI-orchestrated operations suite for multi-brand beauty businesses." },
       { property: "og:title", content: "ESB Brand —AI Suite" },

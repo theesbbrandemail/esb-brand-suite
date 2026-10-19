@@ -138,9 +138,9 @@ export function Shell({ children, requireStaff = false }: { children: ReactNode;
   const aiActive = pathname.startsWith("/ai/");
 
   return (
-    <div className="min-h-screen">
-      <header className="sticky top-0 z-30 backdrop-blur-xl bg-background/40 border-b border-border">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+    <div className="min-h-[100dvh] w-full min-w-0 overflow-x-clip">
+      <header className="sticky top-0 z-30 w-full backdrop-blur-xl bg-background/40 border-b border-border">
+        <div className="mx-auto flex h-16 w-full max-w-[1400px] min-w-0 items-center justify-between gap-2 px-3 sm:gap-4 sm:px-6">
           <EsbLogo />
           <nav className="hidden 2xl:flex items-center gap-0.5 p-1 rounded-full bg-card/60 border border-border" ref={dropdownRef}>
             {visibleTabs.map((t) => {
@@ -281,7 +281,7 @@ export function Shell({ children, requireStaff = false }: { children: ReactNode;
         </div>
 
       </header>
-      <main className="w-full max-w-[1400px] mx-auto px-3 sm:px-6 py-6 sm:py-8 overflow-x-hidden">{children}</main>
+      <main className="mx-auto w-full max-w-[1400px] min-w-0 overflow-x-clip px-3 py-5 sm:px-6 sm:py-8">{children}</main>
       <AppDownloadModal open={downloadOpen} onOpenChange={setDownloadOpen} />
     </div>
   );
