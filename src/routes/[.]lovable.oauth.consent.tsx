@@ -1,6 +1,6 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { getFirebaseAuth } from "@/integrations/firebase/client";
 import { Loader2, ShieldCheck } from "lucide-react";
 
 // Typed wrapper for the beta supabase.auth.oauth namespace
@@ -15,7 +15,7 @@ type OAuthApi = {
   denyAuthorization: (id: string) => Promise<{ data: AuthorizationDetails | null; error: { message: string } | null }>;
 };
 function oauthApi(): OAuthApi {
-  return (supabase.auth as unknown as { oauth: OAuthApi }).oauth;
+  throw new Error("External OAuth consent is not available in the Firebase deployment.");
 }
 
 export const Route = createFileRoute("/.lovable/oauth/consent")({
@@ -25,8 +25,8 @@ export const Route = createFileRoute("/.lovable/oauth/consent")({
   }),
   beforeLoad: async ({ search, location }) => {
     if (!search.authorization_id) throw new Error("Missing authorization_id");
-    const { data } = await supabase.auth.getSession();
-    if (!data.session) {
+    const auth = getFirebaseAuth();
+    if (!auth?.currentUser) {
       const next = location.pathname + location.searchStr;
       throw redirect({ to: "/auth", search: { next } });
     }

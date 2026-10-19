@@ -3,6 +3,7 @@
  * Supabase remains the database. Enable by setting VITE_FIREBASE_* env vars.
  */
 import { initializeApp, type FirebaseApp, getApps } from "firebase/app";
+import { getFirestore, type Firestore } from "firebase/firestore";
 import {
   getAuth,
   GoogleAuthProvider,
@@ -30,6 +31,7 @@ export const isFirebaseConfigured = Boolean(
 
 let app: FirebaseApp | null = null;
 let auth: Auth | null = null;
+export let db: Firestore | null = null;
 
 function ensureFirebase(): Auth | null {
   if (!isFirebaseConfigured) return null;
@@ -37,6 +39,7 @@ function ensureFirebase(): Auth | null {
   if (!app) {
     app = getApps().length ? getApps()[0]! : initializeApp(config);
     auth = getAuth(app);
+    db = getFirestore(app);
   }
   return auth;
 }

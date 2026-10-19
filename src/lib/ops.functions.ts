@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { requireFirebaseAuth as requireSupabaseAuth } from "@/integrations/firebase/auth-middleware";
 import { z } from "zod";
 
 /* ----------------------------- Types ----------------------------- */

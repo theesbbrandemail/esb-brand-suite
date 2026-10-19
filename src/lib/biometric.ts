@@ -3,11 +3,26 @@ import {
   startAuthentication,
   browserSupportsWebAuthn,
 } from "@simplewebauthn/browser";
-import { supabase } from "@/integrations/supabase/client";
+import {
+  addDoc,
+  collection,
+  getDocs,
+  orderBy,
+  query,
+  serverTimestamp,
+  updateDoc,
+  where,
+} from "firebase/firestore";
+import { db } from "@/integrations/firebase/client";
 
-// Lightweight client-side WebAuthn flow. The Supabase row of credential_ids is the
-// allow-list; the device's platform authenticator performs the user verification
-// (Touch ID / Windows Hello / Face ID / Android fingerprint).
+// Lightweight client-side WebAuthn flow. Firestore stores the credential allow-list;
+// the device's platform authenticator performs the user verification.
+const credentialsCollection = "webauthn_credentials";
+
+function requireFirestore() {
+  if (!db) throw new Error("Firebase is not configured.");
+  return db;
+}
 
 const RP_NAME = "ESB Brand · CEO Vault";
 
@@ -62,24 +77,29 @@ export async function registerBiometric(opts: {
     },
   });
 
-  const { error } = await supabase.from("webauthn_credentials").insert({
-    user_id: opts.userId,
-    credential_id: reg.id,
-    public_key: reg.response.publicKey ?? null,
+  const firestore = requireFirestore();
+  await addDoc(collection(firestore, credentialsCollection), {
+    userId: opts.userId,
+    credentialId: reg.id,
+    publicKey: reg.response.publicKey ?? null,
     transports: reg.response.transports ?? null,
-    device_label: opts.deviceLabel ?? navigator.userAgent.slice(0, 80),
+    deviceLabel: opts.deviceLabel ?? navigator.userAgent.slice(0, 80),
+    createdAt: serverTimestamp(),
+    lastUsedAt: null,
   });
-  if (error) throw error;
   return reg;
 }
 
 export async function authenticateBiometric(userId: string) {
-  const { data, error } = await supabase
-    .from("webauthn_credentials")
-    .select("credential_id")
-    .eq("user_id", userId);
-  if (error) throw error;
-  if (!data || data.length === 0) throw new Error("No biometric credentials registered");
+  const firestore = requireFirestore();
+  const credentials = await getDocs(
+    query(collection(firestore, credentialsCollection), where("userId", "==", userId)),
+  );
+  const data = credentials.docs.map((item) => ({
+    ref: item.ref,
+    credentialId: item.get("credentialId") as string,
+  }));
+  if (data.length === 0) throw new Error("No biometric credentials registered");
 
   const challenge = b64url(randomBytes());
   const auth = await startAuthentication({
@@ -89,27 +109,33 @@ export async function authenticateBiometric(userId: string) {
       timeout: 60000,
       userVerification: "required",
       allowCredentials: data.map((c) => ({
-        id: c.credential_id,
+        id: c.credentialId,
         type: "public-key",
       })),
     },
   });
 
-  // Best-effort update last_used_at
-  await supabase
-    .from("webauthn_credentials")
-    .update({ last_used_at: new Date().toISOString() })
-    .eq("credential_id", auth.id);
+  const matched = data.find((item) => item.credentialId === auth.id);
+  if (matched) {
+    await updateDoc(matched.ref, { lastUsedAt: serverTimestamp() });
+  }
 
   return auth;
 }
 
 export async function listCredentials(userId: string) {
-  const { data, error } = await supabase
-    .from("webauthn_credentials")
-    .select("id, device_label, created_at, last_used_at")
-    .eq("user_id", userId)
-    .order("created_at", { ascending: false });
-  if (error) throw error;
-  return data ?? [];
+  const firestore = requireFirestore();
+  const credentials = await getDocs(
+    query(
+      collection(firestore, credentialsCollection),
+      where("userId", "==", userId),
+      orderBy("createdAt", "desc"),
+    ),
+  );
+  return credentials.docs.map((item) => ({
+    id: item.id,
+    device_label: item.get("deviceLabel") as string,
+    created_at: item.get("createdAt"),
+    last_used_at: item.get("lastUsedAt"),
+  }));
 }
