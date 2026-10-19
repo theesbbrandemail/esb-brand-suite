@@ -1,8 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { firebaseExchange } from "@/lib/firebase-auth.functions";
-import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/lib/auth";
 import { EsbLogo } from "@/components/esb/Logo";
@@ -126,7 +124,6 @@ function AuthPage() {
   const { session, loading } = useAuth();
   const navigate = useNavigate();
   const { next } = Route.useSearch();
-  const exchange = useServerFn(firebaseExchange);
   const [phase, setPhase] = useState<Phase>("idle");
   const [error, setError] = useState<FriendlyError | null>(null);
   const [online, setOnline] = useState(
@@ -196,20 +193,7 @@ function AuthPage() {
     }
   }, [loading, session, navigate, next]);
 
-  async function finishFirebase(idToken: string) {
-    setPhase("returning");
-    const res = await exchange({ data: { idToken } });
-    if (res.error || !res.tokenHash) {
-      setError(classifyError(res.error ?? "sign-in failed"));
-      setPhase("error");
-      return;
-    }
-    const { error: otpErr } = await supabase.auth.verifyOtp({ token_hash: res.tokenHash, type: "magiclink" });
-    if (otpErr) {
-      setError(classifyError(otpErr.message));
-      setPhase("error");
-      return;
-    }
+  async function finishFirebase(_idToken: string) {
     setPhase("success");
   }
 
