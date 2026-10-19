@@ -4,7 +4,7 @@
  * 
  * Automatically polls, monitors, and synchronizes data between the application's
  * internal state (CRM, Billing, Inventory, Fleet Telemetry, Offline Queue) and
- * connected external API endpoints (Google Workspace, Supabase Cloud, GPS Radars, Payment Webhooks).
+ * connected external API endpoints (Google Workspace, Firebase Cloud, GPS Radars, Payment Webhooks).
  * 
  * Features:
  * - Ultra-low latency monitoring (< 50ms target)
@@ -112,8 +112,8 @@ const DEFAULT_TASKS: SyncTaskMeta[] = [
   },
   {
     id: "inventory_stock",
-    name: "Supabase Inventory & Stock Velocity",
-    endpoint: "https://public.supabase.co/rest/v1/inventory",
+    name: "Firebase Inventory & Stock Velocity",
+    endpoint: "https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT_ID}/databases/(default)/documents/inventory",
     description: "Synchronizes warehouse SKUs, low-stock threshold triggers, and lab formulation barcode ingest.",
     intervalMs: 8000,
     lastSyncedAt: null,
@@ -488,7 +488,7 @@ class BackgroundSyncManager {
 
   /** Channel 2: Inventory Stock */
   private async syncInventoryStock(): Promise<number> {
-    // Ping simulated Supabase storage / local inventory state
+    // Ping the Firebase-backed inventory state
     if (typeof window === "undefined") return 6;
     try {
       const raw = localStorage.getItem("esb_inventory_cache_v1");

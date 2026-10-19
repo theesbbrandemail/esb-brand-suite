@@ -38,7 +38,7 @@ export function SuiteLayout({
   children: ReactNode;
 }) {
   return (
-    <div className="w-full space-y-5">
+    <div className="w-full min-w-0 space-y-5 overflow-x-clip">
       {banner}
 
       <header className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04] p-5 sm:p-7">
@@ -52,17 +52,17 @@ export function SuiteLayout({
         )}
         <div className="absolute -bottom-16 -left-10 h-48 w-48 rounded-full bg-violet/20 blur-3xl" />
 
-        <div className="relative grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4">
+        <div className="relative grid min-w-0 grid-cols-1 items-start gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:gap-4">
           <div className="min-w-0">
             <div className="mb-1 text-[10px] uppercase tracking-[0.3em] text-gold/90">{eyebrow}</div>
             <h1 className="truncate font-display text-2xl font-semibold sm:text-4xl">{title}</h1>
             {subtitle && <p className="mt-1 text-xs text-muted-foreground sm:text-sm">{subtitle}</p>}
           </div>
-          {actions && <div className="flex shrink-0 items-center gap-2">{actions}</div>}
+          {actions && <div className="flex min-w-0 flex-wrap items-center gap-2">{actions}</div>}
         </div>
 
         {stats && stats.length > 0 && (
-          <div className="relative mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <div className="relative mt-5 grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-4">
             {stats.map((s) => (
               <SuiteStat key={s.label} {...s} />
             ))}

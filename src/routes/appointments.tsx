@@ -9,8 +9,7 @@ import {
   listAppointments, listBranches, createAppointment, updateAppointmentStatus,
   listFollowUps, markFollowUpSent, type Appointment,
 } from "@/lib/ops.functions";
-import { supabase } from "@/integrations/supabase/client";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   CalendarDays, Plus, Phone, MessageCircle, CheckCircle2, XCircle, Clock, Radio, MapPin, Sparkles,
   Search, X, ChevronRight,
@@ -51,7 +50,6 @@ function AppointmentsPage() {
   const branchId = search.branchId || undefined;
   const [date, setDate] = useState<Date>(new Date());
   const [showForm, setShowForm] = useState(false);
-  const [pulse, setPulse] = useState(false);
   const [selectedAppt, setSelectedAppt] = useState<Appointment | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -61,21 +59,6 @@ function AppointmentsPage() {
     queryFn: () => apptsFn({ data: { branchId } }),
   });
   const followQ = useQuery({ queryKey: ["follow-ups"], queryFn: () => followFn() });
-
-  useEffect(() => {
-    const ch = supabase
-      .channel("appts-stream")
-      .on("postgres_changes", { event: "*", schema: "public", table: "appointments" }, () => {
-        setPulse(true);
-        qc.invalidateQueries({ queryKey: ["appointments"] });
-        setTimeout(() => setPulse(false), 800);
-      })
-      .on("postgres_changes", { event: "*", schema: "public", table: "follow_ups" }, () => {
-        qc.invalidateQueries({ queryKey: ["follow-ups"] });
-      })
-      .subscribe();
-    return () => { supabase.removeChannel(ch); };
-  }, [qc]);
 
   const setStatus = useMutation({
     mutationFn: (v: { id: string; status: "confirmed" | "completed" | "cancelled" }) =>
@@ -130,7 +113,7 @@ function AppointmentsPage() {
               <span className="gold-text">Appointments</span> & Follow-ups
             </h1>
             <p className="text-xs sm:text-sm text-muted-foreground mt-1 flex items-center gap-1.5">
-              <Radio className={`h-3 w-3 shrink-0 text-success ${pulse ? "animate-pulse" : ""}`} />
+              <Radio className="h-3 w-3 shrink-0 text-success animate-pulse" />
               <span className="truncate">Live sync · {filteredAppts.length} shown · {apptsQ.data?.length ?? 0} total</span>
             </p>
           </div>
@@ -398,13 +381,15 @@ function BookingForm({
     service: string; scheduled_at: string; duration_minutes: number; notes?: string;
   }) => Promise<void>;
 }) {
-  const [branch, setBranch] = useState(branches[0]?.id ?? "");
+  const availableBranches = branches.length > 0 ? branches : [{ id: "b-ph-01", name: "Port Harcourt" }];
+  const [branch, setBranch] = useState(availableBranches[0]?.id ?? "b-ph-01");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [service, setService] = useState("Skin Consultation");
   const [when, setWhen] = useState("");
   const [duration, setDuration] = useState(30);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const valid = branch && name.trim().length > 1 && service.trim().length > 1 && when;
 
@@ -420,7 +405,7 @@ function BookingForm({
 
         <Field label="Branch">
           <select value={branch} onChange={(e) => setBranch(e.target.value)} className="w-full px-3 py-2 rounded-lg bg-card border border-border text-sm">
-            {branches.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
+            {availableBranches.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
           </select>
         </Field>
         <Field label="Service">
@@ -439,10 +424,12 @@ function BookingForm({
           <input type="number" value={duration} onChange={(e) => setDuration(parseInt(e.target.value) || 30)} className="w-full px-3 py-2 rounded-lg bg-card border border-border text-sm" />
         </Field>
       </div>
+      {error && <p role="alert" className="mt-3 rounded-lg border border-danger/40 bg-danger/10 px-3 py-2 text-xs text-danger">{error}</p>}
       <button
         disabled={!valid || loading}
         onClick={async () => {
           setLoading(true);
+          setError("");
           try {
             await onSubmit({
               branch_id: branch,
@@ -452,6 +439,8 @@ function BookingForm({
               scheduled_at: new Date(when).toISOString(),
               duration_minutes: duration,
             });
+          } catch (cause) {
+            setError(cause instanceof Error ? cause.message : "We could not save this booking. Please try again.");
           } finally { setLoading(false); }
         }}
         className="chip-gold mt-4 w-full py-2 disabled:opacity-50"

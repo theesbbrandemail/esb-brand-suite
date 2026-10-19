@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { requireGoogleAuth } from "@/integrations/firebase/auth-middleware";
 import { streamResponsesText } from "@/lib/responses.server";
 
 export type RestockRow = {
@@ -26,10 +26,10 @@ const BASE_RULES =
   "You are an internal operations assistant for ESB Brand, a group of aesthetics, skincare and dental clinics in Nigeria (branches: Abuja, Port Harcourt). Write for clinic staff. Use concise markdown with headings and bullet points. Never invent patient medical history beyond the data given; flag anything needing a clinician's judgement. Currency is NGN (₦).";
 
 export const runOpsTool = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireGoogleAuth])
   .inputValidator((d: unknown) => Input.parse(d))
   .handler(async ({ data, context }): Promise<ToolResult> => {
-    const sb = context.supabase;
+    const sb = context.firebase;
     const [{ data: isAdmin }, { data: isStaff }] = await Promise.all([
       sb.rpc("has_role", { _user_id: context.userId, _role: "admin" }),
       sb.rpc("has_role", { _user_id: context.userId, _role: "staff" }),

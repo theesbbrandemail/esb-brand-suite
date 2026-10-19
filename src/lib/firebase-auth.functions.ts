@@ -35,22 +35,8 @@ export const firebaseExchange = createServerFn({ method: "POST" })
       return { error: "Could not verify your Google sign-in. Please try again." };
     }
 
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const created = await supabaseAdmin.auth.admin.createUser({
-      email,
-      email_confirm: true,
-      user_metadata: { full_name: name, name, avatar_url: picture, provider: "firebase-google" },
-    });
-    if (created.error && !/already|registered|exists/i.test(created.error.message)) {
-      console.error("[firebaseExchange] createUser", created.error);
-      return { error: "Could not create your account. Please try again." };
-    }
-
-    const link = await supabaseAdmin.auth.admin.generateLink({ type: "magiclink", email });
-    const tokenHash = link.data?.properties?.hashed_token;
-    if (link.error || !tokenHash) {
-      console.error("[firebaseExchange] generateLink", link.error);
-      return { error: "Could not complete sign-in. Please try again." };
-    }
-    return { tokenHash };
+    return {
+      tokenHash: data.idToken,
+      profile: { email, name, picture, provider: "google-firebase" },
+    } as { tokenHash: string; profile: { email: string; name?: string; picture?: string; provider: string } };
   });

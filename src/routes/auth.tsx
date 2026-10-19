@@ -1,9 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { firebaseExchange } from "@/lib/firebase-auth.functions";
-import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/lib/auth";
 import { EsbLogo } from "@/components/esb/Logo";
 import { Sparkles, Loader2, AlertCircle, CheckCircle2, RefreshCw, WifiOff } from "lucide-react";
@@ -126,7 +123,6 @@ function AuthPage() {
   const { session, loading } = useAuth();
   const navigate = useNavigate();
   const { next } = Route.useSearch();
-  const exchange = useServerFn(firebaseExchange);
   const [phase, setPhase] = useState<Phase>("idle");
   const [error, setError] = useState<FriendlyError | null>(null);
   const [online, setOnline] = useState(
@@ -152,28 +148,6 @@ function AuthPage() {
     };
   }, []);
 
-  // Detect legacy OAuth callback (?code=... or #access_token=...)
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (isFirebaseConfigured) return;
-    const search = window.location.search;
-    const hash = window.location.hash;
-    const hasCallback =
-      search.includes("code=") ||
-      search.includes("error=") ||
-      hash.includes("access_token=") ||
-      hash.includes("error=");
-    if (hasCallback) {
-      setPhase("returning");
-      const params = new URLSearchParams(search.startsWith("?") ? search.slice(1) : search);
-      const oauthErr = params.get("error_description") || params.get("error");
-      if (oauthErr) {
-        setError(classifyError(decodeURIComponent(oauthErr)));
-        setPhase("error");
-      }
-    }
-  }, []);
-
   useEffect(() => {
     function on() { setOnline(true); }
     function off() { setOnline(false); }
@@ -196,20 +170,7 @@ function AuthPage() {
     }
   }, [loading, session, navigate, next]);
 
-  async function finishFirebase(idToken: string) {
-    setPhase("returning");
-    const res = await exchange({ data: { idToken } });
-    if (res.error || !res.tokenHash) {
-      setError(classifyError(res.error ?? "sign-in failed"));
-      setPhase("error");
-      return;
-    }
-    const { error: otpErr } = await supabase.auth.verifyOtp({ token_hash: res.tokenHash, type: "magiclink" });
-    if (otpErr) {
-      setError(classifyError(otpErr.message));
-      setPhase("error");
-      return;
-    }
+  async function finishFirebase(_idToken: string) {
     setPhase("success");
   }
 
@@ -240,24 +201,8 @@ function AuthPage() {
         return;
       }
 
-      // Default: Lovable / Supabase OAuth
-      const nextQs = next && next !== "/" ? `?next=${encodeURIComponent(next)}` : "";
-      const returnTo = `${window.location.origin}/auth/callback${nextQs}`;
-      const result = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: returnTo,
-      });
-      if (result.error) {
-        setError(classifyError(result.error.message || ""));
-        setPhase("error");
-        return;
-      }
-      if (result.redirected) {
-        setPhase("redirecting");
-        return;
-      }
-      setPhase("success");
-      if (next && next !== "/") window.location.href = next;
-      else navigate({ to: "/" });
+      setError(classifyError("Firebase is not configured"));
+      setPhase("error");
     } catch (e) {
       setError(classifyError(e instanceof Error ? e.message : String(e)));
       setPhase("error");

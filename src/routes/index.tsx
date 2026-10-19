@@ -30,7 +30,7 @@ function NotAuthorized() {
       <div className="card-elevated p-8 max-w-md text-center">
         <h1 className="font-display text-xl mb-2">Staff access only</h1>
         <p className="text-sm text-muted-foreground mb-5">ESB Brand Suite is an internal tool. Your account isn't on the staff list yet — ask a Super Admin to add your email.</p>
-        <button onClick={() => { void import("@/integrations/supabase/client").then(({ supabase }) => supabase.auth.signOut()).then(() => { window.location.href = "/auth"; }); }} className="px-4 py-2 rounded-full bg-gold text-gold-foreground text-sm font-medium">Sign out</button>
+        <button onClick={() => { void import("@/integrations/firebase/client").then(({ signOutFirebase }) => signOutFirebase()).then(() => { window.location.href = "/auth"; }); }} className="px-4 py-2 rounded-full bg-gold text-gold-foreground text-sm font-medium">Sign out</button>
       </div>
     </div>
   );

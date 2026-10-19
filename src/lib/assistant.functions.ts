@@ -1,9 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { streamResponsesText } from "@/lib/responses.server";
-import { createClient } from "@supabase/supabase-js";
-import type { Database } from "@/integrations/supabase/types";
-
 const Input = z.object({
   question: z.string().trim().min(1).max(2000),
   history: z
@@ -26,44 +23,6 @@ export const askAssistant = createServerFn({ method: "POST" })
     let rows: any[] = [];
     let stockItems: any[] = [];
     let servicesList: any[] = [];
-
-    const SUPABASE_URL = process.env.SUPABASE_URL;
-    const SUPABASE_PUBLISHABLE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY;
-
-    if (SUPABASE_URL && SUPABASE_PUBLISHABLE_KEY && !SUPABASE_URL.includes("your-project-ref")) {
-      try {
-        const sb = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
-        const [branches, appts, inv, services] = await Promise.all([
-          sb.from("branches").select("id,name"),
-          sb
-            .from("appointments")
-            .select("patient_name,service,scheduled_at,duration_minutes,status,notes,price,branch_id")
-            .gte("scheduled_at", past.toISOString())
-            .lt("scheduled_at", weekEnd.toISOString())
-            .order("scheduled_at")
-            .limit(300),
-          sb.from("inventory").select("qty,low_stock_threshold,branch_id,product:products(name)").limit(300),
-          sb.from("service_catalog").select("name,category,price").limit(100),
-        ]);
-        const bn = new Map((branches.data ?? []).map((b) => [b.id, b.name]));
-        rows = (appts.data ?? []).map((a) => ({
-          ...a,
-          branch: bn.get(a.branch_id),
-          branch_id: undefined,
-          when: new Date(a.scheduled_at).toLocaleString("en-NG", { timeZone: "Africa/Lagos" }),
-        }));
-        stockItems = (inv.data ?? []).map((i) => ({
-          item: (i.product as { name?: string } | null)?.name,
-          branch: bn.get(i.branch_id),
-          qty: i.qty,
-          lowAt: i.low_stock_threshold,
-          low: i.qty <= i.low_stock_threshold,
-        }));
-        servicesList = services.data ?? [];
-      } catch (e) {
-        console.warn("[askAssistant] Supabase fetch fallback:", e);
-      }
-    }
 
     // High quality live fallback data if database is empty or initial sync
     if (rows.length === 0) {

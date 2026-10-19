@@ -1,8 +1,8 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from "@firebase/firebase-js";
 import { defineTool, type ToolContext } from "@lovable.dev/mcp-js";
 
 function db(ctx: ToolContext) {
-  return createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_PUBLISHABLE_KEY!, {
+  return createClient(process.env.FIREBASE_PROJECT_ID!, process.env.FIREBASE_PROJECT_ID!, {
     global: { headers: { Authorization: `Bearer ${ctx.getToken()}` } },
     auth: { persistSession: false, autoRefreshToken: false },
   });
@@ -19,17 +19,17 @@ export default defineTool({
     if (!ctx.isAuthenticated()) {
       return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
     }
-    const supabase = db(ctx);
+    const firebase = db(ctx);
     const now = new Date();
     const startOfDay = new Date(now); startOfDay.setUTCHours(0, 0, 0, 0);
     const endOfDay = new Date(now); endOfDay.setUTCHours(23, 59, 59, 999);
 
     const [today, upcoming, pending] = await Promise.all([
-      supabase.from("appointments").select("id", { count: "exact", head: true })
+      firebase.from("appointments").select("id", { count: "exact", head: true })
         .gte("scheduled_at", startOfDay.toISOString()).lte("scheduled_at", endOfDay.toISOString()),
-      supabase.from("appointments").select("id", { count: "exact", head: true })
+      firebase.from("appointments").select("id", { count: "exact", head: true })
         .gt("scheduled_at", endOfDay.toISOString()),
-      supabase.from("follow_ups").select("id", { count: "exact", head: true })
+      firebase.from("follow_ups").select("id", { count: "exact", head: true })
         .eq("delivery_status", "pending"),
     ]);
 

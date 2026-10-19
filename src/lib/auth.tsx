@@ -1,6 +1,5 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import type { Session, User } from "@supabase/supabase-js";
-import { supabase } from "@/integrations/supabase/client";
+import type { User as FirebaseUser } from "firebase/auth";
 import { isFirebaseConfigured, signOutFirebase } from "@/integrations/firebase/client";
 import {
   getCurrentStaffAccount,
@@ -13,10 +12,26 @@ import {
 
 export type AppRole = "super_admin" | "admin" | "manager" | "staff" | "public";
 
+type AppUser = Pick<FirebaseUser, "uid" | "email" | "displayName" | "photoURL"> & {
+  id: string;
+  app_metadata: Record<string, unknown>;
+  user_metadata: Record<string, unknown>;
+  aud: string;
+  created_at: string;
+};
+
+type AppSession = {
+  access_token: string;
+  token_type: "bearer";
+  expires_in: number;
+  refresh_token: string;
+  user: AppUser;
+};
+
 type AuthCtx = {
   loading: boolean;
-  session: Session | null;
-  user: User | null;
+  session: AppSession | null;
+  user: AppUser | null;
   role: AppRole | null;
   isStaff: boolean;
   // Extended role-specific governance
@@ -33,8 +48,8 @@ type AuthCtx = {
 const Ctx = createContext<AuthCtx | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [session, setSession] = useState<Session | null>(null);
-  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<AppSession | null>(null);
+  const [user, setUser] = useState<AppUser | null>(null);
   const [role, setRole] = useState<AppRole | null>("super_admin");
   const [loading, setLoading] = useState(false);
 
@@ -67,8 +82,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const isApprovedStaff = staffAccount.status === "active" && staffAccount.role !== "public";
   const isPendingApproval = staffAccount.status === "pending_ceo_approval" || staffAccount.role === "public";
 
-  const mockExecutiveUser: User = {
+  const mockExecutiveUser: AppUser = {
+    uid: staffAccount.id,
     id: staffAccount.id,
+    email: staffAccount.email,
+    displayName: staffAccount.fullName,
+    photoURL: null,
     app_metadata: {},
     user_metadata: {
       full_name: staffAccount.fullName,
@@ -79,9 +98,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     aud: "authenticated",
     created_at: staffAccount.registeredAt,
     email: staffAccount.email,
-  } as User;
+  };
 
-  const mockSession: Session = {
+  const mockSession: AppSession = {
     access_token: "mock-token",
     token_type: "bearer",
     expires_in: 3600,
@@ -116,11 +135,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signOut: async () => {
       if (isFirebaseConfigured) {
         await signOutFirebase();
-      }
-      try {
-        await supabase.auth.signOut();
-      } catch {
-        // ignore
       }
       setCurrentUserEmail("theesbbrandemail@gmail.com");
       window.location.href = "/";

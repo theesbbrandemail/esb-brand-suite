@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { addDoc, collection, getDocs, limit, orderBy, query, updateDoc, where } from "firebase/firestore";
+import { db } from "@/integrations/firebase/client";
 import { useAuth } from "@/lib/auth";
 import {
   CheckCircle2,
@@ -37,12 +38,9 @@ export function AutomationApprovalQueue() {
   const [busy, setBusy] = useState<string | null>(null);
 
   async function load() {
-    const { data } = await supabase
-      .from("ai_automation_tasks")
-      .select("id,title,description,category,risk,status,impact_estimate,created_at")
-      .order("created_at", { ascending: false })
-      .limit(20);
-    setTasks((data ?? []) as Task[]);
+    if (!db) { setTasks([]); setLoading(false); return; }
+    const snapshot = await getDocs(query(collection(db, "ai_automation_tasks"), orderBy("createdAt", "desc"), limit(20)));
+    setTasks(snapshot.docs.map((item) => ({ id: item.id, ...(item.data() as Omit<Task, "id">) })));
     setLoading(false);
   }
 
@@ -54,19 +52,14 @@ export function AutomationApprovalQueue() {
     if (!user) return;
     setBusy(id);
     try {
-      if (action === "approve") {
-        await supabase
-          .from("ai_automation_tasks")
-          .update({ status: "approved", approved_by: user.id, approved_at: new Date().toISOString() })
-          .eq("id", id);
-      } else if (action === "reject") {
-        await supabase.from("ai_automation_tasks").update({ status: "rejected" }).eq("id", id);
-      } else if (action === "execute") {
-        await supabase
-          .from("ai_automation_tasks")
-          .update({ status: "executed", executed_at: new Date().toISOString() })
-          .eq("id", id);
-      }
+      if (!db) return;
+      const taskRef = (await import("firebase/firestore")).doc(db, "ai_automation_tasks", id);
+      const status = action === "approve" ? "approved" : action === "reject" ? "rejected" : "executed";
+      await updateDoc(taskRef, {
+        status,
+        ...(action === "approve" ? { approvedBy: user.id, approvedAt: new Date() } : {}),
+        ...(action === "execute" ? { executedAt: new Date() } : {}),
+      });
       await load();
     } finally {
       setBusy(null);

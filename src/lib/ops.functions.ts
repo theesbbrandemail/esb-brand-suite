@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { requireGoogleAuth } from "@/integrations/firebase/auth-middleware";
 import { z } from "zod";
 
 /* ----------------------------- Types ----------------------------- */
@@ -99,8 +99,8 @@ const BILLABLE = new Set(["scheduled", "confirmed", "completed"]);
 /* ----------------------------- In-Memory Resilient Store ----------------------------- */
 
 const isPlaceholderBackend =
-  !process.env.SUPABASE_URL ||
-  process.env.SUPABASE_URL.includes("your-project-ref");
+  !process.env.FIREBASE_PROJECT_ID ||
+  process.env.FIREBASE_PROJECT_ID.includes("your-project-ref");
 
 let inMemBranches: Branch[] = [
   {
@@ -360,13 +360,13 @@ const inMemServices: ServiceItem[] = [
 /* ----------------------------- KPIs ----------------------------- */
 
 export const getCeoKpis = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireGoogleAuth])
   .handler(async ({ context }): Promise<CeoKpis> => {
     if (isPlaceholderBackend) {
       return getFallbackKpis();
     }
     try {
-      const sb = context.supabase as any;
+      const sb = context.firebase as any;
       const now = new Date();
       const thirtyAgo = new Date(now.getTime() - 30 * 86400000).toISOString();
       const sixtyAgo = new Date(now.getTime() - 60 * 86400000).toISOString();
@@ -562,11 +562,11 @@ function getFallbackKpis(): CeoKpis {
 /* ----------------------------- Branches ----------------------------- */
 
 export const listBranches = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireGoogleAuth])
   .handler(async ({ context }): Promise<Branch[]> => {
     if (isPlaceholderBackend) return inMemBranches;
     try {
-      const sb = context.supabase as any;
+      const sb = context.firebase as any;
       const { data } = await sb.from("branches").select("id,name,city,phone,address,email,whatsapp,opening_hours").order("name");
       return (data && data.length > 0) ? (data as Branch[]) : inMemBranches;
     } catch {
@@ -577,11 +577,11 @@ export const listBranches = createServerFn({ method: "GET" })
 /* ----------------------------- Reminders ----------------------------- */
 
 export const listReminders = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireGoogleAuth])
   .handler(async ({ context }): Promise<Reminder[]> => {
     if (isPlaceholderBackend) return inMemReminders;
     try {
-      const sb = context.supabase as any;
+      const sb = context.firebase as any;
       const { data } = await sb
         .from("ceo_reminders")
         .select("id,title,body,category,priority,due_at,status")
@@ -595,7 +595,7 @@ export const listReminders = createServerFn({ method: "GET" })
   });
 
 export const createReminder = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireGoogleAuth])
   .inputValidator((d: unknown) =>
     z.object({
       title: z.string().min(2).max(120),
@@ -618,7 +618,7 @@ export const createReminder = createServerFn({ method: "POST" })
     inMemReminders = [newRem, ...inMemReminders];
     if (isPlaceholderBackend) return newRem;
     try {
-      const sb = context.supabase as any;
+      const sb = context.firebase as any;
       const { data: row } = await sb
         .from("ceo_reminders")
         .insert({ ...data, user_id: context.userId })
@@ -631,7 +631,7 @@ export const createReminder = createServerFn({ method: "POST" })
   });
 
 export const updateReminder = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireGoogleAuth])
   .inputValidator((d: unknown) =>
     z.object({
       id: z.string().min(1),
@@ -643,7 +643,7 @@ export const updateReminder = createServerFn({ method: "POST" })
     const found = inMemReminders.find((r) => r.id === data.id) ?? inMemReminders[0];
     if (isPlaceholderBackend) return found;
     try {
-      const sb = context.supabase as any;
+      const sb = context.firebase as any;
       const { data: row } = await sb
         .from("ceo_reminders")
         .update({ status: data.status, updated_at: new Date().toISOString() })
@@ -659,7 +659,7 @@ export const updateReminder = createServerFn({ method: "POST" })
 /* ----------------------------- Inventory ----------------------------- */
 
 export const listInventory = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireGoogleAuth])
   .inputValidator((d: unknown) => z.object({ branchId: z.string().min(1).optional() }).optional().parse(d))
   .handler(async ({ data, context }): Promise<InventoryRow[]> => {
     if (isPlaceholderBackend) {
@@ -667,7 +667,7 @@ export const listInventory = createServerFn({ method: "GET" })
       return inMemInventory;
     }
     try {
-      const sb = context.supabase as any;
+      const sb = context.firebase as any;
       let q = sb
         .from("inventory")
         .select("id, branch_id, product_id, qty, low_stock_threshold, updated_at, branch:branches(name,city), product:products(name,sku,brand,category,image_url)")
@@ -681,7 +681,7 @@ export const listInventory = createServerFn({ method: "GET" })
   });
 
 export const adjustStock = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireGoogleAuth])
   .inputValidator((d: unknown) => z.object({ id: z.string().min(1), delta: z.number().int() }).parse(d))
   .handler(async ({ data, context }) => {
     let nextQty = 10;
@@ -694,7 +694,7 @@ export const adjustStock = createServerFn({ method: "POST" })
     });
     if (isPlaceholderBackend) return { ok: true, qty: nextQty };
     try {
-      const sb = context.supabase as any;
+      const sb = context.firebase as any;
       const { data: cur } = await sb.from("inventory").select("qty").eq("id", data.id).single();
       const next = Math.max(0, (cur?.qty ?? 0) + data.delta);
       await sb.from("inventory").update({ qty: next, updated_at: new Date().toISOString() }).eq("id", data.id);
@@ -707,7 +707,7 @@ export const adjustStock = createServerFn({ method: "POST" })
 /* ----------------------------- Appointments ----------------------------- */
 
 export const listAppointments = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireGoogleAuth])
   .inputValidator((d: unknown) =>
     z.object({
       branchId: z.string().min(1).optional(),
@@ -721,7 +721,7 @@ export const listAppointments = createServerFn({ method: "GET" })
       return inMemAppointments;
     }
     try {
-      const sb = context.supabase as any;
+      const sb = context.firebase as any;
       let q = sb
         .from("appointments")
         .select("id, branch_id, patient_name, patient_phone, patient_email, service, scheduled_at, duration_minutes, status, notes, branch:branches(name,city)")
@@ -738,7 +738,7 @@ export const listAppointments = createServerFn({ method: "GET" })
   });
 
 export const createAppointment = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireGoogleAuth])
   .inputValidator((d: unknown) =>
     z.object({
       branch_id: z.string().min(1),
@@ -789,7 +789,7 @@ export const createAppointment = createServerFn({ method: "POST" })
 
     if (isPlaceholderBackend) return newAppt;
     try {
-      const sb = context.supabase as any;
+      const sb = context.firebase as any;
       const { data: row } = await sb
         .from("appointments")
         .insert({ ...data, price: 180, cost: 45 })
@@ -802,7 +802,7 @@ export const createAppointment = createServerFn({ method: "POST" })
   });
 
 export const updateAppointmentStatus = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireGoogleAuth])
   .inputValidator((d: unknown) =>
     z.object({
       id: z.string().min(1),
@@ -813,7 +813,7 @@ export const updateAppointmentStatus = createServerFn({ method: "POST" })
     inMemAppointments = inMemAppointments.map((a) => (a.id === data.id ? { ...a, status: data.status } : a));
     if (isPlaceholderBackend) return { ok: true };
     try {
-      const sb = context.supabase as any;
+      const sb = context.firebase as any;
       await sb.from("appointments").update({ status: data.status }).eq("id", data.id);
       return { ok: true };
     } catch {
@@ -821,14 +821,29 @@ export const updateAppointmentStatus = createServerFn({ method: "POST" })
     }
   });
 
+export const updateAppointmentNotes = createServerFn({ method: "POST" })
+  .middleware([requireGoogleAuth])
+  .inputValidator((d: unknown) => z.object({ id: z.string().min(1), notes: z.string().max(20000) }).parse(d))
+  .handler(async ({ data, context }) => {
+    inMemAppointments = inMemAppointments.map((a) => (a.id === data.id ? { ...a, notes: data.notes } : a));
+    if (isPlaceholderBackend) return { ok: true };
+    try {
+      const firebase = context.firebase as any;
+      await firebase.from("appointments").update({ notes: data.notes }).eq("id", data.id);
+    } catch {
+      // Keep the in-memory update as the safe fallback for unavailable Google data services.
+    }
+    return { ok: true };
+  });
+
 /* ----------------------------- Follow-ups ----------------------------- */
 
 export const listFollowUps = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireGoogleAuth])
   .handler(async ({ context }) => {
     if (isPlaceholderBackend) return inMemFollowUps;
     try {
-      const sb = context.supabase as any;
+      const sb = context.firebase as any;
       const { data } = await sb
         .from("follow_ups")
         .select("id, appointment_id, patient_name, patient_phone, channel, message, scheduled_at, sent_at, status, delivery_status, attempts, last_error, last_attempt_at, processed_at")
@@ -841,7 +856,7 @@ export const listFollowUps = createServerFn({ method: "GET" })
   });
 
 export const markFollowUpSent = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireGoogleAuth])
   .inputValidator((d: unknown) => z.object({ id: z.string().min(1) }).parse(d))
   .handler(async ({ data, context }) => {
     inMemFollowUps = inMemFollowUps.map((f) =>
@@ -849,7 +864,7 @@ export const markFollowUpSent = createServerFn({ method: "POST" })
     );
     if (isPlaceholderBackend) return { ok: true };
     try {
-      const sb = context.supabase as any;
+      const sb = context.firebase as any;
       const now = new Date().toISOString();
       await sb
         .from("follow_ups")
@@ -866,11 +881,11 @@ export const markFollowUpSent = createServerFn({ method: "POST" })
 export type ServiceItem = { id: string; name: string; price: number; cost: number; active: boolean };
 
 export const listServices = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireGoogleAuth])
   .handler(async ({ context }): Promise<ServiceItem[]> => {
     if (isPlaceholderBackend) return inMemServices;
     try {
-      const sb = context.supabase as any;
+      const sb = context.firebase as any;
       const { data } = await sb
         .from("service_catalog")
         .select("id,name,price,cost,active")
@@ -891,7 +906,7 @@ export type FeedbackEntry = {
 };
 
 export const listFeedback = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireGoogleAuth])
   .inputValidator((d: unknown) => z.object({ limit: z.number().int().min(1).max(100).default(10) }).optional().parse(d))
   .handler(async ({ data, context }): Promise<FeedbackEntry[]> => {
     return [
@@ -913,7 +928,7 @@ export const listFeedback = createServerFn({ method: "GET" })
   });
 
 export const submitFeedback = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireGoogleAuth])
   .inputValidator((d: unknown) =>
     z.object({
       appointment_id: z.string().min(1),
@@ -941,7 +956,7 @@ export type ContentPost = {
 };
 
 export const listContentPosts = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireGoogleAuth])
   .inputValidator((d: unknown) =>
     z.object({ branchId: z.string().min(1).optional(), limit: z.number().int().min(1).max(100).default(50) })
       .optional()
@@ -953,7 +968,7 @@ export const listContentPosts = createServerFn({ method: "GET" })
       return inMemPosts;
     }
     try {
-      const sb = context.supabase as any;
+      const sb = context.firebase as any;
       let q = sb
         .from("content_posts")
         .select("id,title,body,image_url,branch_id,status,scheduled_at,published_at,created_at,branch:branches(name)")
@@ -968,7 +983,7 @@ export const listContentPosts = createServerFn({ method: "GET" })
   });
 
 export const createContentPost = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireGoogleAuth])
   .inputValidator((d: unknown) =>
     z.object({
       title: z.string().min(2).max(160),
@@ -996,7 +1011,7 @@ export const createContentPost = createServerFn({ method: "POST" })
     inMemPosts = [newPost, ...inMemPosts];
     if (isPlaceholderBackend) return newPost;
     try {
-      const sb = context.supabase as any;
+      const sb = context.firebase as any;
       const { data: row } = await sb
         .from("content_posts")
         .insert({
