@@ -363,18 +363,17 @@ export const DEFAULT_AI_ACTIONS: AiActionExecution[] = [
 ];
 
 // Memory fallback for SSR / environments without window
-let memDeals = [...DEFAULT_DEALS];
-let memCrm = [...DEFAULT_CRM_PATIENTS];
-let memStaff = [...DEFAULT_STAFF];
-let memActions = [...DEFAULT_AI_ACTIONS];
+let memDeals: SalesDeal[] = [];
+let memCrm: CrmPatient[] = [];
+let memStaff: StaffRecord[] = [];
+let memActions: AiActionExecution[] = [];
 
 export function getStoredDeals(): SalesDeal[] {
   if (typeof window === "undefined") return memDeals;
   try {
     const raw = localStorage.getItem(STORAGE_KEYS.DEALS);
     if (!raw) {
-      localStorage.setItem(STORAGE_KEYS.DEALS, JSON.stringify(DEFAULT_DEALS));
-      return DEFAULT_DEALS;
+return [];
     }
     return JSON.parse(raw);
   } catch {
@@ -398,8 +397,7 @@ export function getStoredPatients(): CrmPatient[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEYS.CRM);
     if (!raw) {
-      localStorage.setItem(STORAGE_KEYS.CRM, JSON.stringify(DEFAULT_CRM_PATIENTS));
-      return DEFAULT_CRM_PATIENTS;
+return [];
     }
     return JSON.parse(raw);
   } catch {
@@ -423,8 +421,7 @@ export function getStoredStaff(): StaffRecord[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEYS.STAFF);
     if (!raw) {
-      localStorage.setItem(STORAGE_KEYS.STAFF, JSON.stringify(DEFAULT_STAFF));
-      return DEFAULT_STAFF;
+return [];
     }
     return JSON.parse(raw);
   } catch {
@@ -448,8 +445,7 @@ export function getStoredAiActions(): AiActionExecution[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEYS.ACTIONS);
     if (!raw) {
-      localStorage.setItem(STORAGE_KEYS.ACTIONS, JSON.stringify(DEFAULT_AI_ACTIONS));
-      return DEFAULT_AI_ACTIONS;
+return [];
     }
     return JSON.parse(raw);
   } catch {
@@ -585,7 +581,7 @@ export const DEFAULT_DELIVERIES: DeliveryOrder[] = [
   },
 ];
 
-let memDeliveries = DEFAULT_DELIVERIES;
+let memDeliveries: DeliveryOrder[] = [];
 
 export function getStoredDeliveries(): DeliveryOrder[] {
   if (typeof window === "undefined") return memDeliveries;
@@ -682,7 +678,7 @@ export const DEFAULT_PURCHASE_ORDERS: PurchaseOrder[] = [
   },
 ];
 
-let memPurchaseOrders = DEFAULT_PURCHASE_ORDERS;
+let memPurchaseOrders: PurchaseOrder[] = [];
 
 export function getStoredPurchaseOrders(): PurchaseOrder[] {
   if (typeof window === "undefined") return memPurchaseOrders;
@@ -815,7 +811,7 @@ export const DEFAULT_STAFF_PERFORMANCE: StaffPerformanceRecord[] = [
   },
 ];
 
-let memStaffPerf = DEFAULT_STAFF_PERFORMANCE;
+let memStaffPerf: StaffPerformanceRecord[] = [];
 
 export function getStoredStaffPerformance(): StaffPerformanceRecord[] {
   if (typeof window === "undefined") return memStaffPerf;
@@ -1030,7 +1026,7 @@ export const DEFAULT_STORE_PRODUCTS: WebStoreProduct[] = [
   },
 ];
 
-let memStoreProducts = DEFAULT_STORE_PRODUCTS;
+let memStoreProducts: WebStoreProduct[] = [];
 
 export function getStoredStoreProducts(): WebStoreProduct[] {
   if (typeof window === "undefined") return memStoreProducts;

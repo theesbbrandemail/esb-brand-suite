@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import type { User as FirebaseUser } from "firebase/auth";
-import { isFirebaseConfigured, signOutFirebase } from "@/integrations/firebase/client";
+import { isFirebaseConfigured, signOutFirebase, subscribeFirebaseAuth } from "@/integrations/firebase/client";
 import {
   getCurrentStaffAccount,
   getCurrentUserEmail,
@@ -50,8 +50,31 @@ const Ctx = createContext<AuthCtx | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<AppSession | null>(null);
   const [user, setUser] = useState<AppUser | null>(null);
-  const [role, setRole] = useState<AppRole | null>("super_admin");
-  const [loading, setLoading] = useState(false);
+  const [role, setRole] = useState<AppRole | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    return subscribeFirebaseAuth((firebaseUser) => {
+      if (!firebaseUser) {
+        setUser(null);
+        setSession(null);
+        setRole(null);
+        setLoading(false);
+        return;
+      }
+      const nextUser: AppUser = {
+        ...firebaseUser,
+        id: firebaseUser.uid,
+        app_metadata: {},
+        user_metadata: { name: firebaseUser.displayName ?? "", email: firebaseUser.email ?? "" },
+        aud: "authenticated",
+        created_at: firebaseUser.metadata.creationTime ?? new Date().toISOString(),
+      };
+      setUser(nextUser);
+      setSession({ access_token: "firebase-managed", token_type: "bearer", expires_in: 3600, refresh_token: "firebase-managed", user: nextUser });
+      setLoading(false);
+    });
+  }, []);
 
   // Dynamic Staff Account based on current user email
   const [staffAccount, setStaffAccount] = useState<StaffAccount>(() => getCurrentStaffAccount());
@@ -82,32 +105,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const isApprovedStaff = staffAccount.status === "active" && staffAccount.role !== "public";
   const isPendingApproval = staffAccount.status === "pending_ceo_approval" || staffAccount.role === "public";
 
-  const mockExecutiveUser: AppUser = {
-    uid: staffAccount.id,
-    id: staffAccount.id,
-    email: staffAccount.email,
-    displayName: staffAccount.fullName,
-    photoURL: null,
-    app_metadata: {},
-    user_metadata: {
-      full_name: staffAccount.fullName,
-      name: staffAccount.fullName,
-      role: staffAccount.role,
-      branch: staffAccount.branch,
-    },
-    aud: "authenticated",
-    created_at: staffAccount.registeredAt,
-    email: staffAccount.email,
-  };
-
-  const mockSession: AppSession = {
-    access_token: "mock-token",
-    token_type: "bearer",
-    expires_in: 3600,
-    refresh_token: "mock-refresh",
-    user: mockExecutiveUser,
-  };
-
   // Map staffRole to legacy AppRole
   const mappedRole: AppRole =
     staffAccount.role === "ceo"
@@ -119,9 +116,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       : "public";
 
   const value: AuthCtx = {
-    loading: false,
-    session: session ?? mockSession,
-    user: user ?? mockExecutiveUser,
+    loading,
+    session,
+    user,
     role: mappedRole,
     isStaff: isApprovedStaff || isCeo,
     staffAccount,
@@ -136,8 +133,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (isFirebaseConfigured) {
         await signOutFirebase();
       }
-      setCurrentUserEmail("theesbbrandemail@gmail.com");
-      window.location.href = "/";
+      setCurrentUserEmail("");
+      setUser(null);
+      setSession(null);
+      setRole(null);
+      window.location.href = "/auth";
     },
   };
 
