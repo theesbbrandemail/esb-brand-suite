@@ -36,7 +36,7 @@ function ensureFirebase(): Auth | null {
   if (!isFirebaseConfigured) return null;
   if (typeof window === "undefined") return null;
   if (!app) {
-    app = getApps().length ? getApps()[0]! : initializeApp(config);
+    app = getApps().length ? getApps()[0]! : initializeApp(firebaseConfig);
     auth = getAuth(app);
     db = getFirestore(app);
   }
